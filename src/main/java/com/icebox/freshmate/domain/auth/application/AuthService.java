@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.icebox.freshmate.domain.auth.application.dto.request.MemberLoginReq;
 import com.icebox.freshmate.domain.auth.application.dto.request.MemberSignUpAuthReq;
 import com.icebox.freshmate.domain.auth.application.dto.response.MemberAuthRes;
+import com.icebox.freshmate.domain.member.application.dto.response.MemberInfoRes;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
 import com.icebox.freshmate.global.error.ErrorCode;
@@ -39,7 +40,7 @@ public class AuthService implements UserDetailsService {
 			.build();
 	}
 
-	public MemberAuthRes signUp(MemberSignUpAuthReq memberSignUpAuthReq) {
+	public MemberInfoRes signUp(MemberSignUpAuthReq memberSignUpAuthReq) {
 		Member member = memberSignUpAuthReq.toMember();
 		member.addUserAuthority();
 		member.encodePassword(passwordEncoder);
@@ -48,7 +49,7 @@ public class AuthService implements UserDetailsService {
 
 		Member savedMember = memberRepository.save(member);
 
-		return createMemberAuthResWithTokens(savedMember);
+		return MemberInfoRes.from(savedMember);
 	}
 
 	public MemberAuthRes login(MemberLoginReq memberLoginReq) {
@@ -86,7 +87,7 @@ public class AuthService implements UserDetailsService {
 		String refreshToken = jwtService.createRefreshToken();
 		member.updateRefreshToken(refreshToken);
 
-		return new MemberAuthRes(accessToken, refreshToken);
+		return new MemberAuthRes(accessToken);
 	}
 
 	private void checkDuplicatedUsername(String username) {

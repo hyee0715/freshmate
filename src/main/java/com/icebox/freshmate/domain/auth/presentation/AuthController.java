@@ -13,6 +13,7 @@ import com.icebox.freshmate.domain.auth.application.dto.request.MemberLoginReq;
 import com.icebox.freshmate.domain.auth.application.dto.request.MemberSignUpAuthReq;
 import com.icebox.freshmate.domain.auth.application.dto.request.MemberWithdrawReq;
 import com.icebox.freshmate.domain.auth.application.dto.response.MemberAuthRes;
+import com.icebox.freshmate.domain.member.application.dto.response.MemberInfoRes;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,11 +26,11 @@ public class AuthController {
 	private final AuthService authService;
 
 	@PostMapping("/sign-up")
-	public ResponseEntity<MemberAuthRes> signUp(@Valid @RequestBody MemberSignUpAuthReq memberSignUpAuthReq) {
-		MemberAuthRes memberAuthRes = authService.signUp(memberSignUpAuthReq);
+	public ResponseEntity<MemberInfoRes> signUp(@Valid @RequestBody MemberSignUpAuthReq memberSignUpAuthReq) {
+		MemberInfoRes memberInfoRes = authService.signUp(memberSignUpAuthReq);
 
 		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(memberAuthRes);
+			.body(memberInfoRes);
 	}
 
 	@PostMapping("/login")

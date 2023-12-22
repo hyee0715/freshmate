@@ -17,7 +17,6 @@ import com.icebox.freshmate.domain.auth.application.JwtService;
 import com.icebox.freshmate.domain.auth.application.AuthService;
 import com.icebox.freshmate.domain.auth.application.filter.JwtAuthenticationProcessingFilter;
 import com.icebox.freshmate.domain.auth.application.handler.LoginFailureHandler;
-import com.icebox.freshmate.domain.auth.application.handler.LoginSuccessJwtProvideHandler;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -58,11 +57,11 @@ public class SecurityConfig {
 		return new ProviderManager(provider);
 	}
 
-    @Bean
-    public LoginSuccessJwtProvideHandler loginSuccessJwtProvideHandler(){
-
-        return new LoginSuccessJwtProvideHandler(jwtService, memberRepository);
-    }
+//    @Bean
+//    public LoginSuccessJwtProvideHandler loginSuccessJwtProvideHandler(){
+//
+//        return new LoginSuccessJwtProvideHandler(jwtService, memberRepository);
+//    }
 
     @Bean
     public LoginFailureHandler loginFailureHandler(){
