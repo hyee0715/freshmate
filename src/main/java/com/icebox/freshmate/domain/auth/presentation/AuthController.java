@@ -2,6 +2,7 @@ package com.icebox.freshmate.domain.auth.presentation;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.icebox.freshmate.domain.auth.application.AuthService;
 import com.icebox.freshmate.domain.auth.application.dto.request.MemberLoginReq;
 import com.icebox.freshmate.domain.auth.application.dto.request.MemberSignUpAuthReq;
+import com.icebox.freshmate.domain.auth.application.dto.request.MemberWithdrawReq;
 import com.icebox.freshmate.domain.auth.application.dto.response.MemberAuthRes;
 
 import jakarta.validation.Valid;
@@ -35,5 +37,14 @@ public class AuthController {
 		MemberAuthRes memberAuthRes = authService.login(memberLoginReq);
 
 		return ResponseEntity.ok(memberAuthRes);
+	}
+
+	@DeleteMapping("/withdraw")
+	public ResponseEntity<Void> withdraw(@Valid @RequestBody MemberWithdrawReq memberWithdrawReq) {
+		authService.withdraw(memberWithdrawReq.password());
+
+		return ResponseEntity
+			.noContent()
+			.build();
 	}
 }

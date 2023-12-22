@@ -24,6 +24,7 @@ public class MemberService {
 	private final PasswordEncoder passwordEncoder;
 	private final MemberRepository memberRepository;
 
+	@Transactional(readOnly = true)
 	public MemberInfoRes findInfoById(Long id) {
 		Member member = memberRepository.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER));
@@ -31,6 +32,7 @@ public class MemberService {
 		return MemberInfoRes.from(member);
 	}
 
+	@Transactional(readOnly = true)
 	public MemberInfoRes findInfo() {
 		String memberUsername = SecurityUtil.getLoginUsername();
 		Member member = memberRepository.findByUsername(memberUsername)
