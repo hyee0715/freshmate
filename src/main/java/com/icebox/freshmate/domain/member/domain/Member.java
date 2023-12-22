@@ -36,10 +36,10 @@ public class Member extends BaseEntity {
 
 	private String password;
 
-	@Column(nullable = false, length = 30)
+	@Column(nullable = false, length = 10)
 	private String realName;
 
-	@Column(nullable = false, length = 30)
+	@Column(nullable = false, length = 20)
 	private String nickName;
 
 	@Enumerated(EnumType.STRING)
@@ -55,6 +55,15 @@ public class Member extends BaseEntity {
 		this.realName = realName;
 		this.nickName = nickName;
 		this.role = role;
+	}
+
+	public void updateInfo(Member member) {
+		this.realName = member.getRealName();
+		this.nickName = member.getNickName();
+	}
+
+	public void updatePassword(PasswordEncoder passwordEncoder, String password) {
+		this.password = passwordEncoder.encode(password);
 	}
 
 	public void updateRefreshToken(String refreshToken){

@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.icebox.freshmate.domain.auth.application.dto.request.MemberLoginReq;
 import com.icebox.freshmate.domain.auth.application.dto.request.MemberSignUpAuthReq;
@@ -14,9 +15,11 @@ import com.icebox.freshmate.domain.member.domain.MemberRepository;
 import com.icebox.freshmate.global.error.ErrorCode;
 import com.icebox.freshmate.global.error.exception.BusinessException;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
+import com.icebox.freshmate.global.util.SecurityUtil;
 
 import lombok.RequiredArgsConstructor;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class AuthService implements UserDetailsService {
@@ -57,6 +60,19 @@ public class AuthService implements UserDetailsService {
 		Member loginRequestMember = MemberLoginReq.toMember(memberLoginReq);
 
 		return createMemberAuthResWithTokens(loginRequestMember);
+	}
+
+	public void withdraw(String checkPassword) {
+		String memberUsername = SecurityUtil.getLoginUsername();
+
+		Member member = memberRepository.findByUsername(memberUsername)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER));
+
+		if(!member.matchPassword(passwordEncoder, checkPassword) ) {
+			throw new BusinessException(ErrorCode.WRONG_PASSWORD);
+		}
+
+		memberRepository.delete(member);
 	}
 
 	private void checkLoginPassword(Member member, String password) {
