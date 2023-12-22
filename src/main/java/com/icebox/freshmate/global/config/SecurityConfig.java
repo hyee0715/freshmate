@@ -11,12 +11,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icebox.freshmate.domain.auth.application.JwtService;
 import com.icebox.freshmate.domain.auth.application.AuthService;
+import com.icebox.freshmate.domain.auth.application.filter.JsonUsernamePasswordAuthenticationFilter;
 import com.icebox.freshmate.domain.auth.application.filter.JwtAuthenticationProcessingFilter;
 import com.icebox.freshmate.domain.auth.application.handler.LoginFailureHandler;
+import com.icebox.freshmate.domain.auth.application.handler.LoginSuccessJwtProvideHandler;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+	private final ObjectMapper objectMapper;
 	private final MemberRepository memberRepository;
 	private final JwtService jwtService;
 
@@ -38,7 +42,8 @@ public class SecurityConfig {
 			.authorizeHttpRequests(request -> request
 				.requestMatchers("/api/**").permitAll()
 				.anyRequest().authenticated())
-			.addFilterBefore(jwtAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
+			.addFilterAfter(jsonUsernamePasswordLoginFilter(), LogoutFilter.class)
+			.addFilterBefore(jwtAuthenticationProcessingFilter(), JsonUsernamePasswordAuthenticationFilter.class)
 			.build();
 	}
 
@@ -57,16 +62,26 @@ public class SecurityConfig {
 		return new ProviderManager(provider);
 	}
 
-//    @Bean
-//    public LoginSuccessJwtProvideHandler loginSuccessJwtProvideHandler(){
-//
-//        return new LoginSuccessJwtProvideHandler(jwtService, memberRepository);
-//    }
+    @Bean
+    public LoginSuccessJwtProvideHandler loginSuccessJwtProvideHandler(){
+
+        return new LoginSuccessJwtProvideHandler(jwtService, memberRepository, objectMapper);
+    }
 
     @Bean
     public LoginFailureHandler loginFailureHandler(){
         return new LoginFailureHandler();
     }
+
+	@Bean
+	public JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordLoginFilter(){
+		JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordLoginFilter = new JsonUsernamePasswordAuthenticationFilter(objectMapper);
+		jsonUsernamePasswordLoginFilter.setAuthenticationManager(authenticationManager());
+		jsonUsernamePasswordLoginFilter.setAuthenticationSuccessHandler(loginSuccessJwtProvideHandler());
+		jsonUsernamePasswordLoginFilter.setAuthenticationFailureHandler(loginFailureHandler());
+
+		return jsonUsernamePasswordLoginFilter;
+	}
 
 	@Bean
 	public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter(){
