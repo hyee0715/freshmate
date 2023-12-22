@@ -87,16 +87,16 @@ public class JwtService {
 			);
 	}
 
-	public void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken, String refreshToken){
-		response.setStatus(HttpServletResponse.SC_OK);
-
-		setAccessTokenHeader(response, accessToken);
-		setRefreshTokenHeader(response, refreshToken);
-
-		Map<String, String> tokenMap = new HashMap<>();
-		tokenMap.put(ACCESS_TOKEN_SUBJECT, accessToken);
-		tokenMap.put(REFRESH_TOKEN_SUBJECT, refreshToken);
-	}
+//	public void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken, String refreshToken){
+//		response.setStatus(HttpServletResponse.SC_OK);
+//
+//		setAccessTokenHeader(response, accessToken);
+//		setRefreshTokenHeader(response, refreshToken);
+//
+//		Map<String, String> tokenMap = new HashMap<>();
+//		tokenMap.put(ACCESS_TOKEN_SUBJECT, accessToken);
+//		tokenMap.put(REFRESH_TOKEN_SUBJECT, refreshToken);
+//	}
 
 	public void sendAccessToken(HttpServletResponse response, String accessToken){
 		response.setStatus(HttpServletResponse.SC_OK);
@@ -134,9 +134,9 @@ public class JwtService {
 		response.setHeader(accessHeader, accessToken);
 	}
 
-	public void setRefreshTokenHeader(HttpServletResponse response, String refreshToken) {
-		response.setHeader(refreshHeader, refreshToken);
-	}
+//	public void setRefreshTokenHeader(HttpServletResponse response, String refreshToken) {
+//		response.setHeader(refreshHeader, refreshToken);
+//	}
 
 	public boolean isTokenValid(String token){
 		try {
