@@ -76,6 +76,15 @@ public class AuthService implements UserDetailsService {
 		memberRepository.delete(member);
 	}
 
+	public void logout() {
+		String memberUsername = SecurityUtil.getLoginUsername();
+
+		Member member = memberRepository.findByUsername(memberUsername)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER));
+
+		member.destroyRefreshToken();
+	}
+
 	private void checkLoginPassword(Member member, String password) {
 		if (!member.matchPassword(passwordEncoder, password)) {
 			throw new BusinessException(ErrorCode.LOGIN_FAILURE);
