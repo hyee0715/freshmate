@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.2.0'
 	id 'io.spring.dependency-management' version '1.1.4'
+	id "org.asciidoctor.jvm.convert" version "3.3.2"
 }
 
 group = 'com.icebox'
@@ -12,6 +13,7 @@ java {
 }
 
 configurations {
+	asciidoctorExt
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
@@ -34,10 +36,44 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+ext {
+	snippetsDir = file('build/generated-snippets')
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+	outputs.dir snippetsDir
+}
+
+asciidoctor {
+	configurations 'asciidoctorExt'
+	baseDirFollowsSourceFile()
+	inputs.dir snippetsDir
+	dependsOn test
+}
+
+asciidoctor.doFirst {
+	delete file('src/main/resources/static/docs')
+}
+
+task copyDocument(type: Copy) {
+	dependsOn asciidoctor
+	from file("build/docs/asciidoc")
+	into file("src/main/resources/static/docs")
+}
+
+build {
+	dependsOn copyDocument
 }
