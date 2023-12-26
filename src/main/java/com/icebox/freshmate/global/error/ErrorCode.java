@@ -17,7 +17,10 @@ public enum ErrorCode {
 	ALREADY_EXIST_USERNAME("M001", "이미 존재하는 아이디입니다."),
 	LOGIN_FAILURE("M002", "로그인에 실패했습니다."),
 	NOT_FOUND_MEMBER("M003", "회원 정보가 없습니다."),
-	WRONG_PASSWORD("M004", "비밀번호가 일치하지 않습니다.");
+	WRONG_PASSWORD("M004", "비밀번호가 일치하지 않습니다."),
+
+	//인증, 인가
+	INVALID_TOKEN("A001", "토큰이 유효하지 않습니다.");
 
 	private final String code;
 	private final String message;

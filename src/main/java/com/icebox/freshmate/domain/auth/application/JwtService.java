@@ -6,12 +6,11 @@ import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
 import com.icebox.freshmate.global.error.ErrorCode;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
+import com.icebox.freshmate.global.error.exception.InvalidValueException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -23,11 +22,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @Transactional
 @Service
 @RequiredArgsConstructor
-@Setter(value = AccessLevel.PRIVATE)
-@Slf4j
 public class JwtService {
 
 	@Value("${jwt.secret}")
@@ -109,7 +107,6 @@ public class JwtService {
 
 	public Optional<String> extractAccessToken(HttpServletRequest request) {
 		return Optional.ofNullable(request.getHeader(accessHeader)).filter(
-
 			accessToken -> accessToken.startsWith(BEARER)
 
 		).map(accessToken -> accessToken.replace(BEARER, ""));
@@ -124,7 +121,7 @@ public class JwtService {
 	public Optional<String> extractUsername(String accessToken) {
 		try {
 			return Optional.ofNullable(JWT.require(Algorithm.HMAC512(secret)).build().verify(accessToken).getClaim(USERNAME_CLAIM).asString());
-		}catch (Exception e){
+		} catch (Exception e){
 			log.error(e.getMessage());
 			return Optional.empty();
 		}
@@ -142,9 +139,31 @@ public class JwtService {
 		try {
 			JWT.require(Algorithm.HMAC512(secret)).build().verify(token);
 			return true;
-		}catch (Exception e){
+		} catch (Exception e){
 			log.error("유효하지 않은 Token입니다.", e.getMessage());
 			return false;
 		}
+	}
+
+	public String reissueAccessToken(String refreshToken) {
+		Member member = memberRepository.findByRefreshToken(refreshToken)
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER));
+
+		String accessToken = createAccessToken(member.getUsername());
+		log.info("access Token를 재발급합니다. access Token : {}", accessToken);
+
+		return accessToken;
+	}
+
+	public String getRefreshToken(String refreshToken) {
+		if (refreshToken.startsWith("Bearer ")) {
+			refreshToken = refreshToken.replace("Bearer ", "");
+		}
+
+		if (!isTokenValid(refreshToken)) {
+			throw new InvalidValueException(ErrorCode.INVALID_TOKEN);
+		}
+
+		return refreshToken;
 	}
 }

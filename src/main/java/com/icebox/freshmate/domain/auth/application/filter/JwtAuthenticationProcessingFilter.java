@@ -21,20 +21,23 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
 	private final JwtService jwtService;
 	private final MemberRepository memberRepository;
 
-	private final String NO_CHECK_URL = "/api/auth/login";
+	private final String LOGIN_URL = "/api/auth/login";
+	private final String REISSUE_TOKEN = "/api/auth/reissue";
 
 	private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-		if(request.getRequestURI().equals(NO_CHECK_URL)) {
+		if (request.getRequestURI().equals(LOGIN_URL) || request.getRequestURI().equals(REISSUE_TOKEN)) {
 			filterChain.doFilter(request, response);
 			return;
 		}
@@ -80,7 +83,10 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
 	private void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response, String refreshToken) {
 		memberRepository.findByRefreshToken(refreshToken).ifPresent(
-			member -> jwtService.sendAccessToken(response, jwtService.createAccessToken(member.getUsername()))
+			member -> {
+				String accessToken = jwtService.createAccessToken(member.getUsername());
+				jwtService.sendAccessToken(response, accessToken);
+			}
 		);
 	}
 }
