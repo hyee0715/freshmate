@@ -1,5 +1,7 @@
 package com.icebox.freshmate.domain.auth.presentation;
 
+import java.io.IOException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -55,7 +57,7 @@ public class AuthController {
 	}
 
 	@GetMapping("/reissue")
-	public ResponseEntity<MemberAuthRes> reissueToken(@RequestHeader("Authorization-refresh") String refreshTokenHeader) {
+	public ResponseEntity<MemberAuthRes> reissueToken(@RequestHeader("Authorization-refresh") String refreshTokenHeader) throws IOException {
 		String refreshToken = jwtService.getRefreshToken(refreshTokenHeader);
 		String reissuedAccessToken = jwtService.reissueAccessToken(refreshToken);
 

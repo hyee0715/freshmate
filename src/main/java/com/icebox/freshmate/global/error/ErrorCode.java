@@ -20,7 +20,8 @@ public enum ErrorCode {
 	WRONG_PASSWORD("M004", "비밀번호가 일치하지 않습니다."),
 
 	//인증, 인가
-	INVALID_TOKEN("A001", "토큰이 유효하지 않습니다.");
+	INVALID_TOKEN("A001", "토큰의 유효성(형식, 서명 등)이 올바르지 않습니다."),
+	EXPIRED_TOKEN("A002", "토큰이 만료되었습니다.");
 
 	private final String code;
 	private final String message;

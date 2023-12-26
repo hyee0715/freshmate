@@ -2,9 +2,18 @@ package com.icebox.freshmate.domain.auth.application;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.AlgorithmMismatchException;
+import com.auth0.jwt.exceptions.InvalidClaimException;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
 import com.icebox.freshmate.global.error.ErrorCode;
+import com.icebox.freshmate.global.error.ErrorResponse;
+import com.icebox.freshmate.global.error.exception.AuthenticationException;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
 import com.icebox.freshmate.global.error.exception.InvalidValueException;
 
@@ -17,6 +26,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -85,7 +95,7 @@ public class JwtService {
 			);
 	}
 
-	public void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken, String refreshToken){
+	public void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken, String refreshToken) {
 		response.setStatus(HttpServletResponse.SC_OK);
 
 		setAccessTokenHeader(response, accessToken);
@@ -96,7 +106,7 @@ public class JwtService {
 		tokenMap.put(REFRESH_TOKEN_SUBJECT, refreshToken);
 	}
 
-	public void sendAccessToken(HttpServletResponse response, String accessToken){
+	public void sendAccessToken(HttpServletResponse response, String accessToken) {
 		response.setStatus(HttpServletResponse.SC_OK);
 
 		setAccessTokenHeader(response, accessToken);
@@ -121,7 +131,7 @@ public class JwtService {
 	public Optional<String> extractUsername(String accessToken) {
 		try {
 			return Optional.ofNullable(JWT.require(Algorithm.HMAC512(secret)).build().verify(accessToken).getClaim(USERNAME_CLAIM).asString());
-		} catch (Exception e){
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			return Optional.empty();
 		}
@@ -135,14 +145,41 @@ public class JwtService {
 		response.setHeader(refreshHeader, refreshToken);
 	}
 
-	public boolean isTokenValid(String token){
+	public boolean isTokenValid(HttpServletResponse response, String token) throws IOException {
 		try {
 			JWT.require(Algorithm.HMAC512(secret)).build().verify(token);
 			return true;
-		} catch (Exception e){
-			log.error("유효하지 않은 Token입니다.", e.getMessage());
+		} catch (SignatureVerificationException | AlgorithmMismatchException | InvalidClaimException |
+				 JWTDecodeException e) {
+			log.error("토큰의 유효성(형식, 서명 등)이 올바르지 않습니다. token : {}", token);
+			writeErrorResponse(response, ErrorCode.INVALID_TOKEN, HttpServletResponse.SC_UNAUTHORIZED);
+			return false;
+		} catch (TokenExpiredException e) {
+			log.error("토큰이 만료되었습니다.");
+			writeErrorResponse(response, ErrorCode.EXPIRED_TOKEN, HttpServletResponse.SC_UNAUTHORIZED);
 			return false;
 		}
+	}
+
+	private void writeErrorResponse(HttpServletResponse response, ErrorCode errorCode, int statusCode) throws
+		IOException {
+		String errorResponseJsonFormat = getErrorResponseJsonFormat(errorCode);
+		writeToHttpServletResponse(response, statusCode, errorResponseJsonFormat);
+	}
+
+	private void writeToHttpServletResponse(HttpServletResponse response, int statusCode, String errorMessage) throws
+		IOException {
+		response.setStatus(statusCode);
+		response.setContentType("application/json;charset=UTF-8");
+		response.getWriter().write(errorMessage);
+		response.getWriter().flush();
+		response.getWriter().close();
+	}
+
+	private String getErrorResponseJsonFormat(ErrorCode errorCode) throws JsonProcessingException {
+		ErrorResponse errorResponse = ErrorResponse.of(errorCode);
+		ObjectMapper objectMapper = new ObjectMapper();
+		return objectMapper.writeValueAsString(errorResponse);
 	}
 
 	public String reissueAccessToken(String refreshToken) {
@@ -155,7 +192,7 @@ public class JwtService {
 		return accessToken;
 	}
 
-	public String getRefreshToken(String refreshToken) {
+	public String getRefreshToken(String refreshToken) throws IOException {
 		if (refreshToken.startsWith("Bearer ")) {
 			refreshToken = refreshToken.replace("Bearer ", "");
 		}
@@ -165,5 +202,20 @@ public class JwtService {
 		}
 
 		return refreshToken;
+	}
+
+	public boolean isTokenValid(String token) {
+		try {
+			JWT.require(Algorithm.HMAC512(secret)).build().verify(token);
+			return true;
+		} catch (SignatureVerificationException | AlgorithmMismatchException | InvalidClaimException |
+			JWTDecodeException e) {
+			log.error("토큰이 유효성(형식, 서명 등)이 올바르지 않습니다. token : {}", token);
+			throw new AuthenticationException(ErrorCode.INVALID_TOKEN);
+
+		} catch (TokenExpiredException e) {
+			log.error("토큰이 만료되었습니다.");
+			throw new AuthenticationException(ErrorCode.EXPIRED_TOKEN);
+		}
 	}
 }

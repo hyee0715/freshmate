@@ -6,6 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.icebox.freshmate.global.error.exception.AuthenticationException;
 import com.icebox.freshmate.global.error.exception.BusinessException;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
 
@@ -31,5 +32,12 @@ public class GlobalExceptionHandler {
 		ErrorResponse errorResponse = ErrorResponse.of(e.getErrorCode());
 
 		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(AuthenticationException.class)
+	public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException e) {
+		ErrorResponse errorResponse = ErrorResponse.of(e.getErrorCode());
+
+		return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
 	}
 }
