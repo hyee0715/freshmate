@@ -96,7 +96,7 @@ public class AuthService implements UserDetailsService {
 		String refreshToken = jwtService.createRefreshToken();
 		member.updateRefreshToken(refreshToken);
 
-		return new MemberAuthRes(accessToken);
+		return new MemberAuthRes(accessToken, refreshToken);
 	}
 
 	private void checkDuplicatedUsername(String username) {

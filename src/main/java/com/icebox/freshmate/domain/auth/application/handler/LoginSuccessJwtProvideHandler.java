@@ -42,7 +42,7 @@ public class LoginSuccessJwtProvideHandler extends SimpleUrlAuthenticationSucces
 			member -> member.updateRefreshToken(refreshToken)
 		);
 
-		MemberAuthRes memberAuthRes = new MemberAuthRes(accessToken);
+		MemberAuthRes memberAuthRes = new MemberAuthRes(accessToken, refreshToken);
 
 		String result = objectMapper.writeValueAsString(memberAuthRes);
 		response.getWriter().write(result);
