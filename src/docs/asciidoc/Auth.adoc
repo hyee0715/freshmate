@@ -1,0 +1,79 @@
+= REST Docs Auth API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+[[User-API]]
+== POST: 회원 가입
+=== 성공
+
+.Request
+include::{snippets}/auth/auth-sign-up/http-request.adoc[]
+.Request Fields
+include::{snippets}/auth/auth-sign-up/request-fields.adoc[]
+.Request Body
+include::{snippets}/auth/auth-sign-up/request-body.adoc[]
+
+.Response
+include::{snippets}/auth/auth-sign-up/http-response.adoc[]
+.Response Fields
+include::{snippets}/auth/auth-sign-up/response-fields.adoc[]
+.Response body
+include::{snippets}/auth/auth-sign-up/response-body.adoc[]
+
+---
+== POST: 로그인
+=== 성공
+
+.Request
+include::{snippets}/auth/auth-login/http-request.adoc[]
+.Request Fields
+include::{snippets}/auth/auth-login/request-fields.adoc[]
+.Request Body
+include::{snippets}/auth/auth-login/request-body.adoc[]
+
+.Response
+include::{snippets}/auth/auth-login/http-response.adoc[]
+.Response Fields
+include::{snippets}/auth/auth-login/response-fields.adoc[]
+.Response body
+include::{snippets}/auth/auth-login/response-body.adoc[]
+
+---
+== DELETE: 회원 탈퇴
+=== 성공
+
+.Request
+include::{snippets}/auth/auth-withdraw/http-request.adoc[]
+.Request Fields
+include::{snippets}/auth/auth-withdraw/request-fields.adoc[]
+.Request Body
+include::{snippets}/auth/auth-withdraw/request-body.adoc[]
+
+.Response
+include::{snippets}/auth/auth-withdraw/http-response.adoc[]
+
+---
+== GET: Access Token 토큰 재발급
+=== 성공
+
+.Request
+include::{snippets}/auth/auth-reissue-token/http-request.adoc[]
+
+.Response
+include::{snippets}/auth/auth-reissue-token/http-response.adoc[]
+.Response Fields
+include::{snippets}/auth/auth-reissue-token/response-fields.adoc[]
+.Response body
+include::{snippets}/auth/auth-reissue-token/response-body.adoc[]
+
+== PATCH: 로그아웃
+=== 성공
+
+.Request
+include::{snippets}/auth/auth-logout/http-request.adoc[]
+
+.Response
+include::{snippets}/auth/auth-logout/http-response.adoc[]
