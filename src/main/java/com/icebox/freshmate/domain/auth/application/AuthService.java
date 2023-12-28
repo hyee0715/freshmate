@@ -1,8 +1,5 @@
 package com.icebox.freshmate.domain.auth.application;
 
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,22 +20,11 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 @Service
 @RequiredArgsConstructor
-public class AuthService implements UserDetailsService {
+public class AuthService {
 
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtService jwtService;
-
-	@Override
-	public UserDetails loadUserByUsername(String username) {
-		Member member = memberRepository.findByUsername(username)
-			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER));
-
-		return User.builder().username(member.getUsername())
-			.password(member.getPassword())
-			.roles(member.getRole().name())
-			.build();
-	}
 
 	public MemberInfoRes signUp(MemberSignUpAuthReq memberSignUpAuthReq) {
 		Member member = memberSignUpAuthReq.toMember();
