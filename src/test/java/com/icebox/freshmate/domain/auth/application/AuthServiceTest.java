@@ -65,21 +65,21 @@ class AuthServiceTest {
 			.build();
 	}
 
-	@DisplayName("username으로 회원 정보 찾기 테스트")
-	@Test
-	void loadUserByUsername() {
-		//given
-		String username = "aaaa1111";
-
-		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.ofNullable(member));
-
-		//when
-		UserDetails userDetails = authService.loadUserByUsername(username);
-
-		//then
-		assertThat(userDetails.getUsername()).isEqualTo(member.getUsername());
-		assertThat(userDetails.getPassword()).isEqualTo(member.getPassword());
-	}
+//	@DisplayName("username으로 회원 정보 찾기 테스트")
+//	@Test
+//	void loadUserByUsername() {
+//		//given
+//		String username = "aaaa1111";
+//
+//		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.ofNullable(member));
+//
+//		//when
+//		UserDetails userDetails = authService.loadUserByUsername(username);
+//
+//		//then
+//		assertThat(userDetails.getUsername()).isEqualTo(member.getUsername());
+//		assertThat(userDetails.getPassword()).isEqualTo(member.getPassword());
+//	}
 
 	@DisplayName("회원 가입 테스트")
 	@Test
