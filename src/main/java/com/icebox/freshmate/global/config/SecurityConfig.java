@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icebox.freshmate.domain.auth.application.JwtService;
-import com.icebox.freshmate.domain.auth.application.AuthService;
+import com.icebox.freshmate.domain.auth.application.PrincipalDetailsService;
 import com.icebox.freshmate.domain.auth.application.filter.JsonUsernamePasswordAuthenticationFilter;
 import com.icebox.freshmate.domain.auth.application.filter.JwtAuthenticationProcessingFilter;
 import com.icebox.freshmate.domain.auth.application.handler.LoginFailureHandler;
@@ -57,7 +57,7 @@ public class SecurityConfig {
 	public AuthenticationManager authenticationManager() {
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 		provider.setPasswordEncoder(passwordEncoder());
-		provider.setUserDetailsService(new AuthService(memberRepository, passwordEncoder(), jwtService));
+		provider.setUserDetailsService(new PrincipalDetailsService(memberRepository));
 
 		return new ProviderManager(provider);
 	}
