@@ -33,7 +33,7 @@ public class Icebox extends BaseEntity {
 	@JoinColumn(name = "member_id")
 	private Member member;
 
-	@Column(length = 100)
+	@Column(length = 50)
 	private String name;
 
 	@Builder
