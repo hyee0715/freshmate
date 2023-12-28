@@ -16,7 +16,6 @@ import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
 import com.icebox.freshmate.global.error.ErrorCode;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
-import com.icebox.freshmate.global.util.SecurityUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,8 +29,7 @@ public class IceboxService {
 	private final IceboxRepository iceboxRepository;
 	private final MemberRepository memberRepository;
 
-	public IceboxRes create(IceboxReq iceboxReq) {
-		String memberUsername = SecurityUtil.getLoginUsername();
+	public IceboxRes create(IceboxReq iceboxReq, String memberUsername) {
 		Member member = getMember(memberUsername);
 
 		Icebox icebox = IceboxReq.toIcebox(iceboxReq, member);
@@ -49,8 +47,7 @@ public class IceboxService {
 	}
 
 	@Transactional(readOnly = true)
-	public IceboxesRes findAll() {
-		String memberUsername = SecurityUtil.getLoginUsername();
+	public IceboxesRes findAll(String memberUsername) {
 		Member member = getMember(memberUsername);
 
 		List<Icebox> iceboxes = iceboxRepository.findAllByMemberId(member.getId());
@@ -58,8 +55,7 @@ public class IceboxService {
 		return IceboxesRes.from(iceboxes);
 	}
 
-	public IceboxRes update(Long id, IceboxReq iceboxReq) {
-		String memberUsername = SecurityUtil.getLoginUsername();
+	public IceboxRes update(Long id, IceboxReq iceboxReq, String memberUsername) {
 		Member member = getMember(memberUsername);
 
 		Icebox icebox = iceboxRepository.findByIdAndMemberId(id, member.getId())
@@ -72,8 +68,7 @@ public class IceboxService {
 		return IceboxRes.from(icebox);
 	}
 
-	public void delete(Long id) {
-		String memberUsername = SecurityUtil.getLoginUsername();
+	public void delete(Long id, String memberUsername) {
 		Member member = getMember(memberUsername);
 
 		Icebox icebox = iceboxRepository.findByIdAndMemberId(id, member.getId())

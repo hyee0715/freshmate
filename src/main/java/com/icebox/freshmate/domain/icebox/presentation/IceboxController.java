@@ -1,6 +1,8 @@
 package com.icebox.freshmate.domain.icebox.presentation;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,8 +28,8 @@ public class IceboxController {
 	private final IceboxService iceboxService;
 
 	@PostMapping
-	public ResponseEntity<IceboxRes> create(@Validated @RequestBody IceboxReq iceboxReq) {
-		IceboxRes iceboxRes = iceboxService.create(iceboxReq);
+	public ResponseEntity<IceboxRes> create(@Validated @RequestBody IceboxReq iceboxReq, @AuthenticationPrincipal UserDetails userDetails) {
+		IceboxRes iceboxRes = iceboxService.create(iceboxReq, userDetails.getUsername());
 
 		return ResponseEntity.ok(iceboxRes);
 	}
@@ -40,22 +42,22 @@ public class IceboxController {
 	}
 
 	@GetMapping
-	public ResponseEntity<IceboxesRes> findAll() {
-		IceboxesRes iceboxesRes = iceboxService.findAll();
+	public ResponseEntity<IceboxesRes> findAll(@AuthenticationPrincipal UserDetails userDetails) {
+		IceboxesRes iceboxesRes = iceboxService.findAll(userDetails.getUsername());
 
 		return ResponseEntity.ok(iceboxesRes);
 	}
 
 	@PatchMapping("/{id}")
-	public ResponseEntity<IceboxRes> update(@PathVariable Long id, @Validated @RequestBody IceboxReq iceboxReq) {
-		IceboxRes iceboxRes = iceboxService.update(id, iceboxReq);
+	public ResponseEntity<IceboxRes> update(@PathVariable Long id, @Validated @RequestBody IceboxReq iceboxReq, @AuthenticationPrincipal UserDetails userDetails) {
+		IceboxRes iceboxRes = iceboxService.update(id, iceboxReq, userDetails.getUsername());
 
 		return ResponseEntity.ok(iceboxRes);
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		iceboxService.delete(id);
+	public ResponseEntity<Void> delete(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+		iceboxService.delete(id, userDetails.getUsername());
 
 		return ResponseEntity.noContent()
 			.build();
