@@ -1,0 +1,96 @@
+= REST Docs Icebox API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+[[Icebox-API]]
+== POST: 냉장고 생성
+=== 성공
+
+.Request
+include::{snippets}/icebox/icebox-create/http-request.adoc[]
+.Request Headers
+include::{snippets}/icebox/icebox-create/request-headers.adoc[]
+.Request Fields
+include::{snippets}/icebox/icebox-create/request-fields.adoc[]
+.Request Body
+include::{snippets}/icebox/icebox-create/request-body.adoc[]
+
+.Response
+include::{snippets}/icebox/icebox-create/http-response.adoc[]
+.Response Fields
+include::{snippets}/icebox/icebox-create/response-fields.adoc[]
+.Response body
+include::{snippets}/icebox/icebox-create/response-body.adoc[]
+
+---
+== GET: 냉장고 단건 조회
+=== 성공
+
+.Request
+include::{snippets}/icebox/icebox-find-by-id/http-request.adoc[]
+.Request Body
+include::{snippets}/icebox/icebox-find-by-id/request-body.adoc[]
+
+.Response
+include::{snippets}/icebox/icebox-find-by-id/http-response.adoc[]
+.Response Fields
+include::{snippets}/icebox/icebox-find-by-id/response-fields.adoc[]
+.Response body
+include::{snippets}/icebox/icebox-find-by-id/response-body.adoc[]
+
+---
+== GET: 회원의 모든 냉장고 조회
+=== 성공
+
+.Request
+include::{snippets}/icebox/icebox-find-all/http-request.adoc[]
+.Request Headers
+include::{snippets}/icebox/icebox-find-all/request-headers.adoc[]
+.Request Body
+include::{snippets}/icebox/icebox-find-all/request-body.adoc[]
+
+.Response
+include::{snippets}/icebox/icebox-find-all/http-response.adoc[]
+.Response Fields
+include::{snippets}/icebox/icebox-find-all/response-fields.adoc[]
+.Response body
+include::{snippets}/icebox/icebox-find-all/response-body.adoc[]
+
+---
+== PATCH: 냉장고 수정
+=== 성공
+
+.Request
+include::{snippets}/icebox/icebox-update/http-request.adoc[]
+.Request Headers
+include::{snippets}/icebox/icebox-update/request-headers.adoc[]
+.Request Fields
+include::{snippets}/icebox/icebox-update/request-fields.adoc[]
+.Request Body
+include::{snippets}/icebox/icebox-update/request-body.adoc[]
+
+.Response
+include::{snippets}/icebox/icebox-update/http-response.adoc[]
+.Response Fields
+include::{snippets}/icebox/icebox-update/response-fields.adoc[]
+.Response body
+include::{snippets}/icebox/icebox-update/response-body.adoc[]
+
+---
+== DELETE: 냉장고 삭제
+=== 성공
+
+.Request
+include::{snippets}/icebox/icebox-delete/http-request.adoc[]
+.Request Headers
+include::{snippets}/icebox/icebox-delete/request-headers.adoc[]
+.Request Body
+include::{snippets}/icebox/icebox-delete/request-body.adoc[]
+
+.Response
+include::{snippets}/icebox/icebox-delete/http-response.adoc[]
+.Response body
+include::{snippets}/icebox/icebox-delete/response-body.adoc[]
