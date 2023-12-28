@@ -171,6 +171,9 @@ class AuthControllerTest {
 			.andDo(document("auth/auth-withdraw",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
 				requestFields(
 					fieldWithPath("password").description("비밀번호")
 				)

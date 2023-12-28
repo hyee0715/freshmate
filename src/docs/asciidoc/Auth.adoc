@@ -47,6 +47,8 @@ include::{snippets}/auth/auth-login/response-body.adoc[]
 
 .Request
 include::{snippets}/auth/auth-withdraw/http-request.adoc[]
+.Request Headers
+include::{snippets}/auth/auth-withdraw/request-headers.adoc[]
 .Request Fields
 include::{snippets}/auth/auth-withdraw/request-fields.adoc[]
 .Request Body
@@ -61,6 +63,8 @@ include::{snippets}/auth/auth-withdraw/http-response.adoc[]
 
 .Request
 include::{snippets}/auth/auth-reissue-token/http-request.adoc[]
+.Request Headers
+include::{snippets}/auth/auth-reissue-token/request-headers.adoc[]
 
 .Response
 include::{snippets}/auth/auth-reissue-token/http-response.adoc[]
@@ -68,12 +72,13 @@ include::{snippets}/auth/auth-reissue-token/http-response.adoc[]
 include::{snippets}/auth/auth-reissue-token/response-fields.adoc[]
 .Response body
 include::{snippets}/auth/auth-reissue-token/response-body.adoc[]
-
-== PATCH: 로그아웃
+= == PATCH: 로그아웃
 === 성공
 
 .Request
 include::{snippets}/auth/auth-logout/http-request.adoc[]
+.Request Headers
+include::{snippets}/auth/auth-logout/request-headers.adoc[]
 
 .Response
 include::{snippets}/auth/auth-logout/http-response.adoc[]
