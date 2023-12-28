@@ -3,6 +3,7 @@ package com.icebox.freshmate.domain.icebox.presentation;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -261,6 +262,29 @@ class IceboxControllerTest {
 
 	@DisplayName("냉장고 삭제 테스트")
 	@Test
-	void delete() {
+	void delete() throws Exception {
+		//given
+		Long iceboxId = 1L;
+		doNothing().when(iceboxService).delete(any(Long.class), any(String.class));
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.delete("/api/iceboxes/{id}", iceboxId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isNoContent())
+			.andDo(print())
+			.andDo(document("icebox/icebox-delete",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				pathParameters(
+					parameterWithName("id").description("냉장고 ID")
+				)
+			));
 	}
 }
