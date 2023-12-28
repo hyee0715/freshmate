@@ -3,6 +3,7 @@ package com.icebox.freshmate.domain.icebox.presentation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,5 +43,12 @@ public class IceboxController {
 		IceboxesRes iceboxesRes = iceboxService.findAll();
 
 		return ResponseEntity.ok(iceboxesRes);
+	}
+
+	@PatchMapping("/{id}")
+	public ResponseEntity<IceboxRes> update(@PathVariable Long id, @Validated @RequestBody IceboxReq iceboxReq) {
+		IceboxRes iceboxRes = iceboxService.update(id, iceboxReq);
+
+		return ResponseEntity.ok(iceboxRes);
 	}
 }

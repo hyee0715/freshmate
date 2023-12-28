@@ -58,6 +58,20 @@ public class IceboxService {
 		return IceboxesRes.from(iceboxes);
 	}
 
+	public IceboxRes update(Long id, IceboxReq iceboxReq) {
+		String memberUsername = SecurityUtil.getLoginUsername();
+		Member member = getMember(memberUsername);
+
+		Icebox icebox = iceboxRepository.findByIdAndMemberId(id, member.getId())
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_ICEBOX));
+
+		Icebox updatedIcebox = IceboxReq.toIcebox(iceboxReq, member);
+
+		icebox.update(updatedIcebox);
+
+		return IceboxRes.from(icebox);
+	}
+
 	private Member getMember(String username) {
 		return memberRepository.findByUsername(username)
 			.orElseThrow(() -> {

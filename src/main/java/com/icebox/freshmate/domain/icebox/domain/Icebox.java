@@ -41,4 +41,9 @@ public class Icebox extends BaseEntity {
 		this.member = member;
 		this.name = name;
 	}
+
+	public void update(Icebox icebox) {
+		this.member = icebox.getMember();
+		this.name = icebox.getName();
+	}
 }
