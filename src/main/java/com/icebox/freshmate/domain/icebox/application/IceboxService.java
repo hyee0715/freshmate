@@ -72,6 +72,16 @@ public class IceboxService {
 		return IceboxRes.from(icebox);
 	}
 
+	public void delete(Long id) {
+		String memberUsername = SecurityUtil.getLoginUsername();
+		Member member = getMember(memberUsername);
+
+		Icebox icebox = iceboxRepository.findByIdAndMemberId(id, member.getId())
+			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_ICEBOX));
+
+		iceboxRepository.delete(icebox);
+	}
+
 	private Member getMember(String username) {
 		return memberRepository.findByUsername(username)
 			.orElseThrow(() -> {

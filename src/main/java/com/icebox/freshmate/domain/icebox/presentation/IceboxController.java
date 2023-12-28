@@ -2,6 +2,7 @@ package com.icebox.freshmate.domain.icebox.presentation;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,5 +51,13 @@ public class IceboxController {
 		IceboxRes iceboxRes = iceboxService.update(id, iceboxReq);
 
 		return ResponseEntity.ok(iceboxRes);
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> delete(@PathVariable Long id) {
+		iceboxService.delete(id);
+
+		return ResponseEntity.noContent()
+			.build();
 	}
 }
