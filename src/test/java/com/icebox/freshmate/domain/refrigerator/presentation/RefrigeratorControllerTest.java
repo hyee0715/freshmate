@@ -110,7 +110,7 @@ class RefrigeratorControllerTest {
 				.with(csrf().asHeader())
 				.content(objectMapper.writeValueAsString(refrigeratorReq)))
 			.andExpect(content().json(objectMapper.writeValueAsString(refrigeratorRes)))
-			.andExpect(status().isOk())
+			.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.id").value(refrigeratorId))
 			.andExpect(jsonPath("$.name").value(refrigerator.getName()))
 			.andDo(print())
