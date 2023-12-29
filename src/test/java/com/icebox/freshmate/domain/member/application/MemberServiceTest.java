@@ -100,7 +100,7 @@ class MemberServiceTest {
 		assertThat(memberInfoRes.nickName()).isEqualTo(memberUpdateInfoReq.nickName());
 	}
 
-	@DisplayName("회원 비밀번호 수정 테스트")
+	@DisplayName("회원 비밀번호 수정 성공 테스트")
 	@Test
 	void updatePassword() {
 		//given
@@ -123,7 +123,7 @@ class MemberServiceTest {
 
 	@DisplayName("회원 비밀번호 수정 실패 테스트 - 기존 비밀번호 불일치")
 	@Test
-	void updatePasswordFailure_originalPasswordMismatch() {
+	void updatePasswordFailure_wrongOriginalPassword() {
 		//given
 		String updatedPassword = "updatedPassword11!!";
 
