@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -48,8 +50,8 @@ public class AuthController {
 	}
 
 	@DeleteMapping("/withdraw")
-	public ResponseEntity<Void> withdraw(@Valid @RequestBody MemberWithdrawReq memberWithdrawReq) {
-		authService.withdraw(memberWithdrawReq.password());
+	public ResponseEntity<Void> withdraw(@Valid @RequestBody MemberWithdrawReq memberWithdrawReq, @AuthenticationPrincipal UserDetails userDetails) {
+		authService.withdraw(memberWithdrawReq.password(), userDetails.getUsername());
 
 		return ResponseEntity
 			.noContent()
@@ -69,8 +71,8 @@ public class AuthController {
 	}
 
 	@PatchMapping("/logout")
-	public ResponseEntity<Void> logout() {
-		authService.logout();
+	public ResponseEntity<Void> logout(@AuthenticationPrincipal UserDetails userDetails) {
+		authService.logout(userDetails.getUsername());
 
 		return ResponseEntity
 			.noContent()

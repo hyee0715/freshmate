@@ -13,7 +13,6 @@ import com.icebox.freshmate.domain.member.domain.MemberRepository;
 import com.icebox.freshmate.global.error.ErrorCode;
 import com.icebox.freshmate.global.error.exception.BusinessException;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
-import com.icebox.freshmate.global.util.SecurityUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -49,9 +48,7 @@ public class AuthService {
 		return createMemberAuthResWithTokens(loginRequestMember);
 	}
 
-	public void withdraw(String checkPassword) {
-		String memberUsername = SecurityUtil.getLoginUsername();
-
+	public void withdraw(String checkPassword, String memberUsername) {
 		Member member = memberRepository.findByUsername(memberUsername)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER));
 
@@ -62,9 +59,7 @@ public class AuthService {
 		memberRepository.delete(member);
 	}
 
-	public void logout() {
-		String memberUsername = SecurityUtil.getLoginUsername();
-
+	public void logout(String memberUsername) {
 		Member member = memberRepository.findByUsername(memberUsername)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER));
 
