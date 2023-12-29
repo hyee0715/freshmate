@@ -12,7 +12,6 @@ import com.icebox.freshmate.domain.member.domain.MemberRepository;
 import com.icebox.freshmate.global.error.ErrorCode;
 import com.icebox.freshmate.global.error.exception.BusinessException;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
-import com.icebox.freshmate.global.util.SecurityUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,17 +32,14 @@ public class MemberService {
 	}
 
 	@Transactional(readOnly = true)
-	public MemberInfoRes findInfo() {
-		String memberUsername = SecurityUtil.getLoginUsername();
+	public MemberInfoRes findInfo(String memberUsername) {
 		Member member = memberRepository.findByUsername(memberUsername)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER));
 
 		return MemberInfoRes.from(member);
 	}
 
-	public MemberInfoRes updateInfo(MemberUpdateInfoReq memberUpdateInfoReq) {
-		String memberUsername = SecurityUtil.getLoginUsername();
-
+	public MemberInfoRes updateInfo(MemberUpdateInfoReq memberUpdateInfoReq, String memberUsername) {
 		Member member = memberRepository.findByUsername(memberUsername)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER));
 
@@ -54,9 +50,7 @@ public class MemberService {
 		return MemberInfoRes.from(member);
 	}
 
-	public MemberInfoRes updatePassword(MemberUpdatePasswordReq memberUpdatePasswordReq) {
-		String memberUsername = SecurityUtil.getLoginUsername();
-
+	public MemberInfoRes updatePassword(MemberUpdatePasswordReq memberUpdatePasswordReq, String memberUsername) {
 		Member member = memberRepository.findByUsername(memberUsername)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER));
 
