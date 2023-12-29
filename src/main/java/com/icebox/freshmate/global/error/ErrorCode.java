@@ -32,7 +32,8 @@ public enum ErrorCode {
 	NOT_FOUND_REFRIGERATOR("R001", "냉장고가 존재하지 않습니다."),
 
 	//냉장고 저장소
-	INVALID_STORAGE_TYPE("S001", "유효하지 않은 냉장고 저장소 타입입니다.");
+	INVALID_STORAGE_TYPE("S001", "유효하지 않은 냉장고 저장소 타입입니다."),
+	NOT_FOUND_STORAGE("S002", "냉장고 저장소가 존재하지 않습니다.");
 
 	private final String code;
 	private final String message;

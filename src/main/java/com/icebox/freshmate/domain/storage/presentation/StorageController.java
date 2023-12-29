@@ -4,6 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +15,7 @@ import com.icebox.freshmate.domain.auth.application.PrincipalDetails;
 import com.icebox.freshmate.domain.storage.application.StorageService;
 import com.icebox.freshmate.domain.storage.application.dto.request.StorageReq;
 import com.icebox.freshmate.domain.storage.application.dto.response.StorageRes;
+import com.icebox.freshmate.domain.storage.application.dto.response.StoragesRes;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,5 +32,19 @@ public class StorageController {
 
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(storageRes);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<StorageRes> findById(@PathVariable Long id) {
+		StorageRes storageRes = storageService.findById(id);
+
+		return ResponseEntity.ok(storageRes);
+	}
+
+	@GetMapping("/refrigerators/{refrigeratorId}")
+	public ResponseEntity<StoragesRes> findAllByRefrigeratorId(@PathVariable Long refrigeratorId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		StoragesRes storagesRes = storageService.findAllByRefrigeratorId(refrigeratorId, principalDetails.getUsername());
+
+		return ResponseEntity.ok(storagesRes);
 	}
 }
