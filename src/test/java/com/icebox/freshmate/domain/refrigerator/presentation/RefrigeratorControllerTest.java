@@ -1,4 +1,4 @@
-package com.icebox.freshmate.domain.icebox.presentation;
+package com.icebox.freshmate.domain.refrigerator.presentation;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,17 +46,17 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icebox.freshmate.domain.auth.application.PrincipalDetails;
-import com.icebox.freshmate.domain.icebox.application.IceboxService;
-import com.icebox.freshmate.domain.icebox.application.dto.request.IceboxReq;
-import com.icebox.freshmate.domain.icebox.application.dto.response.IceboxRes;
-import com.icebox.freshmate.domain.icebox.application.dto.response.IceboxesRes;
-import com.icebox.freshmate.domain.icebox.domain.Icebox;
+import com.icebox.freshmate.domain.refrigerator.application.RefrigeratorService;
+import com.icebox.freshmate.domain.refrigerator.application.dto.request.RefrigeratorReq;
+import com.icebox.freshmate.domain.refrigerator.application.dto.response.RefrigeratorRes;
+import com.icebox.freshmate.domain.refrigerator.application.dto.response.RefrigeratorsRes;
+import com.icebox.freshmate.domain.refrigerator.domain.Refrigerator;
 import com.icebox.freshmate.global.TestPrincipalDetailsService;
 
 @ExtendWith({RestDocumentationExtension.class})
-@WebMvcTest(value = {IceboxController.class})
+@WebMvcTest(value = {RefrigeratorController.class})
 @AutoConfigureRestDocs
-class IceboxControllerTest {
+class RefrigeratorControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -68,12 +68,12 @@ class IceboxControllerTest {
 	private WebApplicationContext context;
 
 	@MockBean
-	private IceboxService iceboxService;
+	private RefrigeratorService refrigeratorService;
 
 	private final TestPrincipalDetailsService testUserDetailsService = new TestPrincipalDetailsService();
 	private PrincipalDetails principalDetails;
 
-	private Icebox icebox;
+	private Refrigerator refrigerator;
 
 	@BeforeEach
 	void setUp(RestDocumentationContextProvider restDocumentationContextProvider) {
@@ -85,7 +85,7 @@ class IceboxControllerTest {
 
 		principalDetails = (PrincipalDetails) testUserDetailsService.loadUserByUsername(TestPrincipalDetailsService.USERNAME);
 
-		icebox = Icebox.builder()
+		refrigerator = Refrigerator.builder()
 			.name("우리 집 냉장고")
 			.build();
 	}
@@ -94,27 +94,27 @@ class IceboxControllerTest {
 	@Test
 	void create() throws Exception {
 		//given
-		Long iceboxId = 1L;
+		Long refrigeratorId = 1L;
 
-		IceboxReq iceboxReq = new IceboxReq(icebox.getName());
-		IceboxRes iceboxRes = new IceboxRes(iceboxId, icebox.getName());
+		RefrigeratorReq refrigeratorReq = new RefrigeratorReq(refrigerator.getName());
+		RefrigeratorRes refrigeratorRes = new RefrigeratorRes(refrigeratorId, refrigerator.getName());
 
-		when(iceboxService.create(any(IceboxReq.class), any(String.class))).thenReturn(iceboxRes);
+		when(refrigeratorService.create(any(RefrigeratorReq.class), any(String.class))).thenReturn(refrigeratorRes);
 
 		//when
 		//then
-		mockMvc.perform(RestDocumentationRequestBuilders.post("/api/iceboxes")
+		mockMvc.perform(RestDocumentationRequestBuilders.post("/api/refrigerators")
 				.contentType(MediaType.APPLICATION_JSON)
 				.header("Authorization", "Bearer {ACCESS_TOKEN}")
 				.with(user(principalDetails))
 				.with(csrf().asHeader())
-				.content(objectMapper.writeValueAsString(iceboxReq)))
-			.andExpect(content().json(objectMapper.writeValueAsString(iceboxRes)))
+				.content(objectMapper.writeValueAsString(refrigeratorReq)))
+			.andExpect(content().json(objectMapper.writeValueAsString(refrigeratorRes)))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.id").value(iceboxId))
-			.andExpect(jsonPath("$.name").value(icebox.getName()))
+			.andExpect(jsonPath("$.id").value(refrigeratorId))
+			.andExpect(jsonPath("$.name").value(refrigerator.getName()))
 			.andDo(print())
-			.andDo(document("icebox/icebox-create",
+			.andDo(document("refrigerator/refrigerator-create",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
 				requestHeaders(
@@ -134,24 +134,24 @@ class IceboxControllerTest {
 	@Test
 	void findById() throws Exception {
 		//given
-		Long iceboxId = 1L;
+		Long refrigeratorId = 1L;
 
-		IceboxRes iceboxRes = new IceboxRes(iceboxId, icebox.getName());
+		RefrigeratorRes refrigeratorRes = new RefrigeratorRes(refrigeratorId, refrigerator.getName());
 
-		when(iceboxService.findById(anyLong())).thenReturn(iceboxRes);
+		when(refrigeratorService.findById(anyLong())).thenReturn(refrigeratorRes);
 
 		//when
 		//then
-		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/iceboxes/{id}", iceboxId)
+		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/refrigerators/{id}", refrigeratorId)
 				.contentType(MediaType.APPLICATION_JSON)
 			.with(user(principalDetails))
 			.with(csrf().asHeader()))
-			.andExpect(content().json(objectMapper.writeValueAsString(iceboxRes)))
+			.andExpect(content().json(objectMapper.writeValueAsString(refrigeratorRes)))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.id").value(iceboxId))
-			.andExpect(jsonPath("$.name").value(icebox.getName()))
+			.andExpect(jsonPath("$.id").value(refrigeratorId))
+			.andExpect(jsonPath("$.name").value(refrigerator.getName()))
 			.andDo(print())
-			.andDo(document("icebox/icebox-find-by-id",
+			.andDo(document("refrigerator/refrigerator-find-by-id",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
 				pathParameters(parameterWithName("id").description("냉장고 ID")),
@@ -166,40 +166,40 @@ class IceboxControllerTest {
 	@Test
 	void findAll() throws Exception {
 		//given
-		Icebox icebox2 = Icebox.builder()
+		Refrigerator refrigerator2 = Refrigerator.builder()
 			.name("우리 집 냉장고2")
 			.build();
 
-		IceboxRes iceboxRes1 = new IceboxRes(1L, icebox.getName());
-		IceboxRes iceboxRes2 = new IceboxRes(2L, icebox2.getName());
-		IceboxesRes iceboxesRes = new IceboxesRes(List.of(iceboxRes1, iceboxRes2));
+		RefrigeratorRes refrigeratorRes1 = new RefrigeratorRes(1L, refrigerator.getName());
+		RefrigeratorRes refrigeratorRes2 = new RefrigeratorRes(2L, refrigerator2.getName());
+		RefrigeratorsRes refrigeratorsRes = new RefrigeratorsRes(List.of(refrigeratorRes1, refrigeratorRes2));
 
-		when(iceboxService.findAll(any(String.class))).thenReturn(iceboxesRes);
+		when(refrigeratorService.findAll(any(String.class))).thenReturn(refrigeratorsRes);
 
 		//when
 		//then
-		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/iceboxes")
+		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/refrigerators")
 				.contentType(MediaType.APPLICATION_JSON)
 				.header("Authorization", "Bearer {ACCESS_TOKEN}")
 				.with(user(principalDetails))
 				.with(csrf().asHeader()))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.iceboxes", hasSize(2)))
-			.andExpect(jsonPath("$.iceboxes[0].id").value(1))
-			.andExpect(jsonPath("$.iceboxes[0].name").value(icebox.getName()))
-			.andExpect(jsonPath("$.iceboxes[1].id").value(2))
-			.andExpect(jsonPath("$.iceboxes[1].name").value(icebox2.getName()))
+			.andExpect(jsonPath("$.refrigerators", hasSize(2)))
+			.andExpect(jsonPath("$.refrigerators[0].id").value(1))
+			.andExpect(jsonPath("$.refrigerators[0].name").value(refrigerator.getName()))
+			.andExpect(jsonPath("$.refrigerators[1].id").value(2))
+			.andExpect(jsonPath("$.refrigerators[1].name").value(refrigerator2.getName()))
 			.andDo(print())
-			.andDo(document("icebox/icebox-find-all",
+			.andDo(document("refrigerator/refrigerator-find-all",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
 				requestHeaders(
 					headerWithName("Authorization").description("Access Token")
 				),
 				responseFields(
-					fieldWithPath("iceboxes").description("냉장고 배열"),
-					fieldWithPath("iceboxes[].id").type(NUMBER).description("냉장고 ID"),
-					fieldWithPath("iceboxes[].name").type(STRING).description("냉장고 이름")
+					fieldWithPath("refrigerators").description("냉장고 배열"),
+					fieldWithPath("refrigerators[].id").type(NUMBER).description("냉장고 ID"),
+					fieldWithPath("refrigerators[].name").type(STRING).description("냉장고 이름")
 				)
 			));
 	}
@@ -208,26 +208,26 @@ class IceboxControllerTest {
 	@Test
 	void update() throws Exception {
 		//given
-		Long iceboxId = 1L;
-		IceboxReq iceboxReq = new IceboxReq(icebox.getName());
-		IceboxRes iceboxRes = new IceboxRes(iceboxId, icebox.getName());
+		Long refrigeratorId = 1L;
+		RefrigeratorReq refrigeratorReq = new RefrigeratorReq(refrigerator.getName());
+		RefrigeratorRes refrigeratorRes = new RefrigeratorRes(refrigeratorId, refrigerator.getName());
 
-		when(iceboxService.update(any(Long.class), any(IceboxReq.class), any(String.class)))
-			.thenReturn(iceboxRes);
+		when(refrigeratorService.update(any(Long.class), any(RefrigeratorReq.class), any(String.class)))
+			.thenReturn(refrigeratorRes);
 
 		//when
 		//then
-		mockMvc.perform(patch("/api/iceboxes/{id}", iceboxId)
+		mockMvc.perform(patch("/api/refrigerators/{id}", refrigeratorId)
 				.contentType(MediaType.APPLICATION_JSON)
 				.header("Authorization", "Bearer {ACCESS_TOKEN}")
 				.with(user(principalDetails))
 				.with(csrf().asHeader())
-				.content(objectMapper.writeValueAsString(iceboxReq)))
+				.content(objectMapper.writeValueAsString(refrigeratorReq)))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.id").value(iceboxId))
-			.andExpect(jsonPath("$.name").value(icebox.getName()))
+			.andExpect(jsonPath("$.id").value(refrigeratorId))
+			.andExpect(jsonPath("$.name").value(refrigerator.getName()))
 			.andDo(print())
-			.andDo(document("icebox/icebox-update",
+			.andDo(document("refrigerator/refrigerator-update",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
 				requestHeaders(
@@ -250,19 +250,19 @@ class IceboxControllerTest {
 	@Test
 	void delete() throws Exception {
 		//given
-		Long iceboxId = 1L;
-		doNothing().when(iceboxService).delete(any(Long.class), any(String.class));
+		Long refrigeratorId = 1L;
+		doNothing().when(refrigeratorService).delete(any(Long.class), any(String.class));
 
 		//when
 		//then
-		mockMvc.perform(RestDocumentationRequestBuilders.delete("/api/iceboxes/{id}", iceboxId)
+		mockMvc.perform(RestDocumentationRequestBuilders.delete("/api/refrigerators/{id}", refrigeratorId)
 				.contentType(MediaType.APPLICATION_JSON)
 				.header("Authorization", "Bearer {ACCESS_TOKEN}")
 				.with(user(principalDetails))
 				.with(csrf().asHeader()))
 			.andExpect(status().isNoContent())
 			.andDo(print())
-			.andDo(document("icebox/icebox-delete",
+			.andDo(document("refrigerator/refrigerator-delete",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
 				requestHeaders(

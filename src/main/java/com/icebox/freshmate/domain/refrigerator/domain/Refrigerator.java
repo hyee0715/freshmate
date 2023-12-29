@@ -1,4 +1,4 @@
-package com.icebox.freshmate.domain.icebox.domain;
+package com.icebox.freshmate.domain.refrigerator.domain;
 
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.global.BaseEntity;
@@ -20,10 +20,10 @@ import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Entity
-@Table(name = "iceboxes")
+@Table(name = "refrigerators")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
-public class Icebox extends BaseEntity {
+public class Refrigerator extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,13 +37,13 @@ public class Icebox extends BaseEntity {
 	private String name;
 
 	@Builder
-	public Icebox(Member member, String name) {
+	public Refrigerator(Member member, String name) {
 		this.member = member;
 		this.name = name;
 	}
 
-	public void update(Icebox icebox) {
-		this.member = icebox.getMember();
-		this.name = icebox.getName();
+	public void update(Refrigerator refrigerator) {
+		this.member = refrigerator.getMember();
+		this.name = refrigerator.getName();
 	}
 }

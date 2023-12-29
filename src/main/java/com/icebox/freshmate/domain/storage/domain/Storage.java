@@ -1,6 +1,6 @@
 package com.icebox.freshmate.domain.storage.domain;
 
-import com.icebox.freshmate.domain.icebox.domain.Icebox;
+import com.icebox.freshmate.domain.refrigerator.domain.Refrigerator;
 import com.icebox.freshmate.global.BaseEntity;
 
 import jakarta.persistence.Entity;
@@ -29,11 +29,11 @@ public class Storage extends BaseEntity {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "icebox_id")
-	private Icebox icebox;
+	@JoinColumn(name = "refrigerator_id")
+	private Refrigerator refrigerator;
 
 	@Builder
-	public Storage(Icebox icebox) {
-		this.icebox = icebox;
+	public Storage(Refrigerator refrigerator) {
+		this.refrigerator = refrigerator;
 	}
 }
