@@ -41,11 +41,9 @@ import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icebox.freshmate.domain.auth.application.PrincipalDetails;
 import com.icebox.freshmate.domain.icebox.application.IceboxService;
@@ -53,12 +51,9 @@ import com.icebox.freshmate.domain.icebox.application.dto.request.IceboxReq;
 import com.icebox.freshmate.domain.icebox.application.dto.response.IceboxRes;
 import com.icebox.freshmate.domain.icebox.application.dto.response.IceboxesRes;
 import com.icebox.freshmate.domain.icebox.domain.Icebox;
-import com.icebox.freshmate.domain.member.domain.Member;
-import com.icebox.freshmate.domain.member.domain.Role;
 import com.icebox.freshmate.global.TestPrincipalDetailsService;
 
 @ExtendWith({RestDocumentationExtension.class})
-//@WebMvcTest(value = {IceboxController.class}, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 @WebMvcTest(value = {IceboxController.class})
 @AutoConfigureRestDocs
 class IceboxControllerTest {
@@ -78,7 +73,6 @@ class IceboxControllerTest {
 	private final TestPrincipalDetailsService testUserDetailsService = new TestPrincipalDetailsService();
 	private PrincipalDetails principalDetails;
 
-	private Member member;
 	private Icebox icebox;
 
 	@BeforeEach
@@ -90,14 +84,6 @@ class IceboxControllerTest {
 		.alwaysDo(print()).build();
 
 		principalDetails = (PrincipalDetails) testUserDetailsService.loadUserByUsername(TestPrincipalDetailsService.USERNAME);
-
-		member = Member.builder()
-			.realName("성이름")
-			.username("aaaa1111")
-			.password("aaaa1111!")
-			.nickName("닉네임닉네임")
-			.role(Role.USER)
-			.build();
 
 		icebox = Icebox.builder()
 			.name("우리 집 냉장고")

@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.icebox.freshmate.domain.auth.application.AuthService;
 import com.icebox.freshmate.domain.auth.application.JwtService;
+import com.icebox.freshmate.domain.auth.application.PrincipalDetails;
 import com.icebox.freshmate.domain.auth.application.dto.request.MemberLoginReq;
 import com.icebox.freshmate.domain.auth.application.dto.request.MemberSignUpAuthReq;
 import com.icebox.freshmate.domain.auth.application.dto.request.MemberWithdrawReq;
@@ -48,8 +50,8 @@ public class AuthController {
 	}
 
 	@DeleteMapping("/withdraw")
-	public ResponseEntity<Void> withdraw(@Valid @RequestBody MemberWithdrawReq memberWithdrawReq) {
-		authService.withdraw(memberWithdrawReq.password());
+	public ResponseEntity<Void> withdraw(@Valid @RequestBody MemberWithdrawReq memberWithdrawReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		authService.withdraw(memberWithdrawReq.password(), principalDetails.getUsername());
 
 		return ResponseEntity
 			.noContent()
@@ -69,8 +71,8 @@ public class AuthController {
 	}
 
 	@PatchMapping("/logout")
-	public ResponseEntity<Void> logout() {
-		authService.logout();
+	public ResponseEntity<Void> logout(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+		authService.logout(principalDetails.getUsername());
 
 		return ResponseEntity
 			.noContent()

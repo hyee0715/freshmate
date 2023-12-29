@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
@@ -14,12 +15,16 @@ import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -27,12 +32,17 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icebox.freshmate.domain.auth.application.AuthService;
 import com.icebox.freshmate.domain.auth.application.JwtService;
+import com.icebox.freshmate.domain.auth.application.PrincipalDetails;
 import com.icebox.freshmate.domain.auth.application.dto.request.MemberLoginReq;
 import com.icebox.freshmate.domain.auth.application.dto.request.MemberSignUpAuthReq;
 import com.icebox.freshmate.domain.auth.application.dto.request.MemberWithdrawReq;
@@ -40,8 +50,10 @@ import com.icebox.freshmate.domain.auth.application.dto.response.MemberAuthRes;
 import com.icebox.freshmate.domain.member.application.dto.response.MemberInfoRes;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.Role;
+import com.icebox.freshmate.global.TestPrincipalDetailsService;
 
-@WebMvcTest(value = {AuthController.class}, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
+@ExtendWith({RestDocumentationExtension.class})
+@WebMvcTest(value = {AuthController.class})
 @AutoConfigureRestDocs
 class AuthControllerTest {
 
@@ -57,10 +69,24 @@ class AuthControllerTest {
 	@MockBean
 	private JwtService jwtService;
 
+	@Autowired
+	private WebApplicationContext context;
+
+	private final TestPrincipalDetailsService testUserDetailsService = new TestPrincipalDetailsService();
+	private PrincipalDetails principalDetails;
+
 	private Member member;
 
 	@BeforeEach
-	void setUp() {
+	void setUp(RestDocumentationContextProvider restDocumentationContextProvider) {
+		mockMvc = MockMvcBuilders
+			.webAppContextSetup(context)
+			.apply(documentationConfiguration(restDocumentationContextProvider))
+			.apply(springSecurity())
+			.alwaysDo(print()).build();
+
+		principalDetails = (PrincipalDetails) testUserDetailsService.loadUserByUsername(TestPrincipalDetailsService.USERNAME);
+
 		member = Member.builder()
 			.realName("성이름")
 			.username("aaaa1111")
@@ -85,7 +111,9 @@ class AuthControllerTest {
 		//then
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/sign-up")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(mockSignUpRequest)))
+				.content(objectMapper.writeValueAsString(mockSignUpRequest))
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
 			.andExpect(content().json(objectMapper.writeValueAsString(mockMemberInfoRes)))
 			.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.memberId").value(memberId))
@@ -129,7 +157,9 @@ class AuthControllerTest {
 		//then
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/login")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(mockLoginRequest)))
+				.content(objectMapper.writeValueAsString(mockLoginRequest))
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
 			.andExpect(content().json(objectMapper.writeValueAsString(mockMemberAuthRes)))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.accessToken").value(accessToken))
@@ -158,14 +188,16 @@ class AuthControllerTest {
 
 		MemberWithdrawReq mockWithdrawRequest = new MemberWithdrawReq(password);
 
-		doNothing().when(authService).withdraw(anyString());
+		doNothing().when(authService).withdraw(anyString(), anyString());
 
 		//when
 		//then
 		mockMvc.perform(MockMvcRequestBuilders.delete("/api/auth/withdraw")
 				.contentType(MediaType.APPLICATION_JSON)
 				.header("Authorization", "Bearer {ACCESS_TOKEN}")
-				.content(objectMapper.writeValueAsString(mockWithdrawRequest)))
+				.content(objectMapper.writeValueAsString(mockWithdrawRequest))
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
 			.andExpect(status().isNoContent())
 			.andDo(print())
 			.andDo(document("auth/auth-withdraw",
@@ -198,7 +230,9 @@ class AuthControllerTest {
 		//then
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/auth/reissue")
 				.header("Authorization-refresh", mockRefreshTokenHeader)
-				.contentType(MediaType.APPLICATION_JSON))
+				.contentType(MediaType.APPLICATION_JSON)
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
 			.andExpect(content().json(objectMapper.writeValueAsString(mockMemberAuthRes)))
 			.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.accessToken").value(mockReissuedAccessToken))
@@ -221,13 +255,15 @@ class AuthControllerTest {
 	@Test
 	void logout() throws Exception {
 		//given
-		doNothing().when(authService).logout();
+		doNothing().when(authService).logout(anyString());
 
 		//when
 		//then
 		mockMvc.perform(MockMvcRequestBuilders.patch("/api/auth/logout")
 				.header("Authorization", "Bearer {ACCESS_TOKEN}")
-				.contentType(MediaType.APPLICATION_JSON))
+				.contentType(MediaType.APPLICATION_JSON)
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
 			.andExpect(status().isNoContent())
 			.andDo(print())
 			.andDo(document("auth/auth-logout",
@@ -239,6 +275,6 @@ class AuthControllerTest {
 			));
 
 
-		Mockito.verify(authService, Mockito.times(1)).logout();
+		Mockito.verify(authService, Mockito.times(1)).logout(member.getUsername());
 	}
 }

@@ -1,6 +1,7 @@
 package com.icebox.freshmate.domain.member.presentation;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.icebox.freshmate.domain.auth.application.PrincipalDetails;
 import com.icebox.freshmate.domain.member.application.MemberService;
 import com.icebox.freshmate.domain.member.application.dto.request.MemberUpdateInfoReq;
 import com.icebox.freshmate.domain.member.application.dto.request.MemberUpdatePasswordReq;
@@ -32,22 +34,22 @@ public class MemberController {
 	}
 
 	@GetMapping
-	public ResponseEntity<MemberInfoRes> findInfo() {
-		MemberInfoRes memberInfoRes = memberService.findInfo();
+	public ResponseEntity<MemberInfoRes> findInfo(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+		MemberInfoRes memberInfoRes = memberService.findInfo(principalDetails.getUsername());
 
 		return ResponseEntity.ok(memberInfoRes);
 	}
 
 	@PatchMapping
-	public ResponseEntity<MemberInfoRes> updateInfo(@Valid @RequestBody MemberUpdateInfoReq memberUpdateInfoReq) {
-		MemberInfoRes memberInfoRes = memberService.updateInfo(memberUpdateInfoReq);
+	public ResponseEntity<MemberInfoRes> updateInfo(@Valid @RequestBody MemberUpdateInfoReq memberUpdateInfoReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		MemberInfoRes memberInfoRes = memberService.updateInfo(memberUpdateInfoReq, principalDetails.getUsername());
 
 		return ResponseEntity.ok(memberInfoRes);
 	}
 
 	@PatchMapping("/password")
-	public ResponseEntity<MemberInfoRes> updatePassword(@Valid @RequestBody MemberUpdatePasswordReq memberUpdatePasswordReq) {
-		MemberInfoRes memberInfoRes = memberService.updatePassword(memberUpdatePasswordReq);
+	public ResponseEntity<MemberInfoRes> updatePassword(@Valid @RequestBody MemberUpdatePasswordReq memberUpdatePasswordReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		MemberInfoRes memberInfoRes = memberService.updatePassword(memberUpdatePasswordReq, principalDetails.getUsername());
 
 		return ResponseEntity.ok(memberInfoRes);
 	}
