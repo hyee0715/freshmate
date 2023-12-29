@@ -3,7 +3,10 @@ package com.icebox.freshmate.domain.storage.domain;
 import com.icebox.freshmate.domain.refrigerator.domain.Refrigerator;
 import com.icebox.freshmate.global.BaseEntity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,8 +35,16 @@ public class Storage extends BaseEntity {
 	@JoinColumn(name = "refrigerator_id")
 	private Refrigerator refrigerator;
 
+	@Column(length = 50)
+	private String name;
+
+	@Enumerated(EnumType.STRING)
+	private StorageType storageType;
+
 	@Builder
-	public Storage(Refrigerator refrigerator) {
+	public Storage(Refrigerator refrigerator, String name, StorageType storageType) {
 		this.refrigerator = refrigerator;
+		this.name = name;
+		this.storageType = storageType;
 	}
 }
