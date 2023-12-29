@@ -1,6 +1,5 @@
 package com.icebox.freshmate.domain.auth.application;
 
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -23,9 +22,6 @@ public class PrincipalDetailsService implements UserDetailsService {
 		Member member = memberRepository.findByUsername(username)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER));
 
-		return User.builder().username(member.getUsername())
-			.password(member.getPassword())
-			.roles(member.getRole().name())
-			.build();
+		return new PrincipalDetails(member);
 	}
 }
