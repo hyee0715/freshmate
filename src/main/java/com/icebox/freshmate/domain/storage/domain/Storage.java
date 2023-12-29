@@ -47,4 +47,9 @@ public class Storage extends BaseEntity {
 		this.name = name;
 		this.storageType = storageType;
 	}
+
+	public void update(Storage storage) {
+		this.name = storage.getName();
+		this.storageType = storage.getStorageType();
+	}
 }

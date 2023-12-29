@@ -13,7 +13,8 @@ import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
 import com.icebox.freshmate.domain.refrigerator.domain.Refrigerator;
 import com.icebox.freshmate.domain.refrigerator.domain.RefrigeratorRepository;
-import com.icebox.freshmate.domain.storage.application.dto.request.StorageReq;
+import com.icebox.freshmate.domain.storage.application.dto.request.StorageCreateReq;
+import com.icebox.freshmate.domain.storage.application.dto.request.StorageUpdateReq;
 import com.icebox.freshmate.domain.storage.application.dto.response.StorageRes;
 import com.icebox.freshmate.domain.storage.application.dto.response.StoragesRes;
 import com.icebox.freshmate.domain.storage.domain.Storage;
@@ -33,12 +34,12 @@ public class StorageService {
 	private final RefrigeratorRepository refrigeratorRepository;
 	private final MemberRepository memberRepository;
 
-	public StorageRes create(StorageReq storageReq, String memberUsername) {
+	public StorageRes create(StorageCreateReq storageCreateReq, String memberUsername) {
 		Member member = getMember(memberUsername);
 
-		Refrigerator refrigerator = getRefrigerator(storageReq.refrigeratorId(), member.getId());
+		Refrigerator refrigerator = getRefrigerator(storageCreateReq.refrigeratorId(), member.getId());
 
-		Storage storage = StorageReq.toStorage(storageReq, refrigerator);
+		Storage storage = StorageCreateReq.toStorage(storageCreateReq, refrigerator);
 		Storage savedStorage = storageRepository.save(storage);
 
 		return StorageRes.from(savedStorage);
@@ -46,7 +47,7 @@ public class StorageService {
 
 	@Transactional(readOnly = true)
 	public StorageRes findById(Long id) {
-		Storage storage = getStorage(id);
+		Storage storage = getStorageById(id);
 
 		return StorageRes.from(storage);
 	}
@@ -61,7 +62,25 @@ public class StorageService {
 		return StoragesRes.from(storages);
 	}
 
-	private Storage getStorage(Long storageId) {
+	public StorageRes update(Long storageId, StorageUpdateReq storageUpdateReq, String memberUsername) {
+		Member member = getMember(memberUsername);
+		Storage storage = getStorageByIdAndMemberId(storageId, member.getId());
+
+		Storage updateStorage = StorageUpdateReq.toStorage(storageUpdateReq, storage.getRefrigerator());
+		storage.update(updateStorage);
+
+		return StorageRes.from(storage);
+	}
+
+	private Storage getStorageByIdAndMemberId(Long storageId, Long memberId) {
+		return storageRepository.findByIdAndMemberId(storageId, memberId)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_STORAGE_BY_ID_AND_MEMBER_ID : storageId = {}, memberId = {}", storageId, memberId);
+				return new EntityNotFoundException(NOT_FOUND_STORAGE);
+			});
+	}
+
+	private Storage getStorageById(Long storageId) {
 		return storageRepository.findById(storageId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_STORAGE_BY_ID : {}", storageId);
