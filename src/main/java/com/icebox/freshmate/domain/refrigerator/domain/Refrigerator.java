@@ -43,7 +43,6 @@ public class Refrigerator extends BaseEntity {
 	}
 
 	public void update(Refrigerator refrigerator) {
-		this.member = refrigerator.getMember();
 		this.name = refrigerator.getName();
 	}
 }
