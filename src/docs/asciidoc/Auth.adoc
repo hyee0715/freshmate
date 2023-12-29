@@ -72,7 +72,9 @@ include::{snippets}/auth/auth-reissue-token/http-response.adoc[]
 include::{snippets}/auth/auth-reissue-token/response-fields.adoc[]
 .Response body
 include::{snippets}/auth/auth-reissue-token/response-body.adoc[]
-= == PATCH: 로그아웃
+
+---
+== PATCH: 로그아웃
 === 성공
 
 .Request
