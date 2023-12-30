@@ -70,7 +70,7 @@ class RefrigeratorServiceTest {
 		RefrigeratorRes refrigeratorRes = refrigeratorService.create(refrigeratorReq, member.getUsername());
 
 		//then
-		assertThat(refrigeratorRes.name()).isEqualTo(refrigerator.getName());
+		assertThat(refrigeratorRes.refrigeratorName()).isEqualTo(refrigerator.getName());
 	}
 
 	@DisplayName("냉장고 단건 조회 테스트")
@@ -84,7 +84,7 @@ class RefrigeratorServiceTest {
 		RefrigeratorRes refrigeratorRes = refrigeratorService.findById(refrigeratorId);
 
 		//then
-		assertThat(refrigeratorRes.name()).isEqualTo(refrigerator.getName());
+		assertThat(refrigeratorRes.refrigeratorName()).isEqualTo(refrigerator.getName());
 	}
 
 	@DisplayName("회원의 모든 냉장고 조회 테스트")
@@ -99,7 +99,7 @@ class RefrigeratorServiceTest {
 
 		//then
 		assertThat(refrigeratorsRes.refrigerators()).hasSize(1);
-		assertThat(refrigeratorsRes.refrigerators().get(0).name()).isEqualTo(refrigerator.getName());
+		assertThat(refrigeratorsRes.refrigerators().get(0).refrigeratorName()).isEqualTo(refrigerator.getName());
 	}
 
 	@DisplayName("냉장고 수정 테스트")
@@ -117,6 +117,6 @@ class RefrigeratorServiceTest {
 		RefrigeratorRes refrigeratorRes = refrigeratorService.update(refrigeratorId, refrigeratorReq, member.getUsername());
 
 		//then
-		assertThat(refrigeratorRes.name()).isEqualTo(updatedRefrigeratorName);
+		assertThat(refrigeratorRes.refrigeratorName()).isEqualTo(updatedRefrigeratorName);
 	}
 }
