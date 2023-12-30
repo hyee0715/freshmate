@@ -6,12 +6,10 @@ import com.icebox.freshmate.global.error.ErrorCode;
 import com.icebox.freshmate.global.error.exception.BusinessException;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Getter
-@RequiredArgsConstructor
 public enum StorageType {
 
 	FRIDGE, FREEZER;
