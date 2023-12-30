@@ -72,6 +72,13 @@ public class StorageService {
 		return StorageRes.from(storage);
 	}
 
+	public void delete(Long storageId, String memberUsername) {
+		Member member = getMember(memberUsername);
+		Storage storage = getStorageByIdAndMemberId(storageId, member.getId());
+
+		storageRepository.delete(storage);
+	}
+
 	private Storage getStorageByIdAndMemberId(Long storageId, Long memberId) {
 		return storageRepository.findByIdAndMemberId(storageId, memberId)
 			.orElseThrow(() -> {
