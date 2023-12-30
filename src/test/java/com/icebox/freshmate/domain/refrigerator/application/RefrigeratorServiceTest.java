@@ -53,6 +53,7 @@ class RefrigeratorServiceTest {
 
 		refrigerator = Refrigerator.builder()
 			.name("우리 집 냉장고")
+			.member(member)
 			.build();
 	}
 
