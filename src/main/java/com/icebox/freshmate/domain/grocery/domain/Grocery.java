@@ -1,4 +1,4 @@
-package com.icebox.freshmate.domain.ingredient.domain;
+package com.icebox.freshmate.domain.grocery.domain;
 
 import com.icebox.freshmate.domain.storage.domain.Storage;
 import com.icebox.freshmate.global.BaseEntity;
@@ -19,10 +19,10 @@ import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Entity
-@Table(name = "ingredients")
+@Table(name = "groceries")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
-public class Ingredient extends BaseEntity {
+public class Grocery extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +33,7 @@ public class Ingredient extends BaseEntity {
 	private Storage storage;
 
 	@Builder
-	public Ingredient(Storage storage) {
+	public Grocery(Storage storage) {
 		this.storage = storage;
 	}
 }

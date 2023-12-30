@@ -1,6 +1,6 @@
-package com.icebox.freshmate.domain.recipeingredient.domain;
+package com.icebox.freshmate.domain.recipegrocery.domain;
 
-import com.icebox.freshmate.domain.ingredient.domain.Ingredient;
+import com.icebox.freshmate.domain.grocery.domain.Grocery;
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
 
 import jakarta.persistence.Entity;
@@ -18,10 +18,10 @@ import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Entity
-@Table(name = "recipe_ingredients")
+@Table(name = "recipe_grocery")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
-public class RecipeIngredient {
+public class RecipeGrocery {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,12 +32,12 @@ public class RecipeIngredient {
 	private Recipe recipe;
 
 	@ManyToOne
-	@JoinColumn(name = "ingredient_id")
-	private Ingredient ingredient;
+	@JoinColumn(name = "grocery_id")
+	private Grocery grocery;
 
 	@Builder
-	public RecipeIngredient(Recipe recipe, Ingredient ingredient) {
+	public RecipeGrocery(Recipe recipe, Grocery grocery) {
 		this.recipe = recipe;
-		this.ingredient = ingredient;
+		this.grocery = grocery;
 	}
 }

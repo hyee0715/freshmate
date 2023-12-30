@@ -1,6 +1,6 @@
-package com.icebox.freshmate.domain.ingredientbucket.domain;
+package com.icebox.freshmate.domain.grocerybucket.domain;
 
-import com.icebox.freshmate.domain.ingredient.domain.Ingredient;
+import com.icebox.freshmate.domain.grocery.domain.Grocery;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -18,21 +18,21 @@ import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Entity
-@Table(name = "ingredient_buckets")
+@Table(name = "grocery_buckets")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
-public class IngredientBucket {
+public class GroceryBucket {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "ingredient_id")
-	private Ingredient ingredient;
+	@JoinColumn(name = "grocery_id")
+	private Grocery grocery;
 
 	@Builder
-	public IngredientBucket(Ingredient ingredient) {
-		this.ingredient = ingredient;
+	public GroceryBucket(Grocery grocery) {
+		this.grocery = grocery;
 	}
 }
