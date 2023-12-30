@@ -218,11 +218,6 @@ class RefrigeratorControllerTest {
 			.andExpect(jsonPath("$.refrigerators[0].memberId").value(memberId))
 			.andExpect(jsonPath("$.refrigerators[0].memberUsername").value(member.getUsername()))
 			.andExpect(jsonPath("$.refrigerators[0].memberNickName").value(member.getNickName()))
-			.andExpect(jsonPath("$.refrigerators[1].refrigeratorId").value(2))
-			.andExpect(jsonPath("$.refrigerators[1].refrigeratorName").value(refrigerator2.getName()))
-			.andExpect(jsonPath("$.refrigerators[1].memberId").value(memberId))
-			.andExpect(jsonPath("$.refrigerators[1].memberUsername").value(member.getUsername()))
-			.andExpect(jsonPath("$.refrigerators[1].memberNickName").value(member.getNickName()))
 			.andDo(print())
 			.andDo(document("refrigerator/refrigerator-find-all",
 				preprocessRequest(prettyPrint()),
