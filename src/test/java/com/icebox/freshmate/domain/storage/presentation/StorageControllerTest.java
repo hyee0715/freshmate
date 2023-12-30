@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -53,6 +54,7 @@ import com.icebox.freshmate.domain.member.domain.Role;
 import com.icebox.freshmate.domain.refrigerator.domain.Refrigerator;
 import com.icebox.freshmate.domain.storage.application.StorageService;
 import com.icebox.freshmate.domain.storage.application.dto.request.StorageCreateReq;
+import com.icebox.freshmate.domain.storage.application.dto.request.StorageUpdateReq;
 import com.icebox.freshmate.domain.storage.application.dto.response.StorageRes;
 import com.icebox.freshmate.domain.storage.application.dto.response.StoragesRes;
 import com.icebox.freshmate.domain.storage.domain.Storage;
@@ -257,11 +259,77 @@ class StorageControllerTest {
 
 	@DisplayName("냉장고 저장소 수정 테스트")
 	@Test
-	void update() {
+	void update() throws Exception {
+		//given
+		Long storageId = 1L;
+		Long refrigeratorId = 1L;
+		String updateStorageName = "냉동실 수정";
+		String updateStorageType = StorageType.FREEZER.name();
+
+		StorageUpdateReq storageUpdateReq = new StorageUpdateReq(updateStorageName, updateStorageType);
+		StorageRes storageRes = new StorageRes(storageId, updateStorageName, updateStorageType, refrigeratorId, refrigerator.getName());
+
+		when(storageService.update(any(Long.class), any(StorageUpdateReq.class), any(String.class))).thenReturn(storageRes);
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.patch("/api/storages/{id}", storageId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader())
+				.content(objectMapper.writeValueAsString(storageUpdateReq)))
+			.andExpect(status().isOk())
+			.andDo(print())
+			.andDo(document("storage/storage-update",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				pathParameters(
+					parameterWithName("id").description("냉장고 저장소 ID")
+				),
+				requestFields(
+					fieldWithPath("name").description("수정할 냉장고 저장소 이름"),
+					fieldWithPath("storageType").description("수정할 냉장고 타입")
+				),
+				responseFields(
+					fieldWithPath("storageId").type(NUMBER).description("냉장고 저장소 ID"),
+					fieldWithPath("storageName").type(STRING).description("수정된 냉장고 저장소 이름"),
+					fieldWithPath("storageType").type(STRING).description("수정된 냉장고 저장소 타입"),
+					fieldWithPath("refrigeratorId").type(NUMBER).description("냉장고 ID"),
+					fieldWithPath("refrigeratorName").type(STRING).description("냉장고 이름")
+				)
+			));
 	}
 
 	@DisplayName("냉장고 저장소 삭제 테스트")
 	@Test
-	void delete() {
+	void delete() throws Exception {
+		//given
+		Long storageId = 1L;
+
+		doNothing().when(storageService).delete(any(Long.class), any(String.class));
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.delete("/api/storages/{id}", storageId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isNoContent())
+			.andDo(print())
+			.andDo(document("storage/storage-delete",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				pathParameters(
+					parameterWithName("id").description("냉장고 저장소 ID")
+				)
+			));
 	}
 }
