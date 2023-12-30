@@ -1,12 +1,16 @@
 package com.icebox.freshmate.domain.grocery.application;
 
+import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_GROCERY;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_STORAGE;
+
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.icebox.freshmate.domain.grocery.application.dto.request.GroceryReq;
+import com.icebox.freshmate.domain.grocery.application.dto.response.GroceriesRes;
 import com.icebox.freshmate.domain.grocery.application.dto.response.GroceryRes;
 import com.icebox.freshmate.domain.grocery.domain.Grocery;
 import com.icebox.freshmate.domain.grocery.domain.GroceryRepository;
@@ -38,6 +42,30 @@ public class GroceryService {
 		Grocery savedGrocery = groceryRepository.save(grocery);
 
 		return GroceryRes.from(savedGrocery);
+	}
+
+	@Transactional(readOnly = true)
+	public GroceryRes findById(Long id) {
+		Grocery grocery = getGroceryById(id);
+
+		return GroceryRes.from(grocery);
+	}
+
+	@Transactional(readOnly = true)
+	public GroceriesRes findAllByStorageId(Long storageId, String username) {
+		Member member = getMember(username);
+
+		List<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberId(storageId, member.getId());
+
+		return GroceriesRes.from(groceries);
+	}
+
+	private Grocery getGroceryById(Long id) {
+		return groceryRepository.findById(id)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_STORAGE_BY_ID : {}", id);
+				return new EntityNotFoundException(NOT_FOUND_GROCERY);
+			});
 	}
 
 	private Storage getStorageByIdAndMemberId(Long storageId, Long memberId) {

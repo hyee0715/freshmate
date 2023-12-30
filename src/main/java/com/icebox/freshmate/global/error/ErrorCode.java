@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 public enum ErrorCode {
 
 	//서버
-	INTERNAL_SERVER_ERROR("S001", "예기치 못한 오류가 발생했습니다."),
+	INTERNAL_SERVER_ERROR("IN001", "예기치 못한 오류가 발생했습니다."),
 
 	//공용
 	INVALID_INPUT_VALUE("C001", "잘못된 값을 입력하셨습니다."),
@@ -36,7 +36,8 @@ public enum ErrorCode {
 	NOT_FOUND_STORAGE("S002", "냉장고 저장소가 존재하지 않습니다."),
 
 	//식료품
-	INVALID_GROCERY_TYPE("G001", "유효하지 않은 식료품 타입입니다.");
+	INVALID_GROCERY_TYPE("G001", "유효하지 않은 식료품 타입입니다."),
+	NOT_FOUND_GROCERY("G002", "식료품이 존재하지 않습니다.");
 
 	private final String code;
 	private final String message;
