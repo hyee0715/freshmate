@@ -13,6 +13,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -46,6 +47,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icebox.freshmate.domain.auth.application.PrincipalDetails;
+import com.icebox.freshmate.domain.member.domain.Member;
+import com.icebox.freshmate.domain.member.domain.Role;
 import com.icebox.freshmate.domain.refrigerator.application.RefrigeratorService;
 import com.icebox.freshmate.domain.refrigerator.application.dto.request.RefrigeratorReq;
 import com.icebox.freshmate.domain.refrigerator.application.dto.response.RefrigeratorRes;
@@ -73,6 +76,7 @@ class RefrigeratorControllerTest {
 	private final TestPrincipalDetailsService testUserDetailsService = new TestPrincipalDetailsService();
 	private PrincipalDetails principalDetails;
 
+	private Member member;
 	private Refrigerator refrigerator;
 
 	@BeforeEach
@@ -85,8 +89,17 @@ class RefrigeratorControllerTest {
 
 		principalDetails = (PrincipalDetails) testUserDetailsService.loadUserByUsername(TestPrincipalDetailsService.USERNAME);
 
+		member = Member.builder()
+			.realName("성이름")
+			.username("aaaa1111")
+			.password("aaaa1111!")
+			.nickName("닉네임닉네임")
+			.role(Role.USER)
+			.build();
+
 		refrigerator = Refrigerator.builder()
 			.name("우리 집 냉장고")
+			.member(member)
 			.build();
 	}
 
@@ -95,9 +108,9 @@ class RefrigeratorControllerTest {
 	void create() throws Exception {
 		//given
 		Long refrigeratorId = 1L;
-
+		Long memberId = 1L;
 		RefrigeratorReq refrigeratorReq = new RefrigeratorReq(refrigerator.getName());
-		RefrigeratorRes refrigeratorRes = new RefrigeratorRes(refrigeratorId, refrigerator.getName());
+		RefrigeratorRes refrigeratorRes = new RefrigeratorRes(refrigeratorId, refrigerator.getName(), memberId, refrigerator.getMember().getUsername(), refrigerator.getMember().getNickName());
 
 		when(refrigeratorService.create(any(RefrigeratorReq.class), any(String.class))).thenReturn(refrigeratorRes);
 
@@ -110,9 +123,12 @@ class RefrigeratorControllerTest {
 				.with(csrf().asHeader())
 				.content(objectMapper.writeValueAsString(refrigeratorReq)))
 			.andExpect(content().json(objectMapper.writeValueAsString(refrigeratorRes)))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.id").value(refrigeratorId))
-			.andExpect(jsonPath("$.name").value(refrigerator.getName()))
+			.andExpect(status().isCreated())
+			.andExpect(jsonPath("$.refrigeratorId").value(refrigeratorId))
+			.andExpect(jsonPath("$.refrigeratorName").value(refrigerator.getName()))
+			.andExpect(jsonPath("$.memberId").value(memberId))
+			.andExpect(jsonPath("$.memberUsername").value(member.getUsername()))
+			.andExpect(jsonPath("$.memberNickName").value(member.getNickName()))
 			.andDo(print())
 			.andDo(document("refrigerator/refrigerator-create",
 				preprocessRequest(prettyPrint()),
@@ -124,8 +140,11 @@ class RefrigeratorControllerTest {
 					fieldWithPath("name").description("냉장고 이름")
 				),
 				responseFields(
-					fieldWithPath("id").type(NUMBER).description("냉장고 ID"),
-					fieldWithPath("name").type(STRING).description("냉장고 이름")
+					fieldWithPath("refrigeratorId").type(NUMBER).description("냉장고 ID"),
+					fieldWithPath("refrigeratorName").type(STRING).description("냉장고 이름"),
+					fieldWithPath("memberId").type(NUMBER).description("회원 ID"),
+					fieldWithPath("memberUsername").type(STRING).description("회원 아이디"),
+					fieldWithPath("memberNickName").type(STRING).description("회원 닉네임")
 				)
 			));
 	}
@@ -135,8 +154,9 @@ class RefrigeratorControllerTest {
 	void findById() throws Exception {
 		//given
 		Long refrigeratorId = 1L;
+		Long memberId = 1L;
 
-		RefrigeratorRes refrigeratorRes = new RefrigeratorRes(refrigeratorId, refrigerator.getName());
+		RefrigeratorRes refrigeratorRes = new RefrigeratorRes(refrigeratorId, refrigerator.getName(), memberId, refrigerator.getMember().getUsername(), refrigerator.getMember().getNickName());
 
 		when(refrigeratorService.findById(anyLong())).thenReturn(refrigeratorRes);
 
@@ -148,16 +168,22 @@ class RefrigeratorControllerTest {
 			.with(csrf().asHeader()))
 			.andExpect(content().json(objectMapper.writeValueAsString(refrigeratorRes)))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.id").value(refrigeratorId))
-			.andExpect(jsonPath("$.name").value(refrigerator.getName()))
+			.andExpect(jsonPath("$.refrigeratorId").value(refrigeratorId))
+			.andExpect(jsonPath("$.refrigeratorName").value(refrigerator.getName()))
+			.andExpect(jsonPath("$.memberId").value(memberId))
+			.andExpect(jsonPath("$.memberUsername").value(member.getUsername()))
+			.andExpect(jsonPath("$.memberNickName").value(member.getNickName()))
 			.andDo(print())
 			.andDo(document("refrigerator/refrigerator-find-by-id",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
 				pathParameters(parameterWithName("id").description("냉장고 ID")),
 				responseFields(
-					fieldWithPath("id").type(NUMBER).description("냉장고 ID"),
-					fieldWithPath("name").type(STRING).description("냉장고 이름")
+					fieldWithPath("refrigeratorId").type(NUMBER).description("냉장고 ID"),
+					fieldWithPath("refrigeratorName").type(STRING).description("냉장고 이름"),
+					fieldWithPath("memberId").type(NUMBER).description("회원 ID"),
+					fieldWithPath("memberUsername").type(STRING).description("회원 아이디"),
+					fieldWithPath("memberNickName").type(STRING).description("회원 닉네임")
 				)
 			));
 	}
@@ -170,8 +196,10 @@ class RefrigeratorControllerTest {
 			.name("우리 집 냉장고2")
 			.build();
 
-		RefrigeratorRes refrigeratorRes1 = new RefrigeratorRes(1L, refrigerator.getName());
-		RefrigeratorRes refrigeratorRes2 = new RefrigeratorRes(2L, refrigerator2.getName());
+		Long memberId = 1L;
+
+		RefrigeratorRes refrigeratorRes1 = new RefrigeratorRes(1L, refrigerator.getName(), memberId, refrigerator.getMember().getUsername(), refrigerator.getMember().getNickName());
+		RefrigeratorRes refrigeratorRes2 = new RefrigeratorRes(2L, refrigerator2.getName(), memberId, refrigerator.getMember().getUsername(), refrigerator.getMember().getNickName());
 		RefrigeratorsRes refrigeratorsRes = new RefrigeratorsRes(List.of(refrigeratorRes1, refrigeratorRes2));
 
 		when(refrigeratorService.findAll(any(String.class))).thenReturn(refrigeratorsRes);
@@ -185,10 +213,11 @@ class RefrigeratorControllerTest {
 				.with(csrf().asHeader()))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.refrigerators", hasSize(2)))
-			.andExpect(jsonPath("$.refrigerators[0].id").value(1))
-			.andExpect(jsonPath("$.refrigerators[0].name").value(refrigerator.getName()))
-			.andExpect(jsonPath("$.refrigerators[1].id").value(2))
-			.andExpect(jsonPath("$.refrigerators[1].name").value(refrigerator2.getName()))
+			.andExpect(jsonPath("$.refrigerators[0].refrigeratorId").value(1))
+			.andExpect(jsonPath("$.refrigerators[0].refrigeratorName").value(refrigerator.getName()))
+			.andExpect(jsonPath("$.refrigerators[0].memberId").value(memberId))
+			.andExpect(jsonPath("$.refrigerators[0].memberUsername").value(member.getUsername()))
+			.andExpect(jsonPath("$.refrigerators[0].memberNickName").value(member.getNickName()))
 			.andDo(print())
 			.andDo(document("refrigerator/refrigerator-find-all",
 				preprocessRequest(prettyPrint()),
@@ -197,9 +226,12 @@ class RefrigeratorControllerTest {
 					headerWithName("Authorization").description("Access Token")
 				),
 				responseFields(
-					fieldWithPath("refrigerators").description("냉장고 배열"),
-					fieldWithPath("refrigerators[].id").type(NUMBER).description("냉장고 ID"),
-					fieldWithPath("refrigerators[].name").type(STRING).description("냉장고 이름")
+					fieldWithPath("refrigerators").type(ARRAY).description("냉장고 배열"),
+					fieldWithPath("refrigerators[].refrigeratorId").type(NUMBER).description("냉장고 ID"),
+					fieldWithPath("refrigerators[].refrigeratorName").type(STRING).description("냉장고 이름"),
+					fieldWithPath("refrigerators[].memberId").type(NUMBER).description("회원 ID"),
+					fieldWithPath("refrigerators[].memberUsername").type(STRING).description("회원 아이디"),
+					fieldWithPath("refrigerators[].memberNickName").type(STRING).description("회원 닉네임")
 				)
 			));
 	}
@@ -209,8 +241,10 @@ class RefrigeratorControllerTest {
 	void update() throws Exception {
 		//given
 		Long refrigeratorId = 1L;
+		Long memberId = 1L;
+
 		RefrigeratorReq refrigeratorReq = new RefrigeratorReq(refrigerator.getName());
-		RefrigeratorRes refrigeratorRes = new RefrigeratorRes(refrigeratorId, refrigerator.getName());
+		RefrigeratorRes refrigeratorRes = new RefrigeratorRes(refrigeratorId, refrigerator.getName(), memberId, refrigerator.getMember().getUsername(), refrigerator.getMember().getNickName());
 
 		when(refrigeratorService.update(any(Long.class), any(RefrigeratorReq.class), any(String.class)))
 			.thenReturn(refrigeratorRes);
@@ -224,8 +258,11 @@ class RefrigeratorControllerTest {
 				.with(csrf().asHeader())
 				.content(objectMapper.writeValueAsString(refrigeratorReq)))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.id").value(refrigeratorId))
-			.andExpect(jsonPath("$.name").value(refrigerator.getName()))
+			.andExpect(jsonPath("$.refrigeratorId").value(refrigeratorId))
+			.andExpect(jsonPath("$.refrigeratorName").value(refrigerator.getName()))
+			.andExpect(jsonPath("$.memberId").value(memberId))
+			.andExpect(jsonPath("$.memberUsername").value(member.getUsername()))
+			.andExpect(jsonPath("$.memberNickName").value(member.getNickName()))
 			.andDo(print())
 			.andDo(document("refrigerator/refrigerator-update",
 				preprocessRequest(prettyPrint()),
@@ -240,8 +277,11 @@ class RefrigeratorControllerTest {
 					fieldWithPath("name").description("수정할 냉장고 이름")
 				),
 				responseFields(
-					fieldWithPath("id").type(NUMBER).description("냉장고 ID"),
-					fieldWithPath("name").type(STRING).description("냉장고 이름")
+					fieldWithPath("refrigeratorId").type(NUMBER).description("냉장고 ID"),
+					fieldWithPath("refrigeratorName").type(STRING).description("냉장고 이름"),
+					fieldWithPath("memberId").type(NUMBER).description("회원 ID"),
+					fieldWithPath("memberUsername").type(STRING).description("회원 아이디"),
+					fieldWithPath("memberNickName").type(STRING).description("회원 닉네임")
 				)
 			));
 	}
