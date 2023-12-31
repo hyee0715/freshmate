@@ -59,4 +59,13 @@ public class Grocery extends BaseEntity {
 		this.description = description;
 		this.expirationDateTime = expirationDateTime;
 	}
+
+	public void update(Grocery grocery) {
+		this.storage = grocery.getStorage();
+		this.name = grocery.getName();
+		this.groceryType = grocery.getGroceryType();
+		this.quantity = grocery.getQuantity();
+		this.description = grocery.getDescription();
+		this.expirationDateTime = grocery.getExpirationDateTime();
+	}
 }

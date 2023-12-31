@@ -60,6 +60,25 @@ public class GroceryService {
 		return GroceriesRes.from(groceries);
 	}
 
+	public GroceryRes update(Long id, GroceryReq groceryReq, String username) {
+		Member member = getMember(username);
+		Storage storage = getStorageByIdAndMemberId(groceryReq.storageId(), member.getId());
+		Grocery grocery = getGroceryByIdAndMemberId(id, member.getId());
+
+		Grocery updateGrocery = GroceryReq.toGrocery(groceryReq, storage);
+		grocery.update(updateGrocery);
+
+		return GroceryRes.from(grocery);
+	}
+
+	private Grocery getGroceryByIdAndMemberId(Long groceryId, Long memberId) {
+		return groceryRepository.findByIdAndMemberId(groceryId, memberId)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_STORAGE_BY_ID_AND_MEMBER_ID : groceryId = {}, memberId = {}", groceryId, memberId);
+				return new EntityNotFoundException(NOT_FOUND_GROCERY);
+			});
+	}
+
 	private Grocery getGroceryById(Long id) {
 		return groceryRepository.findById(id)
 			.orElseThrow(() -> {

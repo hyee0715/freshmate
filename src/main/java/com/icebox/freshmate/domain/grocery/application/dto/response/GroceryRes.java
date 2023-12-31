@@ -17,7 +17,8 @@ public record GroceryRes(
 	@JsonFormat(shape = STRING, pattern = "YYYY-MM-dd HH:mm", timezone = "Asia/Seoul")
 	LocalDateTime expirationDateTime,
 
-	Long storageId
+	Long storageId,
+	String storageName
 ) {
 
 	public static GroceryRes from(Grocery grocery) {
@@ -29,7 +30,8 @@ public record GroceryRes(
 			grocery.getQuantity(),
 			grocery.getDescription(),
 			grocery.getExpirationDateTime(),
-			grocery.getStorage().getId()
+			grocery.getStorage().getId(),
+			grocery.getStorage().getName()
 		);
 	}
 }
