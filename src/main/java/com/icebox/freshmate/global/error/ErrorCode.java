@@ -37,7 +37,10 @@ public enum ErrorCode {
 
 	//식료품
 	INVALID_GROCERY_TYPE("G001", "유효하지 않은 식료품 타입입니다."),
-	NOT_FOUND_GROCERY("G002", "식료품이 존재하지 않습니다.");
+	NOT_FOUND_GROCERY("G002", "식료품이 존재하지 않습니다."),
+
+	//레시피
+	NOT_FOUND_RECIPE("RC001", "레시피가 존재하지 않습니다.");
 
 	private final String code;
 	private final String message;

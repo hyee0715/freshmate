@@ -1,6 +1,9 @@
 package com.icebox.freshmate.domain.recipe.application;
 
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
+import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_RECIPE;
+
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,6 +12,7 @@ import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
 import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeCreateReq;
 import com.icebox.freshmate.domain.recipe.application.dto.response.RecipeRes;
+import com.icebox.freshmate.domain.recipe.application.dto.response.RecipesRes;
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
 import com.icebox.freshmate.domain.recipe.domain.RecipeRepository;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
@@ -32,6 +36,48 @@ public class RecipeService {
 		Recipe savedRecipe = recipeRepository.save(recipe);
 
 		return RecipeRes.from(savedRecipe);
+	}
+
+	@Transactional(readOnly = true)
+	public RecipeRes findById(Long id) {
+		Recipe recipe = getRecipeById(id);
+
+		return RecipeRes.from(recipe);
+	}
+
+	@Transactional(readOnly = true)
+	public RecipesRes findAllByWriterId(String username) {
+		Member member = getMember(username);
+
+		List<Recipe> recipes = recipeRepository.findAllByWriterId(member.getId());
+
+		return RecipesRes.from(recipes);
+	}
+
+	@Transactional(readOnly = true)
+	public RecipesRes findAllByOwnerId(String username) {
+		Member member = getMember(username);
+
+		List<Recipe> recipes = recipeRepository.findAllByOwnerId(member.getId());
+
+		return RecipesRes.from(recipes);
+	}
+
+	@Transactional(readOnly = true)
+	public RecipesRes findAllByMemberId(String username) {
+		Member member = getMember(username);
+
+		List<Recipe> recipes = recipeRepository.findAllByMemberId(member.getId());
+
+		return RecipesRes.from(recipes);
+	}
+
+	private Recipe getRecipeById(Long recipeId) {
+		return recipeRepository.findById(recipeId)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_RECIPE_BY_ID : {}", recipeId);
+				return new EntityNotFoundException(NOT_FOUND_RECIPE);
+			});
 	}
 
 	private Member getMember(String username) {
