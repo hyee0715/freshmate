@@ -71,6 +71,13 @@ public class GroceryService {
 		return GroceryRes.from(grocery);
 	}
 
+	public void delete(Long id, String username) {
+		Member member = getMember(username);
+		Grocery grocery = getGroceryByIdAndMemberId(id, member.getId());
+
+		groceryRepository.delete(grocery);
+	}
+
 	private Grocery getGroceryByIdAndMemberId(Long groceryId, Long memberId) {
 		return groceryRepository.findByIdAndMemberId(groceryId, memberId)
 			.orElseThrow(() -> {
