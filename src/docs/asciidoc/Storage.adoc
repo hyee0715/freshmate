@@ -47,10 +47,10 @@ include::{snippets}/storage/storage-find-by-id/response-body.adoc[]
 
 .Request
 include::{snippets}/storage/storage-find-all-by-refrigerator-id/http-request.adoc[]
-.Request Headers
-include::{snippets}/storage/storage-find-all-by-refrigerator-id/request-headers.adoc[]
 .Path Parameters
 include::{snippets}/storage/storage-find-all-by-refrigerator-id/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/storage/storage-find-all-by-refrigerator-id/request-headers.adoc[]
 
 .Response
 include::{snippets}/storage/storage-find-all-by-refrigerator-id/http-response.adoc[]
@@ -65,6 +65,8 @@ include::{snippets}/storage/storage-find-all-by-refrigerator-id/response-body.ad
 
 .Request
 include::{snippets}/storage/storage-update/http-request.adoc[]
+.Path Parameters
+include::{snippets}/storage/storage-update/path-parameters.adoc[]
 .Request Headers
 include::{snippets}/storage/storage-update/request-headers.adoc[]
 .Request Fields
@@ -85,6 +87,8 @@ include::{snippets}/storage/storage-update/response-body.adoc[]
 
 .Request
 include::{snippets}/storage/storage-delete/http-request.adoc[]
+.Path Parameters
+include::{snippets}/storage/storage-delete/path-parameters.adoc[]
 .Request Headers
 include::{snippets}/storage/storage-delete/request-headers.adoc[]
 

@@ -281,6 +281,7 @@ class StorageControllerTest {
 				.with(csrf().asHeader())
 				.content(objectMapper.writeValueAsString(storageUpdateReq)))
 			.andExpect(status().isOk())
+			.andExpect(content().json(objectMapper.writeValueAsString(storageRes)))
 			.andDo(print())
 			.andDo(document("storage/storage-update",
 				preprocessRequest(prettyPrint()),
