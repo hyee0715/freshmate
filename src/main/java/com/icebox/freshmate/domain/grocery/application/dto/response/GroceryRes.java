@@ -9,7 +9,7 @@ import com.icebox.freshmate.domain.grocery.domain.Grocery;
 
 public record GroceryRes(
 	Long groceryId,
-	String name,
+	String groceryName,
 	String groceryType,
 	int quantity,
 	String description,
