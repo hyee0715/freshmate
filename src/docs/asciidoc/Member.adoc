@@ -10,6 +10,8 @@
 === 성공
 .Request
 include::{snippets}/member/member-find-info-by-id/http-request.adoc[]
+.Path Parameters
+include::{snippets}/member/member-find-info-by-id/path-parameters.adoc[]
 
 .Response
 include::{snippets}/member/member-find-info-by-id/http-response.adoc[]
@@ -71,7 +73,7 @@ include::{snippets}/member/member-update-password/response-fields.adoc[]
 .Response body
 include::{snippets}/member/member-update-password/response-body.adoc[]
 
-=== 실패
+=== 실패 - 기존 비밀번호가 일치하지 않는 경우
 .Request
 include::{snippets}/member/member-update-password-failure-wrong-original-password/http-request.adoc[]
 .Request Headers
