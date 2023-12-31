@@ -51,10 +51,10 @@ public class Recipe {
 	private String content;
 
 	@Builder
-	public Recipe(Member writer, Member owner, RecipeType recipeType, String title, String material, String content) {
+	public Recipe(Member writer, String title, String material, String content) {
 		this.writer = writer;
-		this.owner = owner;
-		this.recipeType = recipeType;
+		this.owner = writer;
+		this.recipeType = RecipeType.WRITTEN;
 		this.title = title;
 		this.material = material;
 		this.content = content;
