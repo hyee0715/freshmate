@@ -193,6 +193,7 @@ class StorageControllerTest {
 			.andDo(document("storage/storage-find-by-id",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
+				pathParameters(parameterWithName("id").description("냉장고 저장소 ID")),
 				responseFields(
 					fieldWithPath("storageId").type(NUMBER).description("냉장고 저장소 ID"),
 					fieldWithPath("storageName").type(STRING).description("냉장고 저장소 이름"),
@@ -280,6 +281,7 @@ class StorageControllerTest {
 				.with(csrf().asHeader())
 				.content(objectMapper.writeValueAsString(storageUpdateReq)))
 			.andExpect(status().isOk())
+			.andExpect(content().json(objectMapper.writeValueAsString(storageRes)))
 			.andDo(print())
 			.andDo(document("storage/storage-update",
 				preprocessRequest(prettyPrint()),

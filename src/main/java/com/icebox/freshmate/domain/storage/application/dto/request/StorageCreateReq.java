@@ -9,7 +9,7 @@ import com.icebox.freshmate.domain.storage.domain.StorageType;
 import jakarta.validation.constraints.NotBlank;
 
 public record StorageCreateReq(
-	@NotBlank(message = "냉장고 저장소 이름을 입력하세요.")
+	@NotBlank(message = "냉장고 저장소 이름을 입력해주세요.")
 	@Length(min = 1, max = 50, message = "냉장고 저장소 이름은 1자 이상 50자 이하로 등록 가능합니다.")
 	String name,
 

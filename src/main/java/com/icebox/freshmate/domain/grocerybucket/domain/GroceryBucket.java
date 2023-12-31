@@ -1,7 +1,6 @@
-package com.icebox.freshmate.domain.ingredient.domain;
+package com.icebox.freshmate.domain.grocerybucket.domain;
 
-import com.icebox.freshmate.domain.storage.domain.Storage;
-import com.icebox.freshmate.global.BaseEntity;
+import com.icebox.freshmate.domain.grocery.domain.Grocery;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,7 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -19,21 +18,21 @@ import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Entity
-@Table(name = "ingredients")
+@Table(name = "grocery_buckets")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
-public class Ingredient extends BaseEntity {
+public class GroceryBucket {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "storage_id")
-	private Storage storage;
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "grocery_id")
+	private Grocery grocery;
 
 	@Builder
-	public Ingredient(Storage storage) {
-		this.storage = storage;
+	public GroceryBucket(Grocery grocery) {
+		this.grocery = grocery;
 	}
 }

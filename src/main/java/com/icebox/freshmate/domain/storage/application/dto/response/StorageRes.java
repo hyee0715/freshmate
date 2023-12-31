@@ -11,6 +11,7 @@ public record StorageRes(
 ) {
 
 	public static StorageRes from(Storage storage) {
+
 		return new StorageRes(
 			storage.getId(),
 			storage.getName(),
