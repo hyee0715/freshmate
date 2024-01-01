@@ -83,6 +83,21 @@ public class RecipeService {
 		return RecipeRes.from(recipe);
 	}
 
+	public void delete(Long id, String username) {
+		Member writer = getMember(username);
+		Recipe recipe = getRecipeByIdAndOwnerId(id, writer.getId());
+
+		recipeRepository.delete(recipe);
+	}
+
+	private Recipe getRecipeByIdAndOwnerId(Long recipeId, Long ownerId) {
+		return recipeRepository.findByIdAndOwnerId(recipeId, ownerId)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_RECIPE_BY_ID_AND_OWNER_ID : recipeId = {}, ownerId = {}", recipeId, ownerId);
+				return new EntityNotFoundException(NOT_FOUND_RECIPE);
+			});
+	}
+
 	private Recipe getRecipeByIdAndWriterId(Long recipeId, Long writerId) {
 		return recipeRepository.findByIdAndWriterId(recipeId, writerId)
 			.orElseThrow(() -> {

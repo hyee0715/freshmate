@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -68,5 +69,13 @@ public class RecipeController {
 		RecipeRes recipeRes = recipeService.update(id, recipeReq, principalDetails.getUsername());
 
 		return ResponseEntity.ok(recipeRes);
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<RecipeRes> delete(@PathVariable Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		recipeService.delete(id, principalDetails.getUsername());
+
+		return ResponseEntity.noContent()
+			.build();
 	}
 }

@@ -17,4 +17,6 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 	List<Recipe> findAllByMemberId(@Param("memberId") Long memberId);
 
 	Optional<Recipe> findByIdAndWriterId(Long id, Long writerId);
+
+	Optional<Recipe> findByIdAndOwnerId(Long id, Long ownerId);
 }
