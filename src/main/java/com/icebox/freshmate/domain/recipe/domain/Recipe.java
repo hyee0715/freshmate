@@ -59,4 +59,10 @@ public class Recipe {
 		this.material = material;
 		this.content = content;
 	}
+
+	public void update(Recipe recipe) {
+		this.title = recipe.title;
+		this.material = recipe.material;
+		this.content = recipe.content;
+	}
 }

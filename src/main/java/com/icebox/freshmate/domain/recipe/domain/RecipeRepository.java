@@ -1,6 +1,7 @@
 package com.icebox.freshmate.domain.recipe.domain;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,4 +15,6 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
 	@Query("SELECT r FROM Recipe r WHERE r.writer.id = :memberId OR r.owner.id = :memberId")
 	List<Recipe> findAllByMemberId(@Param("memberId") Long memberId);
+
+	Optional<Recipe> findByIdAndWriterId(Long id, Long writerId);
 }

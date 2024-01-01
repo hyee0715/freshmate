@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
-import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeCreateReq;
+import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeReq;
 import com.icebox.freshmate.domain.recipe.application.dto.response.RecipeRes;
 import com.icebox.freshmate.domain.recipe.application.dto.response.RecipesRes;
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
@@ -29,10 +29,10 @@ public class RecipeService {
 	private final RecipeRepository recipeRepository;
 	private final MemberRepository memberRepository;
 
-	public RecipeRes create(RecipeCreateReq recipeCreateReq, String username) {
+	public RecipeRes create(RecipeReq recipeReq, String username) {
 		Member member = getMember(username);
 
-		Recipe recipe = RecipeCreateReq.toRecipe(recipeCreateReq, member);
+		Recipe recipe = RecipeReq.toRecipe(recipeReq, member);
 		Recipe savedRecipe = recipeRepository.save(recipe);
 
 		return RecipeRes.from(savedRecipe);
@@ -70,6 +70,25 @@ public class RecipeService {
 		List<Recipe> recipes = recipeRepository.findAllByMemberId(member.getId());
 
 		return RecipesRes.from(recipes);
+	}
+
+	public RecipeRes update(Long id, RecipeReq recipeReq, String username) {
+		Member writer = getMember(username);
+
+		Recipe recipe = getRecipeByIdAndWriterId(id, writer.getId());
+
+		Recipe updateRecipe = RecipeReq.toRecipe(recipeReq, writer);
+		recipe.update(updateRecipe);
+
+		return RecipeRes.from(recipe);
+	}
+
+	private Recipe getRecipeByIdAndWriterId(Long recipeId, Long writerId) {
+		return recipeRepository.findByIdAndWriterId(recipeId, writerId)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_RECIPE_BY_ID_AND_WRITER_ID : recipeId = {}, writerId = {}", recipeId, writerId);
+				return new EntityNotFoundException(NOT_FOUND_RECIPE);
+			});
 	}
 
 	private Recipe getRecipeById(Long recipeId) {

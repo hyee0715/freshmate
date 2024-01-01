@@ -7,7 +7,7 @@ import com.icebox.freshmate.domain.recipe.domain.Recipe;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record RecipeCreateReq(
+public record RecipeReq(
 	@NotBlank(message = "레시피 제목을 입력해주세요.")
 	@Length(min = 1, max = 200, message = "레시피 제목은 1자 이상 200자 이하로 등록 가능합니다.")
 	String title,
@@ -21,13 +21,13 @@ public record RecipeCreateReq(
 	String content
 ) {
 
-	public static Recipe toRecipe(RecipeCreateReq recipeCreateReq, Member writer) {
+	public static Recipe toRecipe(RecipeReq recipeReq, Member writer) {
 
 		return Recipe.builder()
 			.writer(writer)
-			.title(recipeCreateReq.title())
-			.material(recipeCreateReq.material())
-			.content(recipeCreateReq.content())
+			.title(recipeReq.title())
+			.material(recipeReq.material())
+			.content(recipeReq.content())
 			.build();
 	}
 }
