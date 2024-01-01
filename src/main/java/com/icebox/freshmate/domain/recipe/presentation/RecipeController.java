@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.icebox.freshmate.domain.auth.application.PrincipalDetails;
@@ -34,6 +35,13 @@ public class RecipeController {
 
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(recipeRes);
+	}
+
+	@PostMapping("/scrap")
+	public ResponseEntity<RecipeRes> scrap(@RequestParam("recipe-id") Long recipeId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		RecipeRes recipeRes = recipeService.scrap(recipeId, principalDetails.getUsername());
+
+		return ResponseEntity.ok(recipeRes);
 	}
 
 	@GetMapping("/{id}")

@@ -9,6 +9,7 @@ public record RecipeRes(
 	Long ownerId,
 	String ownerNickName,
 	String recipeType,
+	Long originalRecipeId,
 	String title,
 	String material,
 	String content
@@ -23,6 +24,7 @@ public record RecipeRes(
 			recipe.getOwner().getId(),
 			recipe.getOwner().getNickName(),
 			recipe.getRecipeType().name(),
+			recipe.getOriginalRecipeId(),
 			recipe.getTitle(),
 			recipe.getMaterial(),
 			recipe.getContent()

@@ -4,6 +4,7 @@ import org.hibernate.validator.constraints.Length;
 
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
+import com.icebox.freshmate.domain.recipe.domain.RecipeType;
 
 import jakarta.validation.constraints.NotBlank;
 
@@ -25,6 +26,8 @@ public record RecipeReq(
 
 		return Recipe.builder()
 			.writer(writer)
+			.owner(writer)
+			.recipeType(RecipeType.WRITTEN)
 			.title(recipeReq.title())
 			.material(recipeReq.material())
 			.content(recipeReq.content())

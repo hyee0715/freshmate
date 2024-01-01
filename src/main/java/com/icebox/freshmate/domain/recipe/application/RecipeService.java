@@ -15,6 +15,7 @@ import com.icebox.freshmate.domain.recipe.application.dto.response.RecipeRes;
 import com.icebox.freshmate.domain.recipe.application.dto.response.RecipesRes;
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
 import com.icebox.freshmate.domain.recipe.domain.RecipeRepository;
+import com.icebox.freshmate.domain.recipe.domain.RecipeType;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -30,10 +31,25 @@ public class RecipeService {
 	private final MemberRepository memberRepository;
 
 	public RecipeRes create(RecipeReq recipeReq, String username) {
-		Member member = getMember(username);
+		Member member = getMemberByUsername(username);
 
 		Recipe recipe = RecipeReq.toRecipe(recipeReq, member);
 		Recipe savedRecipe = recipeRepository.save(recipe);
+
+		savedRecipe.updateOriginalRecipeId(savedRecipe.getId());
+
+		return RecipeRes.from(savedRecipe);
+	}
+
+	public RecipeRes scrap(Long recipeId, String username) {
+		Member owner = getMemberByUsername(username);
+		Recipe recipe = getRecipeById(recipeId);
+		Member writer = recipe.getWriter();
+
+		Recipe originalRecipe = toScrappedRecipe(recipe, writer, owner);
+
+		Recipe savedRecipe = recipeRepository.save(originalRecipe);
+		savedRecipe.updateOriginalRecipeId(recipe.getId());
 
 		return RecipeRes.from(savedRecipe);
 	}
@@ -47,7 +63,7 @@ public class RecipeService {
 
 	@Transactional(readOnly = true)
 	public RecipesRes findAllByWriterId(String username) {
-		Member member = getMember(username);
+		Member member = getMemberByUsername(username);
 
 		List<Recipe> recipes = recipeRepository.findAllByWriterId(member.getId());
 
@@ -56,7 +72,7 @@ public class RecipeService {
 
 	@Transactional(readOnly = true)
 	public RecipesRes findAllByOwnerId(String username) {
-		Member member = getMember(username);
+		Member member = getMemberByUsername(username);
 
 		List<Recipe> recipes = recipeRepository.findAllByOwnerId(member.getId());
 
@@ -65,7 +81,7 @@ public class RecipeService {
 
 	@Transactional(readOnly = true)
 	public RecipesRes findAllByMemberId(String username) {
-		Member member = getMember(username);
+		Member member = getMemberByUsername(username);
 
 		List<Recipe> recipes = recipeRepository.findAllByMemberId(member.getId());
 
@@ -73,7 +89,7 @@ public class RecipeService {
 	}
 
 	public RecipeRes update(Long id, RecipeReq recipeReq, String username) {
-		Member writer = getMember(username);
+		Member writer = getMemberByUsername(username);
 
 		Recipe recipe = getRecipeByIdAndWriterId(id, writer.getId());
 
@@ -84,7 +100,7 @@ public class RecipeService {
 	}
 
 	public void delete(Long id, String username) {
-		Member writer = getMember(username);
+		Member writer = getMemberByUsername(username);
 		Recipe recipe = getRecipeByIdAndOwnerId(id, writer.getId());
 
 		recipeRepository.delete(recipe);
@@ -114,11 +130,23 @@ public class RecipeService {
 			});
 	}
 
-	private Member getMember(String username) {
+	private Member getMemberByUsername(String username) {
 		return memberRepository.findByUsername(username)
 			.orElseThrow(() -> {
-				log.warn("GET:READ:NOT_FOUND_STORE_BY_MEMBER_USERNAME : {}", username);
+				log.warn("GET:READ:NOT_FOUND_MEMBER_BY_MEMBER_USERNAME : {}", username);
 				return new EntityNotFoundException(NOT_FOUND_MEMBER);
 			});
+	}
+
+	private Recipe toScrappedRecipe(Recipe recipe, Member writer, Member owner) {
+
+		return Recipe.builder()
+			.writer(writer)
+			.owner(owner)
+			.recipeType(RecipeType.SCRAPED)
+			.title(recipe.getTitle())
+			.material(recipe.getMaterial())
+			.content(recipe.getContent())
+			.build();
 	}
 }

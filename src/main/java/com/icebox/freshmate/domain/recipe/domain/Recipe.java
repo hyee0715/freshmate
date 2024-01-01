@@ -41,6 +41,8 @@ public class Recipe {
 	@Enumerated(EnumType.STRING)
 	private RecipeType recipeType;
 
+	private Long originalRecipeId;
+
 	@Column(length = 200)
 	private String title;
 
@@ -51,10 +53,10 @@ public class Recipe {
 	private String content;
 
 	@Builder
-	public Recipe(Member writer, String title, String material, String content) {
+	public Recipe(Member writer, Member owner, RecipeType recipeType, Long originalRecipeId, String title, String material, String content) {
 		this.writer = writer;
-		this.owner = writer;
-		this.recipeType = RecipeType.WRITTEN;
+		this.owner = owner;
+		this.recipeType = recipeType;
 		this.title = title;
 		this.material = material;
 		this.content = content;
@@ -64,5 +66,9 @@ public class Recipe {
 		this.title = recipe.title;
 		this.material = recipe.material;
 		this.content = recipe.content;
+	}
+
+	public void updateOriginalRecipeId(Long originalRecipeId) {
+		this.originalRecipeId = originalRecipeId;
 	}
 }
