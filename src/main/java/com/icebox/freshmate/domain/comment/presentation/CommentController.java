@@ -4,15 +4,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.icebox.freshmate.domain.auth.application.PrincipalDetails;
 import com.icebox.freshmate.domain.comment.application.CommentService;
 import com.icebox.freshmate.domain.comment.application.dto.request.CommentReq;
 import com.icebox.freshmate.domain.comment.application.dto.response.CommentRes;
+import com.icebox.freshmate.domain.comment.application.dto.response.CommentsRes;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,5 +32,12 @@ public class CommentController {
 
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(commentRes);
+	}
+
+	@GetMapping
+	public ResponseEntity<CommentsRes> findAllByPostId(@RequestParam("post-id") Long postId) {
+		CommentsRes commentsRes = commentService.findAllByPostId(postId);
+
+		return ResponseEntity.ok(commentsRes);
 	}
 }

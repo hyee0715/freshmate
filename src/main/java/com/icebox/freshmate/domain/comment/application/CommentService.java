@@ -3,11 +3,14 @@ package com.icebox.freshmate.domain.comment.application;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_POST;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.icebox.freshmate.domain.comment.application.dto.request.CommentReq;
 import com.icebox.freshmate.domain.comment.application.dto.response.CommentRes;
+import com.icebox.freshmate.domain.comment.application.dto.response.CommentsRes;
 import com.icebox.freshmate.domain.comment.domain.Comment;
 import com.icebox.freshmate.domain.comment.domain.CommentRepository;
 import com.icebox.freshmate.domain.member.domain.Member;
@@ -37,6 +40,12 @@ public class CommentService {
 		Comment savedComment = commentRepository.save(comment);
 
 		return CommentRes.from(savedComment);
+	}
+
+	public CommentsRes findAllByPostId(Long postId) {
+		List<Comment> comments = commentRepository.findAllByPostId(postId);
+
+		return CommentsRes.from(comments);
 	}
 
 	private Post getPostById(Long postId) {
