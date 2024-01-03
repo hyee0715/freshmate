@@ -1,5 +1,6 @@
 package com.icebox.freshmate.domain.recipe.application;
 
+import static com.icebox.freshmate.global.error.ErrorCode.*;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_RECIPE;
 
@@ -94,11 +95,12 @@ public class RecipeService {
 	}
 
 	public RecipeRes update(Long id, RecipeReq recipeReq, String username) {
-		Member writer = getMemberByUsername(username);
+		Member owner = getMemberByUsername(username);
+		Recipe recipe = getRecipeByIdAndOwnerId(id, owner.getId());
 
-		Recipe recipe = getRecipeByIdAndWriterId(id, writer.getId());
+		validateScrapedRecipe(recipe);
 
-		Recipe updateRecipe = RecipeReq.toRecipe(recipeReq, writer);
+		Recipe updateRecipe = RecipeReq.toRecipe(recipeReq, owner);
 		recipe.update(updateRecipe);
 
 		return RecipeRes.from(recipe);
@@ -146,7 +148,15 @@ public class RecipeService {
 	private void validateOwnerAndWriterToScrap(Long ownerId, Long writerId) {
 		if (Objects.equals(ownerId, writerId)) {
 			log.warn("POST:WRITE:INVALID_SCRAP_ATTEMPT_TO_OWN_RECIPE : ownerId = {}, writerId = {}", ownerId, writerId);
-			throw new BusinessException(ErrorCode.INVALID_SCRAP_ATTEMPT_TO_OWN_RECIPE);
+			throw new BusinessException(INVALID_SCRAP_ATTEMPT_TO_OWN_RECIPE);
+		}
+	}
+
+	private void validateScrapedRecipe(Recipe recipe) {
+		if (recipe.getRecipeType().equals(RecipeType.SCRAPED)) {
+			log.warn("PATCH:WRITE:INVALID_UPDATE_ATTEMPT_TO_SCRAPED_RECIPE : recipeId = {}", recipe.getId());
+			throw new BusinessException(INVALID_UPDATE_ATTEMPT_TO_SCRAPED_RECIPE);
+
 		}
 	}
 
