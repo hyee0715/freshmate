@@ -4,6 +4,7 @@ import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_RECIPE;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,8 @@ import com.icebox.freshmate.domain.recipe.application.dto.response.RecipesRes;
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
 import com.icebox.freshmate.domain.recipe.domain.RecipeRepository;
 import com.icebox.freshmate.domain.recipe.domain.RecipeType;
+import com.icebox.freshmate.global.error.ErrorCode;
+import com.icebox.freshmate.global.error.exception.BusinessException;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -45,6 +48,8 @@ public class RecipeService {
 		Member owner = getMemberByUsername(username);
 		Recipe recipe = getRecipeById(recipeId);
 		Member writer = recipe.getWriter();
+
+		validateOwnerAndWriterToScrap(owner.getId(), writer.getId());
 
 		Recipe originalRecipe = toScrappedRecipe(recipe, writer, owner);
 
@@ -136,6 +141,13 @@ public class RecipeService {
 				log.warn("GET:READ:NOT_FOUND_MEMBER_BY_MEMBER_USERNAME : {}", username);
 				return new EntityNotFoundException(NOT_FOUND_MEMBER);
 			});
+	}
+
+	private void validateOwnerAndWriterToScrap(Long ownerId, Long writerId) {
+		if (Objects.equals(ownerId, writerId)) {
+			log.warn("POST:WRITE:INVALID_SCRAP_ATTEMPT_TO_OWN_RECIPE : ownerId = {}, writerId = {}", ownerId, writerId);
+			throw new BusinessException(ErrorCode.INVALID_SCRAP_ATTEMPT_TO_OWN_RECIPE);
+		}
 	}
 
 	private Recipe toScrappedRecipe(Recipe recipe, Member writer, Member owner) {

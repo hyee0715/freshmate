@@ -40,7 +40,8 @@ public enum ErrorCode {
 	NOT_FOUND_GROCERY("G002", "식료품이 존재하지 않습니다."),
 
 	//레시피
-	NOT_FOUND_RECIPE("RC001", "레시피가 존재하지 않습니다.");
+	NOT_FOUND_RECIPE("RC001", "레시피가 존재하지 않습니다."),
+	INVALID_SCRAP_ATTEMPT_TO_OWN_RECIPE("RC002", "본인이 작성한 레시피는 스크랩할 수 없습니다.");
 
 	private final String code;
 	private final String message;
