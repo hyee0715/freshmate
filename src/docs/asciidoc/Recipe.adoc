@@ -47,7 +47,7 @@ include::{snippets}/recipe/recipe-scrap/response-body.adoc[]
 
 ---
 == POST: 레시피 스크랩
-=== 실패
+=== 실패 - 본인이 작성한 레시피는 스크랩 불가
 
 .Request
 include::{snippets}/recipe/recipe-failure-invalid-scrap-attempt-to-own-recipe/http-request.adoc[]
@@ -153,7 +153,7 @@ include::{snippets}/recipe/recipe-update/response-body.adoc[]
 
 ---
 == PATCH: 사용자가 작성한 레시피 수정
-=== 실패
+=== 실패 - 스크랩한 레시피는 수정 불가
 
 .Request
 include::{snippets}/recipe/recipe-update-failure-invalid-update-attempt-to-scraped-recipe/http-request.adoc[]
@@ -163,6 +163,7 @@ include::{snippets}/recipe/recipe-update-failure-invalid-update-attempt-to-scrap
 include::{snippets}/recipe/recipe-update-failure-invalid-update-attempt-to-scraped-recipe/request-headers.adoc[]
 .Request Fields
 include::{snippets}/recipe/recipe-update-failure-invalid-update-attempt-to-scraped-recipe/request-fields.adoc[]
+include::{snippets}/recipe/recipe-find-all-by-owner-id/request-body.adoc[]
 .Request Body
 include::{snippets}/recipe/recipe-update-failure-invalid-update-attempt-to-scraped-recipe/request-body.adoc[]
 
