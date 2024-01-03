@@ -33,12 +33,16 @@ public class Post extends BaseEntity {
 	@JoinColumn(name = "member_id")
 	private Member member;
 
+	@Column(length = 200)
+	private String title;
+
 	@Column(columnDefinition = "TEXT")
 	private String content;
 
 	@Builder
-	public Post(Member member, String content) {
+	public Post(Member member, String title, String content) {
 		this.member = member;
+		this.title = title;
 		this.content = content;
 	}
 }
