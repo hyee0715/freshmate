@@ -63,6 +63,13 @@ public class PostService {
 		return PostRes.from(post);
 	}
 
+	public void delete(Long postId, String username) {
+		Member member = getMemberByUsername(username);
+		Post post = getPostByIdAndMemberId(postId, member.getId());
+
+		postRepository.delete(post);
+	}
+
 	private Member getMemberById(Long memberId) {
 		return memberRepository.findById(memberId)
 			.orElseThrow(() -> {
