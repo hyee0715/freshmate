@@ -3,6 +3,7 @@ package com.icebox.freshmate.domain.post.domain;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.global.BaseEntity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -32,8 +33,12 @@ public class Post extends BaseEntity {
 	@JoinColumn(name = "member_id")
 	private Member member;
 
+	@Column(columnDefinition = "TEXT")
+	private String content;
+
 	@Builder
-	public Post(Member member) {
+	public Post(Member member, String content) {
 		this.member = member;
+		this.content = content;
 	}
 }
