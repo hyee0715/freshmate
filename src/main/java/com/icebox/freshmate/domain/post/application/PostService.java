@@ -53,6 +53,16 @@ public class PostService {
 		return PostsRes.from(posts);
 	}
 
+	public PostRes update(Long postId, PostReq postReq, String username) {
+		Member member = getMemberByUsername(username);
+		Post post = getPostById(postId);
+
+		Post updatePost = PostReq.toPost(postReq, member);
+		post.update(updatePost);
+
+		return PostRes.from(post);
+	}
+
 	private Member getMemberById(Long memberId) {
 		return memberRepository.findById(memberId)
 			.orElseThrow(() -> {
