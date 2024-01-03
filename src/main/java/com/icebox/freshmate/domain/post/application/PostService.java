@@ -55,7 +55,7 @@ public class PostService {
 
 	public PostRes update(Long postId, PostReq postReq, String username) {
 		Member member = getMemberByUsername(username);
-		Post post = getPostById(postId);
+		Post post = getPostByIdAndMemberId(postId, member.getId());
 
 		Post updatePost = PostReq.toPost(postReq, member);
 		post.update(updatePost);
@@ -68,6 +68,14 @@ public class PostService {
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_MEMBER_BY_ID : {}", memberId);
 				return new EntityNotFoundException(NOT_FOUND_MEMBER);
+			});
+	}
+
+	private Post getPostByIdAndMemberId(Long postId, Long memberId) {
+		return postRepository.findByIdAndMemberId(postId, memberId)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_POST_BY_ID_AND_MEMBER_ID : postId = {}, memberId = {}", postId, memberId);
+				return new EntityNotFoundException(NOT_FOUND_POST);
 			});
 	}
 
