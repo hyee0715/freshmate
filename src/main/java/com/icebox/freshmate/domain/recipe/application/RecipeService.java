@@ -121,14 +121,6 @@ public class RecipeService {
 			});
 	}
 
-	private Recipe getRecipeByIdAndWriterId(Long recipeId, Long writerId) {
-		return recipeRepository.findByIdAndWriterId(recipeId, writerId)
-			.orElseThrow(() -> {
-				log.warn("GET:READ:NOT_FOUND_RECIPE_BY_ID_AND_WRITER_ID : recipeId = {}, writerId = {}", recipeId, writerId);
-				return new EntityNotFoundException(NOT_FOUND_RECIPE);
-			});
-	}
-
 	private Recipe getRecipeById(Long recipeId) {
 		return recipeRepository.findById(recipeId)
 			.orElseThrow(() -> {
