@@ -33,10 +33,6 @@ include::{snippets}/grocery/grocery-create/response-body.adoc[]
 include::{snippets}/grocery/grocery-find-by-id/http-request.adoc[]
 .Path Parameters
 include::{snippets}/grocery/grocery-find-by-id/path-parameters.adoc[]
-.Request Headers
-include::{snippets}/grocery/grocery-find-by-id/request-headers.adoc[]
-.Request Fields
-include::{snippets}/grocery/grocery-find-by-id/request-fields.adoc[]
 
 .Response
 include::{snippets}/grocery/grocery-find-by-id/http-response.adoc[]

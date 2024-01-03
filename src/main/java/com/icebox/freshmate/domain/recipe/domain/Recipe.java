@@ -1,9 +1,17 @@
 package com.icebox.freshmate.domain.recipe.domain;
 
+import com.icebox.freshmate.domain.member.domain.Member;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -21,4 +29,46 @@ public class Recipe {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "writer_id")
+	private Member writer;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "owner_id")
+	private Member owner;
+
+	@Enumerated(EnumType.STRING)
+	private RecipeType recipeType;
+
+	private Long originalRecipeId;
+
+	@Column(length = 200)
+	private String title;
+
+	@Column(length = 1000)
+	private String material;
+
+	@Column(columnDefinition = "TEXT")
+	private String content;
+
+	@Builder
+	public Recipe(Member writer, Member owner, RecipeType recipeType, Long originalRecipeId, String title, String material, String content) {
+		this.writer = writer;
+		this.owner = owner;
+		this.recipeType = recipeType;
+		this.title = title;
+		this.material = material;
+		this.content = content;
+	}
+
+	public void update(Recipe recipe) {
+		this.title = recipe.title;
+		this.material = recipe.material;
+		this.content = recipe.content;
+	}
+
+	public void updateOriginalRecipeId(Long originalRecipeId) {
+		this.originalRecipeId = originalRecipeId;
+	}
 }

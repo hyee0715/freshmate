@@ -9,7 +9,6 @@ public record StoragesRes(
 ) {
 
 	public static StoragesRes from(List<Storage> storages) {
-
 		List<StorageRes> storagesRes = storages.stream()
 			.map(StorageRes::from)
 			.toList();

@@ -1,0 +1,191 @@
+= REST Docs Recipe API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+[[Recipe-API]]
+== POST: 레시피 생성
+=== 성공
+
+.Request
+include::{snippets}/recipe/recipe-create/http-request.adoc[]
+.Request Headers
+include::{snippets}/recipe/recipe-create/request-headers.adoc[]
+.Request Fields
+include::{snippets}/recipe/recipe-create/request-fields.adoc[]
+.Request Body
+include::{snippets}/recipe/recipe-create/request-body.adoc[]
+
+.Response
+include::{snippets}/recipe/recipe-create/http-response.adoc[]
+.Response Fields
+include::{snippets}/recipe/recipe-create/response-fields.adoc[]
+.Response body
+include::{snippets}/recipe/recipe-create/response-body.adoc[]
+
+---
+== POST: 레시피 스크랩
+=== 성공
+
+.Request
+include::{snippets}/recipe/recipe-scrap/http-request.adoc[]
+.Query Strings
+include::{snippets}/recipe/recipe-scrap/query-parameters.adoc[]
+.Request Headers
+include::{snippets}/recipe/recipe-scrap/request-headers.adoc[]
+.Request Body
+include::{snippets}/recipe/recipe-scrap/request-body.adoc[]
+
+.Response
+include::{snippets}/recipe/recipe-scrap/http-response.adoc[]
+.Response Fields
+include::{snippets}/recipe/recipe-scrap/response-fields.adoc[]
+.Response body
+include::{snippets}/recipe/recipe-scrap/response-body.adoc[]
+
+---
+== POST: 레시피 스크랩
+=== 실패 - 본인이 작성한 레시피는 스크랩 불가
+
+.Request
+include::{snippets}/recipe/recipe-failure-invalid-scrap-attempt-to-own-recipe/http-request.adoc[]
+.Query Strings
+include::{snippets}/recipe/recipe-failure-invalid-scrap-attempt-to-own-recipe/query-parameters.adoc[]
+.Request Headers
+include::{snippets}/recipe/recipe-failure-invalid-scrap-attempt-to-own-recipe/request-headers.adoc[]
+
+.Response
+include::{snippets}/recipe/recipe-failure-invalid-scrap-attempt-to-own-recipe/http-response.adoc[]
+.Response Fields
+include::{snippets}/recipe/recipe-failure-invalid-scrap-attempt-to-own-recipe/response-fields.adoc[]
+.Response body
+include::{snippets}/recipe/recipe-failure-invalid-scrap-attempt-to-own-recipe/response-body.adoc[]
+
+---
+== GET: 레시피 단건 조회
+=== 성공
+
+.Request
+include::{snippets}/recipe/recipe-find-by-id/http-request.adoc[]
+.Path Parameters
+include::{snippets}/recipe/recipe-find-by-id/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/recipe/recipe-find-by-id/request-headers.adoc[]
+
+.Response
+include::{snippets}/recipe/recipe-find-by-id/http-response.adoc[]
+.Response Fields
+include::{snippets}/recipe/recipe-find-by-id/response-fields.adoc[]
+.Response body
+include::{snippets}/recipe/recipe-find-by-id/response-body.adoc[]
+
+---
+== GET: 사용자가 작성한 모든 레시피 조회
+=== 성공
+
+.Request
+include::{snippets}/recipe/recipe-find-all-by-writer-id/http-request.adoc[]
+.Request Headers
+include::{snippets}/recipe/recipe-find-all-by-writer-id/request-headers.adoc[]
+
+.Response
+include::{snippets}/recipe/recipe-find-all-by-writer-id/http-response.adoc[]
+.Response Fields
+include::{snippets}/recipe/recipe-find-all-by-writer-id/response-fields.adoc[]
+.Response body
+include::{snippets}/recipe/recipe-find-all-by-writer-id/response-body.adoc[]
+
+---
+== POST: 사용자가 스크랩한(소유한) 모든 레시피 조회
+=== 성공
+
+.Request
+include::{snippets}/recipe/recipe-find-all-by-owner-id/http-request.adoc[]
+.Request Headers
+include::{snippets}/recipe/recipe-find-all-by-owner-id/request-headers.adoc[]
+
+.Response
+include::{snippets}/recipe/recipe-find-all-by-owner-id/http-response.adoc[]
+.Response Fields
+include::{snippets}/recipe/recipe-find-all-by-owner-id/response-fields.adoc[]
+.Response body
+include::{snippets}/recipe/recipe-find-all-by-owner-id/response-body.adoc[]
+
+---
+== GET: 사용자가 작성하고 스크랩한(소유한) 모든 레시피 조회
+=== 성공
+
+.Request
+include::{snippets}/recipe/recipe-find-all-by-owner-id/http-request.adoc[]
+.Request Headers
+include::{snippets}/recipe/recipe-find-all-by-owner-id/request-headers.adoc[]
+
+.Response
+include::{snippets}/recipe/recipe-find-all-by-owner-id/http-response.adoc[]
+.Response Fields
+include::{snippets}/recipe/recipe-find-all-by-owner-id/response-fields.adoc[]
+.Response body
+include::{snippets}/recipe/recipe-find-all-by-owner-id/response-body.adoc[]
+
+---
+== PATCH: 사용자가 작성한 레시피 수정
+=== 성공
+
+.Request
+include::{snippets}/recipe/recipe-update/http-request.adoc[]
+.Path Parameters
+include::{snippets}/recipe/recipe-update/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/recipe/recipe-update/request-headers.adoc[]
+.Request Fields
+include::{snippets}/recipe/recipe-update/request-fields.adoc[]
+.Request Body
+include::{snippets}/recipe/recipe-update/request-body.adoc[]
+
+.Response
+include::{snippets}/recipe/recipe-update/http-response.adoc[]
+.Response Fields
+include::{snippets}/recipe/recipe-update/response-fields.adoc[]
+.Response body
+include::{snippets}/recipe/recipe-update/response-body.adoc[]
+
+---
+== PATCH: 사용자가 작성한 레시피 수정
+=== 실패 - 스크랩한 레시피는 수정 불가
+
+.Request
+include::{snippets}/recipe/recipe-update-failure-invalid-update-attempt-to-scraped-recipe/http-request.adoc[]
+.Path Parameters
+include::{snippets}/recipe/recipe-update-failure-invalid-update-attempt-to-scraped-recipe/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/recipe/recipe-update-failure-invalid-update-attempt-to-scraped-recipe/request-headers.adoc[]
+.Request Fields
+include::{snippets}/recipe/recipe-update-failure-invalid-update-attempt-to-scraped-recipe/request-fields.adoc[]
+include::{snippets}/recipe/recipe-find-all-by-owner-id/request-body.adoc[]
+.Request Body
+include::{snippets}/recipe/recipe-update-failure-invalid-update-attempt-to-scraped-recipe/request-body.adoc[]
+
+.Response
+include::{snippets}/recipe/recipe-update-failure-invalid-update-attempt-to-scraped-recipe/http-response.adoc[]
+.Response Fields
+include::{snippets}/recipe/recipe-update-failure-invalid-update-attempt-to-scraped-recipe/response-fields.adoc[]
+.Response body
+include::{snippets}/recipe/recipe-update-failure-invalid-update-attempt-to-scraped-recipe/response-body.adoc[]
+
+---
+== DELETE: 레시피 삭제
+=== 성공
+
+.Request
+include::{snippets}/recipe/recipe-delete/http-request.adoc[]
+.Path Parameters
+include::{snippets}/recipe/recipe-delete/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/recipe/recipe-delete/request-headers.adoc[]
+
+.Response
+include::{snippets}/recipe/recipe-delete/http-response.adoc[]
+
+---
