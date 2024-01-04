@@ -32,15 +32,15 @@ public class MemberService {
 	}
 
 	@Transactional(readOnly = true)
-	public MemberInfoRes findInfo(String memberUsername) {
-		Member member = memberRepository.findByUsername(memberUsername)
+	public MemberInfoRes findInfo(String username) {
+		Member member = memberRepository.findByUsername(username)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER));
 
 		return MemberInfoRes.from(member);
 	}
 
-	public MemberInfoRes updateInfo(MemberUpdateInfoReq memberUpdateInfoReq, String memberUsername) {
-		Member member = memberRepository.findByUsername(memberUsername)
+	public MemberInfoRes updateInfo(MemberUpdateInfoReq memberUpdateInfoReq, String username) {
+		Member member = memberRepository.findByUsername(username)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER));
 
 		Member memberFromRequest = memberUpdateInfoReq.toMember();
@@ -50,8 +50,8 @@ public class MemberService {
 		return MemberInfoRes.from(member);
 	}
 
-	public MemberInfoRes updatePassword(MemberUpdatePasswordReq memberUpdatePasswordReq, String memberUsername) {
-		Member member = memberRepository.findByUsername(memberUsername)
+	public MemberInfoRes updatePassword(MemberUpdatePasswordReq memberUpdatePasswordReq, String username) {
+		Member member = memberRepository.findByUsername(username)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER));
 
 		if (!member.matchPassword(passwordEncoder, memberUpdatePasswordReq.originalPassword()) ) {

@@ -48,8 +48,8 @@ public class AuthService {
 		return createMemberAuthResWithTokens(loginRequestMember);
 	}
 
-	public void withdraw(String checkPassword, String memberUsername) {
-		Member member = memberRepository.findByUsername(memberUsername)
+	public void withdraw(String checkPassword, String username) {
+		Member member = memberRepository.findByUsername(username)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER));
 
 		if(!member.matchPassword(passwordEncoder, checkPassword) ) {
@@ -59,8 +59,8 @@ public class AuthService {
 		memberRepository.delete(member);
 	}
 
-	public void logout(String memberUsername) {
-		Member member = memberRepository.findByUsername(memberUsername)
+	public void logout(String username) {
+		Member member = memberRepository.findByUsername(username)
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER));
 
 		member.destroyRefreshToken();

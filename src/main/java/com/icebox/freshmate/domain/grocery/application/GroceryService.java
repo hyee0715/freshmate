@@ -34,7 +34,7 @@ public class GroceryService {
 	private final StorageRepository storageRepository;
 
 	public GroceryRes create(GroceryReq groceryReq, String username) {
-		Member member = getMember(username);
+		Member member = getMemberByUsername(username);
 
 		Storage storage = getStorageByIdAndMemberId(groceryReq.storageId(), member.getId());
 
@@ -53,7 +53,7 @@ public class GroceryService {
 
 	@Transactional(readOnly = true)
 	public GroceriesRes findAllByStorageId(Long storageId, String username) {
-		Member member = getMember(username);
+		Member member = getMemberByUsername(username);
 
 		List<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberId(storageId, member.getId());
 
@@ -61,7 +61,7 @@ public class GroceryService {
 	}
 
 	public GroceryRes update(Long id, GroceryReq groceryReq, String username) {
-		Member member = getMember(username);
+		Member member = getMemberByUsername(username);
 		Storage storage = getStorageByIdAndMemberId(groceryReq.storageId(), member.getId());
 		Grocery grocery = getGroceryByIdAndMemberId(id, member.getId());
 
@@ -72,7 +72,7 @@ public class GroceryService {
 	}
 
 	public void delete(Long id, String username) {
-		Member member = getMember(username);
+		Member member = getMemberByUsername(username);
 		Grocery grocery = getGroceryByIdAndMemberId(id, member.getId());
 
 		groceryRepository.delete(grocery);
@@ -102,7 +102,7 @@ public class GroceryService {
 			});
 	}
 
-	private Member getMember(String username) {
+	private Member getMemberByUsername(String username) {
 		return memberRepository.findByUsername(username)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_STORE_BY_MEMBER_USERNAME : {}", username);

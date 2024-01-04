@@ -34,8 +34,8 @@ public class StorageService {
 	private final RefrigeratorRepository refrigeratorRepository;
 	private final MemberRepository memberRepository;
 
-	public StorageRes create(StorageCreateReq storageCreateReq, String memberUsername) {
-		Member member = getMember(memberUsername);
+	public StorageRes create(StorageCreateReq storageCreateReq, String username) {
+		Member member = getMemberByUsername(username);
 
 		Refrigerator refrigerator = getRefrigerator(storageCreateReq.refrigeratorId(), member.getId());
 
@@ -53,8 +53,8 @@ public class StorageService {
 	}
 
 	@Transactional(readOnly = true)
-	public StoragesRes findAllByRefrigeratorId(Long refrigeratorId, String memberUsername) {
-		Member member = getMember(memberUsername);
+	public StoragesRes findAllByRefrigeratorId(Long refrigeratorId, String username) {
+		Member member = getMemberByUsername(username);
 		Refrigerator refrigerator = getRefrigerator(refrigeratorId, member.getId());
 
 		List<Storage> storages = storageRepository.findAllByRefrigeratorId(refrigerator.getId());
@@ -62,8 +62,8 @@ public class StorageService {
 		return StoragesRes.from(storages);
 	}
 
-	public StorageRes update(Long storageId, StorageUpdateReq storageUpdateReq, String memberUsername) {
-		Member member = getMember(memberUsername);
+	public StorageRes update(Long storageId, StorageUpdateReq storageUpdateReq, String username) {
+		Member member = getMemberByUsername(username);
 		Storage storage = getStorageByIdAndMemberId(storageId, member.getId());
 
 		Storage updateStorage = StorageUpdateReq.toStorage(storageUpdateReq, storage.getRefrigerator());
@@ -72,8 +72,8 @@ public class StorageService {
 		return StorageRes.from(storage);
 	}
 
-	public void delete(Long storageId, String memberUsername) {
-		Member member = getMember(memberUsername);
+	public void delete(Long storageId, String username) {
+		Member member = getMemberByUsername(username);
 		Storage storage = getStorageByIdAndMemberId(storageId, member.getId());
 
 		storageRepository.delete(storage);
@@ -103,7 +103,7 @@ public class StorageService {
 			});
 	}
 
-	private Member getMember(String username) {
+	private Member getMemberByUsername(String username) {
 		return memberRepository.findByUsername(username)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_STORE_BY_MEMBER_USERNAME : {}", username);

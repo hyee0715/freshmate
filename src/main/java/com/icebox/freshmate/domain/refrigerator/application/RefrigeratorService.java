@@ -29,8 +29,8 @@ public class RefrigeratorService {
 	private final RefrigeratorRepository refrigeratorRepository;
 	private final MemberRepository memberRepository;
 
-	public RefrigeratorRes create(RefrigeratorReq refrigeratorReq, String memberUsername) {
-		Member member = getMember(memberUsername);
+	public RefrigeratorRes create(RefrigeratorReq refrigeratorReq, String username) {
+		Member member = getMemberByUsername(username);
 
 		Refrigerator refrigerator = RefrigeratorReq.toRefrigerator(refrigeratorReq, member);
 		Refrigerator savedRefrigerator = refrigeratorRepository.save(refrigerator);
@@ -47,16 +47,16 @@ public class RefrigeratorService {
 	}
 
 	@Transactional(readOnly = true)
-	public RefrigeratorsRes findAll(String memberUsername) {
-		Member member = getMember(memberUsername);
+	public RefrigeratorsRes findAll(String username) {
+		Member member = getMemberByUsername(username);
 
 		List<Refrigerator> refrigerators = refrigeratorRepository.findAllByMemberId(member.getId());
 
 		return RefrigeratorsRes.from(refrigerators);
 	}
 
-	public RefrigeratorRes update(Long id, RefrigeratorReq refrigeratorReq, String memberUsername) {
-		Member member = getMember(memberUsername);
+	public RefrigeratorRes update(Long id, RefrigeratorReq refrigeratorReq, String username) {
+		Member member = getMemberByUsername(username);
 
 		Refrigerator refrigerator = refrigeratorRepository.findByIdAndMemberId(id, member.getId())
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_REFRIGERATOR));
@@ -68,8 +68,8 @@ public class RefrigeratorService {
 		return RefrigeratorRes.from(refrigerator);
 	}
 
-	public void delete(Long id, String memberUsername) {
-		Member member = getMember(memberUsername);
+	public void delete(Long id, String username) {
+		Member member = getMemberByUsername(username);
 
 		Refrigerator refrigerator = refrigeratorRepository.findByIdAndMemberId(id, member.getId())
 			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_REFRIGERATOR));
@@ -77,7 +77,7 @@ public class RefrigeratorService {
 		refrigeratorRepository.delete(refrigerator);
 	}
 
-	private Member getMember(String username) {
+	private Member getMemberByUsername(String username) {
 		return memberRepository.findByUsername(username)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_STORE_BY_MEMBER_USERNAME : {}", username);
