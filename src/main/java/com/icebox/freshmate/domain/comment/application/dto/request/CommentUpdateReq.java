@@ -8,20 +8,18 @@ import com.icebox.freshmate.domain.post.domain.Post;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record CommentReq(
-	Long postId,
-
+public record CommentUpdateReq(
 	@NotBlank(message = "댓글 내용을 입력해주세요.")
 	@Length(min = 1, message = "댓글 내용은 1자 이상부터 등록 가능합니다.")
 	String content
 ) {
 
-	public static Comment toComment(CommentReq commentReq, Post post, Member member) {
+	public static Comment toComment(CommentUpdateReq commentUpdateReq, Post post, Member member) {
 
 		return Comment.builder()
 			.post(post)
 			.member(member)
-			.content(commentReq.content())
+			.content(commentUpdateReq.content())
 			.build();
 	}
 }

@@ -1,5 +1,6 @@
 package com.icebox.freshmate.domain.comment.application;
 
+import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_COMMENT;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_POST;
 
@@ -8,7 +9,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.icebox.freshmate.domain.comment.application.dto.request.CommentReq;
+import com.icebox.freshmate.domain.comment.application.dto.request.CommentCreateReq;
+import com.icebox.freshmate.domain.comment.application.dto.request.CommentUpdateReq;
 import com.icebox.freshmate.domain.comment.application.dto.response.CommentRes;
 import com.icebox.freshmate.domain.comment.application.dto.response.CommentsRes;
 import com.icebox.freshmate.domain.comment.domain.Comment;
@@ -32,20 +34,40 @@ public class CommentService {
 	private final PostRepository postRepository;
 	private final CommentRepository commentRepository;
 
-	public CommentRes create(CommentReq commentReq, String username) {
+	public CommentRes create(CommentCreateReq commentCreateReq, String username) {
 		Member member = getMemberByUsername(username);
-		Post post = getPostById(commentReq.postId());
+		Post post = getPostById(commentCreateReq.postId());
 
-		Comment comment = CommentReq.toComment(commentReq, post, member);
+		Comment comment = CommentCreateReq.toComment(commentCreateReq, post, member);
 		Comment savedComment = commentRepository.save(comment);
 
 		return CommentRes.from(savedComment);
 	}
 
+	@Transactional(readOnly = true)
 	public CommentsRes findAllByPostId(Long postId) {
 		List<Comment> comments = commentRepository.findAllByPostId(postId);
 
 		return CommentsRes.from(comments);
+	}
+
+	public CommentRes update(Long commentId, CommentUpdateReq commentUpdateReq, String username) {
+		Member member = getMemberByUsername(username);
+		Comment comment = getCommentByIdAndMemberId(commentId, member.getId());
+		Post post = getPostById(comment.getId());
+
+		Comment updateComment = CommentUpdateReq.toComment(commentUpdateReq, post, member);
+		comment.update(updateComment);
+
+		return CommentRes.from(comment);
+	}
+
+	private Comment getCommentByIdAndMemberId(Long commentId, Long memberId) {
+		return commentRepository.findByIdAndMemberId(commentId, memberId)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_COMMENT_BY_ID_AND_MEMBER_ID : commentId = {}, memberId = {}", commentId, memberId);
+				return new EntityNotFoundException(NOT_FOUND_COMMENT);
+			});
 	}
 
 	private Post getPostById(Long postId) {
