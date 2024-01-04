@@ -1,7 +1,9 @@
 package com.icebox.freshmate.domain.comment.domain;
 
+import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.post.domain.Post;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -31,8 +33,21 @@ public class Comment {
 	@JoinColumn(name = "post_id")
 	private Post post;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "member_id")
+	private Member member;
+
+	@Column(columnDefinition = "TEXT")
+	private String content;
+
 	@Builder
-	public Comment(Post post) {
+	public Comment(Post post, Member member, String content) {
 		this.post = post;
+		this.member = member;
+		this.content = content;
+	}
+
+	public void update(Comment comment) {
+		this.content = comment.getContent();
 	}
 }
