@@ -62,6 +62,13 @@ public class CommentService {
 		return CommentRes.from(comment);
 	}
 
+	public void delete(Long commentId, String username) {
+		Member member = getMemberByUsername(username);
+		Comment comment = getCommentByIdAndMemberId(commentId, member.getId());
+
+		commentRepository.delete(comment);
+	}
+
 	private Comment getCommentByIdAndMemberId(Long commentId, Long memberId) {
 		return commentRepository.findByIdAndMemberId(commentId, memberId)
 			.orElseThrow(() -> {
