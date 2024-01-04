@@ -1,0 +1,80 @@
+= REST Docs Comment API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+[[Comment-API]]
+== POST: 댓글 생성
+=== 성공
+
+.Request
+include::{snippets}/comment/comment-create/http-request.adoc[]
+.Request Headers
+include::{snippets}/comment/comment-create/request-headers.adoc[]
+.Request Fields
+include::{snippets}/comment/comment-create/request-fields.adoc[]
+.Request Body
+include::{snippets}/comment/comment-create/request-body.adoc[]
+
+.Response
+include::{snippets}/comment/comment-create/http-response.adoc[]
+.Response Fields
+include::{snippets}/comment/comment-create/response-fields.adoc[]
+.Response body
+include::{snippets}/comment/comment-create/response-body.adoc[]
+
+---
+== GET: 게시글 별 모든 댓글 조회
+=== 성공
+
+.Request
+include::{snippets}/comment/comment-find-all-by-post-id/http-request.adoc[]
+.Query Strings
+include::{snippets}/comment/comment-find-all-by-post-id/query-parameters.adoc[]
+
+.Response
+include::{snippets}/comment/comment-find-all-by-post-id/http-response.adoc[]
+.Response Fields
+include::{snippets}/comment/comment-find-all-by-post-id/response-fields.adoc[]
+.Response body
+include::{snippets}/comment/comment-find-all-by-post-id/response-body.adoc[]
+
+---
+== PATCH: 댓글 수정
+=== 성공
+
+.Request
+include::{snippets}/comment/comment-update/http-request.adoc[]
+.Path Parameters
+include::{snippets}/comment/comment-update/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/comment/comment-update/request-headers.adoc[]
+.Request Fields
+include::{snippets}/comment/comment-update/request-fields.adoc[]
+.Request Body
+include::{snippets}/comment/comment-update/request-body.adoc[]
+
+.Response
+include::{snippets}/comment/comment-update/http-response.adoc[]
+.Response Fields
+include::{snippets}/comment/comment-update/response-fields.adoc[]
+.Response body
+include::{snippets}/comment/comment-update/response-body.adoc[]
+
+---
+== DELETE: 댓글 삭제
+=== 성공
+
+.Request
+include::{snippets}/comment/comment-delete/http-request.adoc[]
+.Path Parameters
+include::{snippets}/comment/comment-delete/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/comment/comment-delete/request-headers.adoc[]
+
+.Response
+include::{snippets}/comment/comment-delete/http-response.adoc[]
+
+---
