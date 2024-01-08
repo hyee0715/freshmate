@@ -1,5 +1,7 @@
 package com.icebox.freshmate.domain.grocery.domain;
 
+import static com.icebox.freshmate.domain.grocery.domain.GroceryExpirationType.checkExpiration;
+
 import java.time.LocalDate;
 
 import com.icebox.freshmate.domain.storage.domain.Storage;
@@ -50,6 +52,9 @@ public class Grocery extends BaseEntity {
 
 	private LocalDate expirationDate;
 
+	@Enumerated(EnumType.STRING)
+	private GroceryExpirationType groceryExpirationType;
+
 	@Builder
 	public Grocery(Storage storage, String name, GroceryType groceryType, int quantity, String description, LocalDate expirationDate) {
 		this.storage = storage;
@@ -58,6 +63,7 @@ public class Grocery extends BaseEntity {
 		this.quantity = quantity;
 		this.description = description;
 		this.expirationDate = expirationDate;
+		this.groceryExpirationType = checkExpiration(expirationDate, LocalDate.now());
 	}
 
 	public void update(Grocery grocery) {

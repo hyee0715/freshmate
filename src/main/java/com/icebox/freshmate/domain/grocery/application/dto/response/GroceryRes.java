@@ -18,7 +18,8 @@ public record GroceryRes(
 	LocalDate expirationDate,
 
 	Long storageId,
-	String storageName
+	String storageName,
+	String groceryExpirationType
 ) {
 
 	public static GroceryRes from(Grocery grocery) {
@@ -31,7 +32,8 @@ public record GroceryRes(
 			grocery.getDescription(),
 			grocery.getExpirationDate(),
 			grocery.getStorage().getId(),
-			grocery.getStorage().getName()
+			grocery.getStorage().getName(),
+			grocery.getGroceryExpirationType().name()
 		);
 	}
 }
