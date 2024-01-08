@@ -1,6 +1,6 @@
 package com.icebox.freshmate.domain.grocery.domain;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import com.icebox.freshmate.domain.storage.domain.Storage;
 import com.icebox.freshmate.global.BaseEntity;
@@ -48,16 +48,16 @@ public class Grocery extends BaseEntity {
 	@Column(length = 400)
 	private String description;
 
-	private LocalDateTime expirationDateTime;
+	private LocalDate expirationDate;
 
 	@Builder
-	public Grocery(Storage storage, String name, GroceryType groceryType, int quantity, String description, LocalDateTime expirationDateTime) {
+	public Grocery(Storage storage, String name, GroceryType groceryType, int quantity, String description, LocalDate expirationDate) {
 		this.storage = storage;
 		this.name = name;
 		this.groceryType = groceryType;
 		this.quantity = quantity;
 		this.description = description;
-		this.expirationDateTime = expirationDateTime;
+		this.expirationDate = expirationDate;
 	}
 
 	public void update(Grocery grocery) {
@@ -66,6 +66,6 @@ public class Grocery extends BaseEntity {
 		this.groceryType = grocery.getGroceryType();
 		this.quantity = grocery.getQuantity();
 		this.description = grocery.getDescription();
-		this.expirationDateTime = grocery.getExpirationDateTime();
+		this.expirationDate = grocery.getExpirationDate();
 	}
 }
