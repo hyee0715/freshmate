@@ -3,6 +3,7 @@ package com.icebox.freshmate.domain.grocery.application.dto.response;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.icebox.freshmate.domain.grocery.domain.Grocery;
@@ -19,7 +20,10 @@ public record GroceryRes(
 
 	Long storageId,
 	String storageName,
-	String groceryExpirationType
+	String groceryExpirationType,
+
+	@JsonFormat(shape = STRING, pattern = "YYYY-MM-dd HH:mm", timezone = "Asia/Seoul")
+	LocalDateTime createdAt
 ) {
 
 	public static GroceryRes from(Grocery grocery) {
@@ -33,7 +37,8 @@ public record GroceryRes(
 			grocery.getExpirationDate(),
 			grocery.getStorage().getId(),
 			grocery.getStorage().getName(),
-			grocery.getGroceryExpirationType().name()
+			grocery.getGroceryExpirationType().name(),
+			grocery.getCreatedAt()
 		);
 	}
 }

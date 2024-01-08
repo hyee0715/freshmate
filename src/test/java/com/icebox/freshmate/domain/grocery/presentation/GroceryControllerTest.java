@@ -30,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -135,8 +136,10 @@ class GroceryControllerTest {
 		Long groceryId = 1L;
 		Long storageId = 1L;
 
+		LocalDateTime createdAt = LocalDateTime.now();
+
 		GroceryReq groceryReq = new GroceryReq(grocery.getName(), grocery.getGroceryType().name(), grocery.getQuantity(), grocery.getDescription(), grocery.getExpirationDate(), grocery.getStorage().getId());
-		GroceryRes groceryRes = new GroceryRes(groceryId, grocery.getName(), grocery.getGroceryType().name(), grocery.getQuantity(), grocery.getDescription(), grocery.getExpirationDate(), storageId, grocery.getStorage().getName(), grocery.getGroceryExpirationType().name());
+		GroceryRes groceryRes = new GroceryRes(groceryId, grocery.getName(), grocery.getGroceryType().name(), grocery.getQuantity(), grocery.getDescription(), grocery.getExpirationDate(), storageId, grocery.getStorage().getName(), grocery.getGroceryExpirationType().name(), createdAt);
 
 		when(groceryService.create(any(GroceryReq.class), any(String.class))).thenReturn(groceryRes);
 
@@ -159,6 +162,7 @@ class GroceryControllerTest {
 			.andExpect(jsonPath("$.storageId").value(storageId))
 			.andExpect(jsonPath("$.storageName").value(grocery.getStorage().getName()))
 			.andExpect(jsonPath("$.groceryExpirationType").value(grocery.getGroceryExpirationType().name()))
+			.andExpect(jsonPath("$.createdAt").value(formatLocalDateTime(createdAt)))
 			.andDo(print())
 			.andDo(document("grocery/grocery-create",
 				preprocessRequest(prettyPrint()),
@@ -183,7 +187,8 @@ class GroceryControllerTest {
 					fieldWithPath("expirationDate").type(STRING).description("식료품 유통기한"),
 					fieldWithPath("storageId").type(NUMBER).description("냉장고 저장소 ID"),
 					fieldWithPath("storageName").type(STRING).description("냉장고 저장소 이름"),
-					fieldWithPath("groceryExpirationType").type(STRING).description("식료품 유통기한 만료 상태")
+					fieldWithPath("groceryExpirationType").type(STRING).description("식료품 유통기한 만료 상태"),
+					fieldWithPath("createdAt").type(STRING).description("식료품 생성 날짜")
 				)
 			));
 	}
@@ -195,7 +200,10 @@ class GroceryControllerTest {
 		Long groceryId = 1L;
 		Long storageId = 1L;
 
-		GroceryRes groceryRes = new GroceryRes(groceryId, grocery.getName(), grocery.getGroceryType().name(), grocery.getQuantity(), grocery.getDescription(), grocery.getExpirationDate(), storageId, grocery.getStorage().getName(), grocery.getGroceryExpirationType().name());
+		LocalDateTime createdAt = LocalDateTime.now();
+
+
+		GroceryRes groceryRes = new GroceryRes(groceryId, grocery.getName(), grocery.getGroceryType().name(), grocery.getQuantity(), grocery.getDescription(), grocery.getExpirationDate(), storageId, grocery.getStorage().getName(), grocery.getGroceryExpirationType().name(), createdAt);
 
 		when(groceryService.findById(groceryId)).thenReturn(groceryRes);
 
@@ -216,6 +224,7 @@ class GroceryControllerTest {
 			.andExpect(jsonPath("$.storageId").value(storageId))
 			.andExpect(jsonPath("$.storageName").value(grocery.getStorage().getName()))
 			.andExpect(jsonPath("$.groceryExpirationType").value(grocery.getGroceryExpirationType().name()))
+			.andExpect(jsonPath("$.createdAt").value(formatLocalDateTime(createdAt)))
 			.andDo(print())
 			.andDo(document("grocery/grocery-find-by-id",
 				preprocessRequest(prettyPrint()),
@@ -230,7 +239,8 @@ class GroceryControllerTest {
 					fieldWithPath("expirationDate").type(STRING).description("식료품 유통기한"),
 					fieldWithPath("storageId").type(NUMBER).description("냉장고 저장소 ID"),
 					fieldWithPath("storageName").type(STRING).description("냉장고 저장소 이름"),
-					fieldWithPath("groceryExpirationType").type(STRING).description("식료품 유통기한 만료 상태")
+					fieldWithPath("groceryExpirationType").type(STRING).description("식료품 유통기한 만료 상태"),
+					fieldWithPath("createdAt").type(STRING).description("식료품 생성 날짜")
 				)
 			));
 	}
@@ -241,6 +251,8 @@ class GroceryControllerTest {
 		//given
 		Long storageId = 1L;
 
+		LocalDateTime createdAt = LocalDateTime.now();
+
 		Grocery grocery2 = Grocery.builder()
 			.storage(storage)
 			.name("배추")
@@ -250,8 +262,8 @@ class GroceryControllerTest {
 			.expirationDate(LocalDate.now().plusDays(7))
 			.build();
 
-		GroceryRes groceryRes1 = new GroceryRes(1L, grocery.getName(), grocery.getGroceryType().name(), grocery.getQuantity(), grocery.getDescription(), grocery.getExpirationDate(), storageId, grocery.getStorage().getName(), grocery.getGroceryExpirationType().name());
-		GroceryRes groceryRes2 = new GroceryRes(2L, grocery2.getName(), grocery2.getGroceryType().name(), grocery2.getQuantity(), grocery2.getDescription(), grocery.getExpirationDate(), storageId, grocery2.getStorage().getName(), grocery2.getGroceryExpirationType().name());
+		GroceryRes groceryRes1 = new GroceryRes(1L, grocery.getName(), grocery.getGroceryType().name(), grocery.getQuantity(), grocery.getDescription(), grocery.getExpirationDate(), storageId, grocery.getStorage().getName(), grocery.getGroceryExpirationType().name(), createdAt);
+		GroceryRes groceryRes2 = new GroceryRes(2L, grocery2.getName(), grocery2.getGroceryType().name(), grocery2.getQuantity(), grocery2.getDescription(), grocery.getExpirationDate(), storageId, grocery2.getStorage().getName(), grocery2.getGroceryExpirationType().name(), createdAt);
 
 		GroceriesRes groceriesRes = new GroceriesRes(List.of(groceryRes1, groceryRes2));
 
@@ -276,6 +288,7 @@ class GroceryControllerTest {
 			.andExpect(jsonPath("$.groceries[0].storageId").value(storageId))
 			.andExpect(jsonPath("$.groceries[0].storageName").value(groceryRes1.storageName()))
 			.andExpect(jsonPath("$.groceries[0].groceryExpirationType").value(groceryRes1.groceryExpirationType()))
+			.andExpect(jsonPath("$.groceries[0].createdAt").value(formatLocalDateTime(createdAt)))
 			.andDo(print())
 			.andDo(document("grocery/grocery-find-all-by-storage-id",
 				preprocessRequest(prettyPrint()),
@@ -294,7 +307,8 @@ class GroceryControllerTest {
 					fieldWithPath("groceries[].expirationDate").type(STRING).description("식료품 유통기한"),
 					fieldWithPath("groceries[].storageId").type(NUMBER).description("냉장고 저장소 ID"),
 					fieldWithPath("groceries[].storageName").type(STRING).description("냉장고 저장소 이름"),
-					fieldWithPath("groceries[].groceryExpirationType").type(STRING).description("식료품 유통기한 만료 상태")
+					fieldWithPath("groceries[].groceryExpirationType").type(STRING).description("식료품 유통기한 만료 상태"),
+					fieldWithPath("groceries[].createdAt").type(STRING).description("식료품 생성 날짜")
 				)
 			));
 	}
@@ -306,8 +320,10 @@ class GroceryControllerTest {
 		Long groceryId = 1L;
 		Long storageId = 1L;
 
+		LocalDateTime createdAt = LocalDateTime.now();
+
 		GroceryReq groceryReq = new GroceryReq("식료품 수정", GroceryType.SNACKS.name(), 2, "수정", LocalDate.now().plusDays(2), storageId);
-		GroceryRes groceryRes = new GroceryRes(groceryId, groceryReq.name(), groceryReq.groceryType(), groceryReq.quantity(), groceryReq.description(), groceryReq.expirationDate(), storageId, grocery.getStorage().getName(), grocery.getGroceryExpirationType().name());
+		GroceryRes groceryRes = new GroceryRes(groceryId, groceryReq.name(), groceryReq.groceryType(), groceryReq.quantity(), groceryReq.description(), groceryReq.expirationDate(), storageId, grocery.getStorage().getName(), grocery.getGroceryExpirationType().name(), createdAt);
 
 		when(groceryService.update(eq(groceryId), any(GroceryReq.class), anyString())).thenReturn(groceryRes);
 
@@ -329,7 +345,8 @@ class GroceryControllerTest {
 			.andExpect(jsonPath("$.expirationDate").value(formatLocalDate(groceryRes.expirationDate())))
 			.andExpect(jsonPath("$.storageId").value(storageId))
 			.andExpect(jsonPath("$.storageName").value(groceryRes.storageName()))
-			.andExpect(jsonPath("$.groceryExpirationType").value(grocery.getGroceryExpirationType().name()))
+			.andExpect(jsonPath("$.groceryExpirationType").value(groceryRes.groceryExpirationType()))
+			.andExpect(jsonPath("$.createdAt").value(formatLocalDateTime(createdAt)))
 			.andDo(print())
 			.andDo(document("grocery/grocery-update",
 				preprocessRequest(prettyPrint()),
@@ -355,7 +372,8 @@ class GroceryControllerTest {
 					fieldWithPath("expirationDate").type(STRING).description("식료품 유통기한"),
 					fieldWithPath("storageId").type(NUMBER).description("냉장고 저장소 ID"),
 					fieldWithPath("storageName").type(STRING).description("냉장고 저장소 이름"),
-					fieldWithPath("groceryExpirationType").type(STRING).description("식료품 유통기한 만료 상태")
+					fieldWithPath("groceryExpirationType").type(STRING).description("식료품 유통기한 만료 상태"),
+					fieldWithPath("createdAt").type(STRING).description("식료품 생성 날짜")
 				)
 			));
 	}
@@ -392,5 +410,10 @@ class GroceryControllerTest {
 	private String formatLocalDate(LocalDate localDate) {
 
 		return DateTimeFormatter.ofPattern("yyyy-MM-dd").format(localDate);
+	}
+
+	private String formatLocalDateTime(LocalDateTime localDateTime) {
+
+		return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").format(localDateTime);
 	}
 }
