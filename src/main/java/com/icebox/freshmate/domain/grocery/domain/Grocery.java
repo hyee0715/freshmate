@@ -3,6 +3,7 @@ package com.icebox.freshmate.domain.grocery.domain;
 import static com.icebox.freshmate.domain.grocery.domain.GroceryExpirationType.checkExpiration;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 import com.icebox.freshmate.domain.storage.domain.Storage;
 import com.icebox.freshmate.global.BaseEntity;
@@ -78,5 +79,9 @@ public class Grocery extends BaseEntity {
 
 	public void updateGroceryExpirationType() {
 		this.groceryExpirationType = checkExpiration(expirationDate, LocalDate.now());
+	}
+
+	public int calculateExpirationDateFromCurrentDate(LocalDate currentDate) {
+		return (int) ChronoUnit.DAYS.between(this.expirationDate, currentDate);
 	}
 }

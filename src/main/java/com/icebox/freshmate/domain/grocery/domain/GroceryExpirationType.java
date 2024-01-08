@@ -16,4 +16,9 @@ public enum GroceryExpirationType {
 
 		return NOT_EXPIRED;
 	}
+
+	public static GroceryExpirationType[] getGroceryExpirationSequence() {
+
+		return new GroceryExpirationType[] {GroceryExpirationType.NOT_EXPIRED, GroceryExpirationType.EXPIRED};
+	}
 }
