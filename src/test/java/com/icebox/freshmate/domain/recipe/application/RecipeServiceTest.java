@@ -25,14 +25,14 @@ import com.icebox.freshmate.domain.grocery.domain.GroceryType;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
 import com.icebox.freshmate.domain.member.domain.Role;
-import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeReq;
+import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeCreateReq;
+import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeUpdateReq;
 import com.icebox.freshmate.domain.recipe.application.dto.response.RecipeRes;
 import com.icebox.freshmate.domain.recipe.application.dto.response.RecipesRes;
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
 import com.icebox.freshmate.domain.recipe.domain.RecipeRepository;
 import com.icebox.freshmate.domain.recipe.domain.RecipeType;
 import com.icebox.freshmate.domain.recipegrocery.application.dto.request.RecipeGroceryReq;
-import com.icebox.freshmate.domain.recipegrocery.application.dto.response.RecipeGroceryRes;
 import com.icebox.freshmate.domain.recipegrocery.domain.RecipeGrocery;
 import com.icebox.freshmate.domain.recipegrocery.domain.RecipeGroceryRepository;
 import com.icebox.freshmate.domain.refrigerator.domain.Refrigerator;
@@ -159,14 +159,14 @@ class RecipeServiceTest {
 		//given
 		RecipeGroceryReq recipeGroceryReq = new RecipeGroceryReq(1L, grocery1.getName());
 		List<RecipeGroceryReq> recipeGroceriesReq = List.of(recipeGroceryReq);
-		RecipeReq recipeReq = new RecipeReq(recipe1.getTitle(), recipeGroceriesReq, recipe1.getContent());
+		RecipeCreateReq recipeCreateReq = new RecipeCreateReq(recipe1.getTitle(), recipeGroceriesReq, recipe1.getContent());
 
 		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member1));
 		when(recipeRepository.save(any(Recipe.class))).thenReturn(recipe1);
 		when(groceryRepository.findByIdAndMemberId(any(), any())).thenReturn(Optional.of(grocery1));
 
 		//when
-		RecipeRes recipeRes = recipeService.create(recipeReq, member1.getUsername());
+		RecipeRes recipeRes = recipeService.create(recipeCreateReq, member1.getUsername());
 
 		//then
 		assertThat(recipeRes.writerNickName()).isEqualTo(recipe1.getWriter().getNickName());
@@ -256,51 +256,49 @@ class RecipeServiceTest {
 		assertThat(recipesRes.recipes().get(0).title()).isEqualTo(recipe1.getTitle());
 		assertThat(recipesRes.recipes().get(0).content()).isEqualTo(recipe1.getContent());
 	}
-//
-//	@DisplayName("사용자가 작성한 레시피 수정 성공 테스트")
-//	@Test
-//	void update() {
-//		//given
-//		Long recipeId = 1L;
-//
-//		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member1));
-//		when(recipeRepository.findByIdAndOwnerId(any(), any())).thenReturn(Optional.of(recipe1));
-//
-//		String updateTitle = "수정된제목";
-//		String updateMaterial = "수정된재료";
-//		String updateContent = "수정된내용";
-//
-//		RecipeReq recipeReq = new RecipeReq(updateTitle, updateMaterial, updateContent);
-//
-//		//when
-//		RecipeRes recipeRes = recipeService.update(recipeId, recipeReq, member1.getUsername());
-//
-//		//then
-//		assertThat(recipeRes.writerNickName()).isEqualTo(recipe1.getWriter().getNickName());
-//		assertThat(recipeRes.ownerNickName()).isEqualTo(recipe1.getOwner().getNickName());
-//		assertThat(recipeRes.recipeType()).isEqualTo(recipe1.getRecipeType().name());
-//		assertThat(recipeRes.title()).isEqualTo(updateTitle);
-//		assertThat(recipeRes.material()).isEqualTo(updateMaterial);
-//		assertThat(recipeRes.content()).isEqualTo(updateContent);
-//	}
-//
-//	@DisplayName("사용자가 작성한 레시피 수정 실패 테스트 - 스크랩한 레시피는 수정 불가")
-//	@Test
-//	void updateFailure() {
-//		//given
-//		Long recipeId = 1L;
-//
-//		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member1));
-//		when(recipeRepository.findByIdAndOwnerId(any(), any())).thenReturn(Optional.of(recipe2));
-//
-//		String updateTitle = "수정된제목";
-//		String updateMaterial = "수정된재료";
-//		String updateContent = "수정된내용";
-//
-//		RecipeReq recipeReq = new RecipeReq(updateTitle, updateMaterial, updateContent);
-//
-//		//when
-//		//then
-//		assertThrows(BusinessException.class, () -> recipeService.update(recipeId, recipeReq, member1.getUsername()));
-//	}
+
+	@DisplayName("사용자가 작성한 레시피 수정 성공 테스트")
+	@Test
+	void update() {
+		//given
+		Long recipeId = 1L;
+
+		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member1));
+		when(recipeRepository.findByIdAndOwnerId(any(), any())).thenReturn(Optional.of(recipe1));
+		when(recipeGroceryRepository.findAllByRecipeId(any())).thenReturn(List.of(recipeGrocery1));
+
+		String updateTitle = "수정된제목";
+		String updateContent = "수정된내용";
+
+		RecipeUpdateReq recipeUpdateReq = new RecipeUpdateReq(updateTitle, updateContent);
+
+		//when
+		RecipeRes recipeRes = recipeService.update(recipeId, recipeUpdateReq, member1.getUsername());
+
+		//then
+		assertThat(recipeRes.writerNickName()).isEqualTo(recipe1.getWriter().getNickName());
+		assertThat(recipeRes.ownerNickName()).isEqualTo(recipe1.getOwner().getNickName());
+		assertThat(recipeRes.recipeType()).isEqualTo(recipe1.getRecipeType().name());
+		assertThat(recipeRes.title()).isEqualTo(updateTitle);
+		assertThat(recipeRes.content()).isEqualTo(updateContent);
+	}
+
+	@DisplayName("사용자가 작성한 레시피 수정 실패 테스트 - 스크랩한 레시피는 수정 불가")
+	@Test
+	void updateFailure() {
+		//given
+		Long recipeId = 1L;
+
+		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member1));
+		when(recipeRepository.findByIdAndOwnerId(any(), any())).thenReturn(Optional.of(recipe2));
+
+		String updateTitle = "수정된제목";
+		String updateContent = "수정된내용";
+
+		RecipeUpdateReq recipeUpdateReq = new RecipeUpdateReq(updateTitle, updateContent);
+
+		//when
+		//then
+		assertThrows(BusinessException.class, () -> recipeService.update(recipeId, recipeUpdateReq, member1.getUsername()));
+	}
 }
