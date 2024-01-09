@@ -158,6 +158,22 @@ public class RecipeService {
 		recipeRepository.delete(recipe);
 	}
 
+	public RecipeRes removeRecipeGrocery(Long recipeGroceryId, String username) {
+		Member member = getMemberByUsername(username);
+		RecipeGrocery recipeGrocery = getRecipeGroceryById(recipeGroceryId);
+
+		Recipe recipe = getRecipeByIdAndOwnerId(recipeGrocery.getRecipe().getId(), member.getId());
+		validateScrapedRecipe(recipe);
+
+		recipeGrocery.getRecipe().removeRecipeGrocery(recipeGrocery);
+		recipeGroceryRepository.delete(recipeGrocery);
+
+		List<RecipeGrocery> recipeGroceries = recipe.getRecipeGroceries();
+		List<RecipeGroceryRes> recipeGroceriesRes = RecipeGroceryRes.from(recipeGroceries);
+
+		return RecipeRes.of(recipe, recipeGroceriesRes);
+	}
+
 	private Recipe getRecipeByIdAndOwnerId(Long recipeId, Long ownerId) {
 		return recipeRepository.findByIdAndOwnerId(recipeId, ownerId)
 			.orElseThrow(() -> {

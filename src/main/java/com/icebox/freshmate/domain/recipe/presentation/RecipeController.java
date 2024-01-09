@@ -89,17 +89,24 @@ public class RecipeController {
 	}
 
 	@PatchMapping("/recipe-groceries/{recipeId}")
-	public ResponseEntity<RecipeRes> addRecipeGroceries(@PathVariable Long recipeId, @Validated @RequestBody RecipeGroceryReq recipeGroceryReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+	public ResponseEntity<RecipeRes> addRecipeGrocery(@PathVariable Long recipeId, @Validated @RequestBody RecipeGroceryReq recipeGroceryReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		RecipeRes recipeRes = recipeService.addRecipeGrocery(recipeId, recipeGroceryReq, principalDetails.getUsername());
 
 		return ResponseEntity.ok(recipeRes);
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<RecipeRes> delete(@PathVariable Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+	public ResponseEntity<Void> delete(@PathVariable Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		recipeService.delete(id, principalDetails.getUsername());
 
 		return ResponseEntity.noContent()
 			.build();
+	}
+
+	@DeleteMapping
+	public ResponseEntity<RecipeRes> removeRecipeGrocery(@RequestParam("recipe-groceries-id") Long recipeGroceryId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		RecipeRes recipeRes = recipeService.removeRecipeGrocery(recipeGroceryId, principalDetails.getUsername());
+
+		return ResponseEntity.ok(recipeRes);
 	}
 }
