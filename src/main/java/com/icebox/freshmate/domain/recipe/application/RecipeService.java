@@ -109,6 +109,20 @@ public class RecipeService {
 		return RecipesRes.from(recipes);
 	}
 
+	@Transactional(readOnly = true)
+	public RecipesRes findAllByGroceryId(Long groceryId) {
+		Grocery grocery = getGroceryById(groceryId);
+
+		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByGroceryId(grocery.getId());
+
+		List<Recipe> recipes = recipeGroceries.stream()
+			.map(x -> x.getRecipe().getId())
+			.map(this::getRecipeById)
+			.toList();
+
+		return RecipesRes.from(recipes);
+	}
+
 	public RecipeRes update(Long id, RecipeUpdateReq recipeUpdateReq, String username) {
 		Member owner = getMemberByUsername(username);
 		Recipe recipe = getRecipeByIdAndOwnerId(id, owner.getId());
@@ -216,6 +230,14 @@ public class RecipeService {
 		return groceryRepository.findByIdAndMemberId(groceryId, memberId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_STORAGE_BY_ID_AND_MEMBER_ID : groceryId = {}, memberId = {}", groceryId, memberId);
+				return new EntityNotFoundException(NOT_FOUND_GROCERY);
+			});
+	}
+
+	private Grocery getGroceryById(Long groceryId) {
+		return groceryRepository.findById(groceryId)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_STORAGE_BY_ID : groceryId = {}", groceryId);
 				return new EntityNotFoundException(NOT_FOUND_GROCERY);
 			});
 	}

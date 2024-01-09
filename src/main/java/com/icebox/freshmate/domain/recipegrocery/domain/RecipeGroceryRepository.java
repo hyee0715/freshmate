@@ -9,4 +9,6 @@ public interface RecipeGroceryRepository extends JpaRepository<RecipeGrocery, Lo
 	boolean existsByRecipeIdAndGroceryId(Long recipeId, Long groceryId);
 
 	List<RecipeGrocery> findAllByRecipeId(Long recipeId);
+
+	List<RecipeGrocery> findAllByGroceryId(Long groceryId);
 }

@@ -73,6 +73,13 @@ public class RecipeController {
 		return ResponseEntity.ok(recipesRes);
 	}
 
+	@GetMapping
+	public ResponseEntity<RecipesRes> findAllByGroceryId(@RequestParam("grocery-id") Long groceryId) {
+		RecipesRes recipesRes = recipeService.findAllByGroceryId(groceryId);
+
+		return ResponseEntity.ok(recipesRes);
+	}
+
 	@PatchMapping("/{id}")
 	public ResponseEntity<RecipeRes> update(@PathVariable Long id, @Validated @RequestBody RecipeUpdateReq recipeUpdateReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		RecipeRes recipeRes = recipeService.update(id, recipeUpdateReq, principalDetails.getUsername());
