@@ -86,11 +86,11 @@ public class GrocerySchedulingService {
 			Grocery grocery = groceries.get(0);
 			int expirationDate = grocery.calculateExpirationDateFromCurrentDate(currentDate);
 
-			notifyExpirationDate(expirationDate);
+			notifyExpirationInformation(expirationDate);
 		}
 	}
 
-	private void notifyExpirationDate(int expirationDate) {
+	private void notifyExpirationInformation(int expirationDate) {
 
 		expirationNotificationStrategies.entrySet().stream()
 			.filter(entry -> entry.getKey().test(expirationDate))
