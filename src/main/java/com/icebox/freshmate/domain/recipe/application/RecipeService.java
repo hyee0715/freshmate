@@ -196,6 +196,7 @@ public class RecipeService {
 			.map(groceryId -> {
 				Grocery foundGrocery = getGroceryByIdAndMemberId(groceryId, memberId);
 				validateRecipeGroceryName(foundGrocery, recipeGroceryReq.groceryName());
+				validateDuplicatedRecipeGrocery(recipe.getId(), groceryId);
 
 				return foundGrocery;
 			})
@@ -216,6 +217,13 @@ public class RecipeService {
 		if (!grocery.getName().equals(requestedGroceryName)) {
 			log.warn("INVALID_RECIPE_GROCERY_NAME : groceryId = {}, groceryName = {}, requestGroceryName = {}", grocery.getId(), grocery.getName(), requestedGroceryName);
 			throw new BusinessException(ErrorCode.INVALID_RECIPE_GROCERY_NAME);
+		}
+	}
+
+	private void validateDuplicatedRecipeGrocery(Long recipeId, Long groceryId) {
+		if(recipeGroceryRepository.existsByRecipeIdAndGroceryId(recipeId, groceryId)) {
+			log.warn("DUPLICATED_RECIPE_GROCERY : recipeId = {}, groceryId = {}", recipeId, groceryId);
+			throw new BusinessException(ErrorCode.DUPLICATED_RECIPE_GROCERY);
 		}
 	}
 

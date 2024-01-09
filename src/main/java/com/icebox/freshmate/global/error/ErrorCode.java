@@ -46,6 +46,7 @@ public enum ErrorCode {
 
 	//레시피의 식재료
 	INVALID_RECIPE_GROCERY_NAME("RG001", "레시피에 추가하려는 식재료 ID와 이름의 정보가 일치하지 않습니다."),
+	DUPLICATED_RECIPE_GROCERY("RG002", "해당 레시피에 이미 같은 식재료가 등록되어 있습니다."),
 
 	//게시글
 	NOT_FOUND_POST("P001", "게시글이 존재하지 않습니다."),
