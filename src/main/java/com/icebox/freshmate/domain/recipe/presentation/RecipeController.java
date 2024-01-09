@@ -37,19 +37,19 @@ public class RecipeController {
 			.body(recipeRes);
 	}
 
-	@PostMapping("/scrap")
-	public ResponseEntity<RecipeRes> scrap(@RequestParam("recipe-id") Long recipeId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		RecipeRes recipeRes = recipeService.scrap(recipeId, principalDetails.getUsername());
-
-		return ResponseEntity.ok(recipeRes);
-	}
-
-	@GetMapping("/{id}")
-	public ResponseEntity<RecipeRes> findById(@PathVariable Long id) {
-		RecipeRes recipeRes = recipeService.findById(id);
-
-		return ResponseEntity.ok(recipeRes);
-	}
+//	@PostMapping("/scrap")
+//	public ResponseEntity<RecipeRes> scrap(@RequestParam("recipe-id") Long recipeId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+//		RecipeRes recipeRes = recipeService.scrap(recipeId, principalDetails.getUsername());
+//
+//		return ResponseEntity.ok(recipeRes);
+//	}
+//
+//	@GetMapping("/{id}")
+//	public ResponseEntity<RecipeRes> findById(@PathVariable Long id) {
+//		RecipeRes recipeRes = recipeService.findById(id);
+//
+//		return ResponseEntity.ok(recipeRes);
+//	}
 
 	@GetMapping("/writers")
 	public ResponseEntity<RecipesRes> findAllByWriterId(@AuthenticationPrincipal PrincipalDetails principalDetails) {
@@ -72,12 +72,12 @@ public class RecipeController {
 		return ResponseEntity.ok(recipesRes);
 	}
 
-	@PatchMapping("/{id}")
-	public ResponseEntity<RecipeRes> update(@PathVariable Long id, @Validated @RequestBody RecipeReq recipeReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		RecipeRes recipeRes = recipeService.update(id, recipeReq, principalDetails.getUsername());
-
-		return ResponseEntity.ok(recipeRes);
-	}
+//	@PatchMapping("/{id}")
+//	public ResponseEntity<RecipeRes> update(@PathVariable Long id, @Validated @RequestBody RecipeReq recipeReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+//		RecipeRes recipeRes = recipeService.update(id, recipeReq, principalDetails.getUsername());
+//
+//		return ResponseEntity.ok(recipeRes);
+//	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<RecipeRes> delete(@PathVariable Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {

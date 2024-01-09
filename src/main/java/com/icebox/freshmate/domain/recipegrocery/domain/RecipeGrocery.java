@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Entity
-@Table(name = "recipe_grocery")
+@Table(name = "recipe_groceries")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
 public class RecipeGrocery {
@@ -35,9 +35,20 @@ public class RecipeGrocery {
 	@JoinColumn(name = "grocery_id")
 	private Grocery grocery;
 
+	private String groceryName;
+
 	@Builder
-	public RecipeGrocery(Recipe recipe, Grocery grocery) {
+	public RecipeGrocery(Recipe recipe, Grocery grocery, String groceryName) {
 		this.recipe = recipe;
+		this.grocery = grocery;
+		this.groceryName = groceryName;
+	}
+
+	public void addRecipe(Recipe recipe) {
+		this.recipe = recipe;
+	}
+
+	public void addGrocery(Grocery grocery) {
 		this.grocery = grocery;
 	}
 }
