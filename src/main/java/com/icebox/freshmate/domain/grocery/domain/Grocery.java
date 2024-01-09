@@ -4,10 +4,14 @@ import static com.icebox.freshmate.domain.grocery.domain.GroceryExpirationType.c
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.icebox.freshmate.domain.recipegrocery.domain.RecipeGrocery;
 import com.icebox.freshmate.domain.storage.domain.Storage;
 import com.icebox.freshmate.global.BaseEntity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,6 +22,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -39,6 +44,9 @@ public class Grocery extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "storage_id")
 	private Storage storage;
+
+	@OneToMany(mappedBy = "grocery", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<RecipeGrocery> recipeGroceries = new ArrayList<>();
 
 	@Column(length = 50)
 	private String name;
@@ -83,5 +91,14 @@ public class Grocery extends BaseEntity {
 
 	public int calculateExpirationDateFromCurrentDate(LocalDate currentDate) {
 		return (int) ChronoUnit.DAYS.between(this.expirationDate, currentDate);
+	}
+
+	public void addRecipeGrocery(RecipeGrocery recipeGrocery) {
+		recipeGrocery.addGrocery(this);
+		this.getRecipeGroceries().add(recipeGrocery);
+	}
+
+	public void removeRecipeGrocery(RecipeGrocery recipeGrocery) {
+		this.getRecipeGroceries().remove(recipeGrocery);
 	}
 }

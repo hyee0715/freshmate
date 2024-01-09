@@ -1,7 +1,12 @@
 package com.icebox.freshmate.domain.recipe.domain;
 
-import com.icebox.freshmate.domain.member.domain.Member;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.icebox.freshmate.domain.member.domain.Member;
+import com.icebox.freshmate.domain.recipegrocery.domain.RecipeGrocery;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,6 +17,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -38,6 +44,9 @@ public class Recipe {
 	@JoinColumn(name = "owner_id")
 	private Member owner;
 
+	@OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<RecipeGrocery> recipeGroceries = new ArrayList<>();
+
 	@Enumerated(EnumType.STRING)
 	private RecipeType recipeType;
 
@@ -46,29 +55,33 @@ public class Recipe {
 	@Column(length = 200)
 	private String title;
 
-	@Column(length = 1000)
-	private String material;
-
 	@Column(columnDefinition = "TEXT")
 	private String content;
 
 	@Builder
-	public Recipe(Member writer, Member owner, RecipeType recipeType, Long originalRecipeId, String title, String material, String content) {
+	public Recipe(Member writer, Member owner, RecipeType recipeType, String title, String content) {
 		this.writer = writer;
 		this.owner = owner;
 		this.recipeType = recipeType;
 		this.title = title;
-		this.material = material;
 		this.content = content;
 	}
 
 	public void update(Recipe recipe) {
 		this.title = recipe.title;
-		this.material = recipe.material;
 		this.content = recipe.content;
 	}
 
 	public void updateOriginalRecipeId(Long originalRecipeId) {
 		this.originalRecipeId = originalRecipeId;
+	}
+
+	public void addRecipeGrocery(RecipeGrocery recipeGrocery) {
+		recipeGrocery.addRecipe(this);
+		this.getRecipeGroceries().add(recipeGrocery);
+	}
+
+	public void removeRecipeGrocery(RecipeGrocery recipeGrocery) {
+		this.getRecipeGroceries().remove(recipeGrocery);
 	}
 }
