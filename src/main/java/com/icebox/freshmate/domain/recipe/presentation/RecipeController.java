@@ -20,6 +20,7 @@ import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeCreateRe
 import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeUpdateReq;
 import com.icebox.freshmate.domain.recipe.application.dto.response.RecipeRes;
 import com.icebox.freshmate.domain.recipe.application.dto.response.RecipesRes;
+import com.icebox.freshmate.domain.recipegrocery.application.dto.request.RecipeGroceryReq;
 
 import lombok.RequiredArgsConstructor;
 
@@ -83,6 +84,13 @@ public class RecipeController {
 	@PatchMapping("/{id}")
 	public ResponseEntity<RecipeRes> update(@PathVariable Long id, @Validated @RequestBody RecipeUpdateReq recipeUpdateReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		RecipeRes recipeRes = recipeService.update(id, recipeUpdateReq, principalDetails.getUsername());
+
+		return ResponseEntity.ok(recipeRes);
+	}
+
+	@PatchMapping("/recipe-groceries/{recipeId}")
+	public ResponseEntity<RecipeRes> addRecipeGroceries(@PathVariable Long recipeId, @Validated @RequestBody RecipeGroceryReq recipeGroceryReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		RecipeRes recipeRes = recipeService.addRecipeGrocery(recipeId, recipeGroceryReq, principalDetails.getUsername());
 
 		return ResponseEntity.ok(recipeRes);
 	}

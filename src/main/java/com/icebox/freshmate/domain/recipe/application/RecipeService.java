@@ -137,6 +137,20 @@ public class RecipeService {
 		return RecipeRes.of(recipe, recipeGroceriesRes);
 	}
 
+	public RecipeRes addRecipeGrocery(Long recipeId, RecipeGroceryReq recipeGroceryReq, String username) {
+		Member member = getMemberByUsername(username);
+
+		Recipe recipe = getRecipeByIdAndOwnerId(recipeId, member.getId());
+		validateScrapedRecipe(recipe);
+
+		saveMaterials(List.of(recipeGroceryReq), recipe, member.getId());
+		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByRecipeId(recipe.getId());
+
+		List<RecipeGroceryRes> recipeGroceriesRes = RecipeGroceryRes.from(recipeGroceries);
+
+		return RecipeRes.of(recipe, recipeGroceriesRes);
+	}
+
 	public void delete(Long id, String username) {
 		Member writer = getMemberByUsername(username);
 		Recipe recipe = getRecipeByIdAndOwnerId(id, writer.getId());
@@ -263,5 +277,14 @@ public class RecipeService {
 			.grocery(grocery)
 			.groceryName(groceryName)
 			.build();
+	}
+
+	private RecipeGrocery getRecipeGroceryById(Long recipeGroceryId) {
+
+		return recipeGroceryRepository.findById(recipeGroceryId)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_RECIPE_GROCERY_BY_ID : recipeGroceryId = {}", recipeGroceryId);
+				return new EntityNotFoundException(NOT_FOUND_RECIPE_GROCERY);
+			});
 	}
 }
