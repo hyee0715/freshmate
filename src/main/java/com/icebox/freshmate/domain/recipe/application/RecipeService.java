@@ -70,12 +70,15 @@ public class RecipeService {
 //		return RecipeRes.from(savedRecipe);
 //	}
 //
-//	@Transactional(readOnly = true)
-//	public RecipeRes findById(Long id) {
-//		Recipe recipe = getRecipeById(id);
-//
-//		return RecipeRes.from(recipe);
-//	}
+	@Transactional(readOnly = true)
+	public RecipeRes findById(Long id) {
+		Recipe recipe = getRecipeById(id);
+
+		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByRecipeId(recipe.getId());
+		List<RecipeGroceryRes> recipeGroceriesRes = RecipeGroceryRes.from(recipeGroceries);
+
+		return RecipeRes.of(recipe, recipeGroceriesRes);
+	}
 
 	@Transactional(readOnly = true)
 	public RecipesRes findAllByWriterId(String username) {
@@ -131,13 +134,13 @@ public class RecipeService {
 			});
 	}
 
-//	private Recipe getRecipeById(Long recipeId) {
-//		return recipeRepository.findById(recipeId)
-//			.orElseThrow(() -> {
-//				log.warn("GET:READ:NOT_FOUND_RECIPE_BY_ID : {}", recipeId);
-//				return new EntityNotFoundException(NOT_FOUND_RECIPE);
-//			});
-//	}
+	private Recipe getRecipeById(Long recipeId) {
+		return recipeRepository.findById(recipeId)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_RECIPE_BY_ID : {}", recipeId);
+				return new EntityNotFoundException(NOT_FOUND_RECIPE);
+			});
+	}
 
 	private Member getMemberByUsername(String username) {
 		return memberRepository.findByUsername(username)

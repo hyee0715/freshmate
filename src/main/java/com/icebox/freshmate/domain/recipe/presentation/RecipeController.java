@@ -44,12 +44,12 @@ public class RecipeController {
 //		return ResponseEntity.ok(recipeRes);
 //	}
 //
-//	@GetMapping("/{id}")
-//	public ResponseEntity<RecipeRes> findById(@PathVariable Long id) {
-//		RecipeRes recipeRes = recipeService.findById(id);
-//
-//		return ResponseEntity.ok(recipeRes);
-//	}
+	@GetMapping("/{id}")
+	public ResponseEntity<RecipeRes> findById(@PathVariable Long id) {
+		RecipeRes recipeRes = recipeService.findById(id);
+
+		return ResponseEntity.ok(recipeRes);
+	}
 
 	@GetMapping("/writers")
 	public ResponseEntity<RecipesRes> findAllByWriterId(@AuthenticationPrincipal PrincipalDetails principalDetails) {

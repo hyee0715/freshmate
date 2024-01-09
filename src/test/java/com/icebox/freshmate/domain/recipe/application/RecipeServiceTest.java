@@ -32,6 +32,8 @@ import com.icebox.freshmate.domain.recipe.domain.Recipe;
 import com.icebox.freshmate.domain.recipe.domain.RecipeRepository;
 import com.icebox.freshmate.domain.recipe.domain.RecipeType;
 import com.icebox.freshmate.domain.recipegrocery.application.dto.request.RecipeGroceryReq;
+import com.icebox.freshmate.domain.recipegrocery.application.dto.response.RecipeGroceryRes;
+import com.icebox.freshmate.domain.recipegrocery.domain.RecipeGrocery;
 import com.icebox.freshmate.domain.recipegrocery.domain.RecipeGroceryRepository;
 import com.icebox.freshmate.domain.refrigerator.domain.Refrigerator;
 import com.icebox.freshmate.domain.storage.domain.Storage;
@@ -64,6 +66,8 @@ class RecipeServiceTest {
 	private Storage storage;
 	private Grocery grocery1;
 	private Grocery grocery2;
+	private RecipeGrocery recipeGrocery1;
+	private RecipeGrocery recipeGrocery2;
 
 	@BeforeEach
 	void setUp() {
@@ -135,6 +139,18 @@ class RecipeServiceTest {
 			.description("필수 식재료")
 			.expirationDate(LocalDate.now().plusDays(7))
 			.build();
+
+		recipeGrocery1 = RecipeGrocery.builder()
+			.recipe(recipe1)
+			.grocery(grocery1)
+			.groceryName(grocery1.getName())
+			.build();
+
+		recipeGrocery2 = RecipeGrocery.builder()
+			.recipe(recipe1)
+			.grocery(grocery2)
+			.groceryName(grocery2.getName())
+			.build();
 	}
 
 	@DisplayName("레시피 생성 테스트")
@@ -162,25 +178,27 @@ class RecipeServiceTest {
 		assertThat(recipeRes.materials().get(0).groceryName()).isEqualTo(grocery1.getName());
 	}
 
-//	@DisplayName("레시피 단건 조회 테스트")
-//	@Test
-//	void findById() {
-//		//given
-//		Long recipeId = 1L;
-//
-//		when(recipeRepository.findById(anyLong())).thenReturn(Optional.of(recipe1));
-//
-//		//when
-//		RecipeRes recipeRes = recipeService.findById(recipeId);
-//
-//		//then
-//		assertThat(recipeRes.writerNickName()).isEqualTo(recipe1.getWriter().getNickName());
-//		assertThat(recipeRes.ownerNickName()).isEqualTo(recipe1.getOwner().getNickName());
-//		assertThat(recipeRes.recipeType()).isEqualTo(recipe1.getRecipeType().name());
-//		assertThat(recipeRes.title()).isEqualTo(recipe1.getTitle());
-//		assertThat(recipeRes.material()).isEqualTo(recipe1.getMaterial());
-//		assertThat(recipeRes.content()).isEqualTo(recipe1.getContent());
-//	}
+	@DisplayName("레시피 단건 조회 테스트")
+	@Test
+	void findById() {
+		//given
+		Long recipeId = 1L;
+
+		when(recipeRepository.findById(anyLong())).thenReturn(Optional.of(recipe1));
+		when(recipeGroceryRepository.findAllByRecipeId(any())).thenReturn(List.of(recipeGrocery1));
+
+		//when
+		RecipeRes recipeRes = recipeService.findById(recipeId);
+
+		//then
+		assertThat(recipeRes.writerNickName()).isEqualTo(recipe1.getWriter().getNickName());
+		assertThat(recipeRes.ownerNickName()).isEqualTo(recipe1.getOwner().getNickName());
+		assertThat(recipeRes.recipeType()).isEqualTo(recipe1.getRecipeType().name());
+		assertThat(recipeRes.title()).isEqualTo(recipe1.getTitle());
+		assertThat(recipeRes.content()).isEqualTo(recipe1.getContent());
+		assertThat(recipeRes.materials().get(0).recipeTitle()).isEqualTo(recipeGrocery1.getRecipe().getTitle());
+		assertThat(recipeRes.materials().get(0).groceryName()).isEqualTo(recipeGrocery1.getGroceryName());
+	}
 
 	@DisplayName("사용자가 작성한 모든 레시피 조회 테스트")
 	@Test
