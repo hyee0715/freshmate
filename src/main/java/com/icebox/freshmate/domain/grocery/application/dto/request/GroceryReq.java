@@ -1,6 +1,6 @@
 package com.icebox.freshmate.domain.grocery.application.dto.request;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import org.hibernate.validator.constraints.Length;
 
 import com.icebox.freshmate.domain.grocery.domain.Grocery;
@@ -23,7 +23,7 @@ public record GroceryReq(
 	@Length(min = 1, max = 400, message = "식료품 설명은 1자 이상 400자 이하로 등록 가능합니다.")
 	String description,
 
-	LocalDateTime expirationDateTime,
+	LocalDate expirationDate,
 	Long storageId
 ) {
 
@@ -36,7 +36,7 @@ public record GroceryReq(
 			.groceryType(foundGroceryType)
 			.quantity(groceryReq.quantity())
 			.description(groceryReq.description())
-			.expirationDateTime(groceryReq.expirationDateTime())
+			.expirationDate(groceryReq.expirationDate())
 			.build();
 	}
 }

@@ -5,7 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,7 +78,7 @@ class GroceryServiceTest {
 			.groceryType(GroceryType.VEGETABLES)
 			.quantity(1)
 			.description("필수 식재료")
-			.expirationDateTime(LocalDateTime.now().plusDays(7))
+			.expirationDate(LocalDate.now().plusDays(7))
 			.build();
 	}
 
@@ -86,7 +86,7 @@ class GroceryServiceTest {
 	@Test
 	void create() {
 		//given
-		GroceryReq groceryReq = new GroceryReq(grocery.getName(), grocery.getGroceryType().name(), grocery.getQuantity(), grocery.getDescription(), grocery.getExpirationDateTime(), grocery.getStorage().getId());
+		GroceryReq groceryReq = new GroceryReq(grocery.getName(), grocery.getGroceryType().name(), grocery.getQuantity(), grocery.getDescription(), grocery.getExpirationDate(), grocery.getStorage().getId());
 
 		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member));
 		when(storageRepository.findByIdAndMemberId(any(), any())).thenReturn(Optional.of(storage));
@@ -100,7 +100,7 @@ class GroceryServiceTest {
 		assertThat(groceryRes.groceryType()).isEqualTo(grocery.getGroceryType().name());
 		assertThat(groceryRes.quantity()).isEqualTo(grocery.getQuantity());
 		assertThat(groceryRes.description()).isEqualTo(grocery.getDescription());
-		assertThat(groceryRes.expirationDateTime()).isEqualTo(grocery.getExpirationDateTime());
+		assertThat(groceryRes.expirationDate()).isEqualTo(grocery.getExpirationDate());
 		assertThat(groceryRes.storageName()).isEqualTo(grocery.getStorage().getName());
 	}
 
@@ -120,7 +120,7 @@ class GroceryServiceTest {
 		assertThat(groceryRes.groceryType()).isEqualTo(grocery.getGroceryType().name());
 		assertThat(groceryRes.quantity()).isEqualTo(grocery.getQuantity());
 		assertThat(groceryRes.description()).isEqualTo(grocery.getDescription());
-		assertThat(groceryRes.expirationDateTime()).isEqualTo(grocery.getExpirationDateTime());
+		assertThat(groceryRes.expirationDate()).isEqualTo(grocery.getExpirationDate());
 		assertThat(groceryRes.storageName()).isEqualTo(grocery.getStorage().getName());
 	}
 
@@ -136,7 +136,7 @@ class GroceryServiceTest {
 			.groceryType(GroceryType.MEAT)
 			.quantity(3)
 			.description("김밥 재료")
-			.expirationDateTime(LocalDateTime.now().plusDays(14))
+			.expirationDate(LocalDate.now().plusDays(14))
 			.build();
 
 		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member));
@@ -151,7 +151,7 @@ class GroceryServiceTest {
 		assertThat(groceriesRes.groceries().get(0).groceryType()).isEqualTo(grocery.getGroceryType().name());
 		assertThat(groceriesRes.groceries().get(0).quantity()).isEqualTo(grocery.getQuantity());
 		assertThat(groceriesRes.groceries().get(0).description()).isEqualTo(grocery.getDescription());
-		assertThat(groceriesRes.groceries().get(0).expirationDateTime()).isEqualTo(grocery.getExpirationDateTime());
+		assertThat(groceriesRes.groceries().get(0).expirationDate()).isEqualTo(grocery.getExpirationDate());
 		assertThat(groceriesRes.groceries().get(0).storageName()).isEqualTo(grocery.getStorage().getName());
 	}
 
@@ -166,7 +166,7 @@ class GroceryServiceTest {
 		when(storageRepository.findByIdAndMemberId(any(), any())).thenReturn(Optional.of(storage));
 		when(groceryRepository.findByIdAndMemberId(any(), any())).thenReturn(Optional.of(grocery));
 
-		GroceryReq groceryReq = new GroceryReq("식료품 수정", GroceryType.SNACKS.name(), 2, "수정", LocalDateTime.now().plusDays(2), storageId);
+		GroceryReq groceryReq = new GroceryReq("식료품 수정", GroceryType.SNACKS.name(), 2, "수정", LocalDate.now().plusDays(2), storageId);
 
 		//when
 		GroceryRes groceryRes = groceryService.update(groceryId, groceryReq, member.getUsername());
@@ -176,7 +176,7 @@ class GroceryServiceTest {
 		assertThat(groceryRes.groceryType()).isEqualTo(grocery.getGroceryType().name());
 		assertThat(groceryRes.quantity()).isEqualTo(grocery.getQuantity());
 		assertThat(groceryRes.description()).isEqualTo(grocery.getDescription());
-		assertThat(groceryRes.expirationDateTime()).isEqualTo(grocery.getExpirationDateTime());
+		assertThat(groceryRes.expirationDate()).isEqualTo(grocery.getExpirationDate());
 		assertThat(groceryRes.storageName()).isEqualTo(grocery.getStorage().getName());
 	}
 }
