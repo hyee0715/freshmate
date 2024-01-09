@@ -3,6 +3,7 @@ package com.icebox.freshmate.domain.recipe.presentation;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -768,32 +769,32 @@ class RecipeControllerTest {
 			));
 	}
 
-//	@DisplayName("레시피 삭제 테스트")
-//	@Test
-//	void delete() throws Exception {
-//		//given
-//		Long recipe1Id = 1L;
-//
-//		doNothing().when(recipeService).delete(anyLong(), any(String.class));
-//
-//		//when
-//		//then
-//		mockMvc.perform(RestDocumentationRequestBuilders.delete("/api/recipes/{id}", recipe1Id)
-//				.contentType(MediaType.APPLICATION_JSON)
-//				.header("Authorization", "Bearer {ACCESS_TOKEN}")
-//				.with(user(principalDetails))
-//				.with(csrf().asHeader()))
-//			.andExpect(status().isNoContent())
-//			.andDo(print())
-//			.andDo(document("recipe/recipe-delete",
-//				preprocessRequest(prettyPrint()),
-//				preprocessResponse(prettyPrint()),
-//				requestHeaders(
-//					headerWithName("Authorization").description("Access Token")
-//				),
-//				pathParameters(
-//					parameterWithName("id").description("레시피 ID")
-//				)
-//			));
-//	}
+	@DisplayName("레시피 삭제 테스트")
+	@Test
+	void delete() throws Exception {
+		//given
+		Long recipe1Id = 1L;
+
+		doNothing().when(recipeService).delete(anyLong(), any(String.class));
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.delete("/api/recipes/{id}", recipe1Id)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isNoContent())
+			.andDo(print())
+			.andDo(document("recipe/recipe-delete",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				pathParameters(
+					parameterWithName("id").description("레시피 ID")
+				)
+			));
+	}
 }
