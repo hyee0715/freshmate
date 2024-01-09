@@ -4,10 +4,8 @@ import static com.icebox.freshmate.global.error.ErrorCode.*;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_RECIPE;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,11 +14,13 @@ import com.icebox.freshmate.domain.grocery.domain.Grocery;
 import com.icebox.freshmate.domain.grocery.domain.GroceryRepository;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
-import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeReq;
+import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeCreateReq;
+import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeUpdateReq;
 import com.icebox.freshmate.domain.recipe.application.dto.response.RecipeRes;
 import com.icebox.freshmate.domain.recipe.application.dto.response.RecipesRes;
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
 import com.icebox.freshmate.domain.recipe.domain.RecipeRepository;
+import com.icebox.freshmate.domain.recipe.domain.RecipeType;
 import com.icebox.freshmate.domain.recipegrocery.application.dto.request.RecipeGroceryReq;
 import com.icebox.freshmate.domain.recipegrocery.application.dto.response.RecipeGroceryRes;
 import com.icebox.freshmate.domain.recipegrocery.domain.RecipeGrocery;
@@ -43,14 +43,14 @@ public class RecipeService {
 	private final RecipeGroceryRepository recipeGroceryRepository;
 	private final GroceryRepository groceryRepository;
 
-	public RecipeRes create(RecipeReq recipeReq, String username) {
+	public RecipeRes create(RecipeCreateReq recipeCreateReq, String username) {
 		Member member = getMemberByUsername(username);
 
-		Recipe recipe = RecipeReq.toRecipe(recipeReq, member);
+		Recipe recipe = RecipeCreateReq.toRecipe(recipeCreateReq, member);
 		Recipe savedRecipe = recipeRepository.save(recipe);
 		savedRecipe.updateOriginalRecipeId(savedRecipe.getId());
 
-		List<RecipeGroceryRes> recipeGroceriesRes = saveMaterials(recipeReq.materials(), savedRecipe, member.getId());
+		List<RecipeGroceryRes> recipeGroceriesRes = saveMaterials(recipeCreateReq.materials(), savedRecipe, member.getId());
 
 		return RecipeRes.of(savedRecipe, recipeGroceriesRes);
 	}
@@ -107,17 +107,19 @@ public class RecipeService {
 		return RecipesRes.from(recipes);
 	}
 
-//	public RecipeRes update(Long id, RecipeReq recipeReq, String username) {
-//		Member owner = getMemberByUsername(username);
-//		Recipe recipe = getRecipeByIdAndOwnerId(id, owner.getId());
-//
-//		validateScrapedRecipe(recipe);
-//
-//		Recipe updateRecipe = RecipeReq.toRecipe(recipeReq, owner);
-//		recipe.update(updateRecipe);
-//
-//		return RecipeRes.from(recipe);
-//	}
+	public RecipeRes update(Long id, RecipeUpdateReq recipeUpdateReq, String username) {
+		Member owner = getMemberByUsername(username);
+		Recipe recipe = getRecipeByIdAndOwnerId(id, owner.getId());
+		validateScrapedRecipe(recipe);
+
+		Recipe updateRecipe = RecipeUpdateReq.toRecipe(recipeUpdateReq, owner);
+		recipe.update(updateRecipe);
+
+		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByRecipeId(recipe.getId());
+		List<RecipeGroceryRes> recipeGroceriesRes = RecipeGroceryRes.from(recipeGroceries);
+
+		return RecipeRes.of(recipe, recipeGroceriesRes);
+	}
 
 	public void delete(Long id, String username) {
 		Member writer = getMemberByUsername(username);
@@ -157,13 +159,13 @@ public class RecipeService {
 //		}
 //	}
 //
-//	private void validateScrapedRecipe(Recipe recipe) {
-//		if (recipe.getRecipeType().equals(RecipeType.SCRAPED)) {
-//			log.warn("PATCH:WRITE:INVALID_UPDATE_ATTEMPT_TO_SCRAPED_RECIPE : recipeId = {}", recipe.getId());
-//			throw new BusinessException(INVALID_UPDATE_ATTEMPT_TO_SCRAPED_RECIPE);
-//
-//		}
-//	}
+	private void validateScrapedRecipe(Recipe recipe) {
+		if (recipe.getRecipeType().equals(RecipeType.SCRAPED)) {
+			log.warn("PATCH:WRITE:INVALID_UPDATE_ATTEMPT_TO_SCRAPED_RECIPE : recipeId = {}", recipe.getId());
+			throw new BusinessException(INVALID_UPDATE_ATTEMPT_TO_SCRAPED_RECIPE);
+
+		}
+	}
 //
 //	private Recipe toScrappedRecipe(Recipe recipe, Member writer, Member owner) {
 //

@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.icebox.freshmate.domain.auth.application.PrincipalDetails;
 import com.icebox.freshmate.domain.recipe.application.RecipeService;
-import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeReq;
+import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeCreateReq;
+import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeUpdateReq;
 import com.icebox.freshmate.domain.recipe.application.dto.response.RecipeRes;
 import com.icebox.freshmate.domain.recipe.application.dto.response.RecipesRes;
 
@@ -30,8 +30,8 @@ public class RecipeController {
 	private final RecipeService recipeService;
 
 	@PostMapping
-	public ResponseEntity<RecipeRes> create(@Validated @RequestBody RecipeReq recipeReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		RecipeRes recipeRes = recipeService.create(recipeReq, principalDetails.getUsername());
+	public ResponseEntity<RecipeRes> create(@Validated @RequestBody RecipeCreateReq recipeCreateReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		RecipeRes recipeRes = recipeService.create(recipeCreateReq, principalDetails.getUsername());
 
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(recipeRes);
@@ -72,12 +72,12 @@ public class RecipeController {
 		return ResponseEntity.ok(recipesRes);
 	}
 
-//	@PatchMapping("/{id}")
-//	public ResponseEntity<RecipeRes> update(@PathVariable Long id, @Validated @RequestBody RecipeReq recipeReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-//		RecipeRes recipeRes = recipeService.update(id, recipeReq, principalDetails.getUsername());
-//
-//		return ResponseEntity.ok(recipeRes);
-//	}
+	@PatchMapping("/{id}")
+	public ResponseEntity<RecipeRes> update(@PathVariable Long id, @Validated @RequestBody RecipeUpdateReq recipeUpdateReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		RecipeRes recipeRes = recipeService.update(id, recipeUpdateReq, principalDetails.getUsername());
+
+		return ResponseEntity.ok(recipeRes);
+	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<RecipeRes> delete(@PathVariable Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
