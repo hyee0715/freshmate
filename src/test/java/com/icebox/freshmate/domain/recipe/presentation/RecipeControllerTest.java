@@ -13,8 +13,8 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
+import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -29,7 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 
 import java.time.LocalDate;
 import java.util.List;
@@ -57,13 +56,15 @@ import com.icebox.freshmate.domain.grocery.domain.GroceryType;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.Role;
 import com.icebox.freshmate.domain.recipe.application.RecipeService;
-import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeReq;
+import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeCreateReq;
+import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeUpdateReq;
 import com.icebox.freshmate.domain.recipe.application.dto.response.RecipeRes;
 import com.icebox.freshmate.domain.recipe.application.dto.response.RecipesRes;
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
 import com.icebox.freshmate.domain.recipe.domain.RecipeType;
 import com.icebox.freshmate.domain.recipegrocery.application.dto.request.RecipeGroceryReq;
 import com.icebox.freshmate.domain.recipegrocery.application.dto.response.RecipeGroceryRes;
+import com.icebox.freshmate.domain.recipegrocery.domain.RecipeGrocery;
 import com.icebox.freshmate.domain.refrigerator.domain.Refrigerator;
 import com.icebox.freshmate.domain.storage.domain.Storage;
 import com.icebox.freshmate.domain.storage.domain.StorageType;
@@ -99,6 +100,9 @@ class RecipeControllerTest {
 	private Refrigerator refrigerator;
 	private Storage storage;
 	private Grocery grocery1;
+	private Grocery grocery2;
+	private RecipeGrocery recipeGrocery1;
+	private RecipeGrocery recipeGrocery2;
 
 	@BeforeEach
 	void setUp(RestDocumentationContextProvider restDocumentationContextProvider) {
@@ -169,6 +173,27 @@ class RecipeControllerTest {
 			.description("필수 식재료")
 			.expirationDate(LocalDate.now().plusDays(7))
 			.build();
+
+		grocery2 = Grocery.builder()
+			.storage(storage)
+			.name("배추")
+			.groceryType(GroceryType.VEGETABLES)
+			.quantity(1)
+			.description("필수 식재료")
+			.expirationDate(LocalDate.now().plusDays(7))
+			.build();
+
+		recipeGrocery1 = RecipeGrocery.builder()
+			.recipe(recipe1)
+			.grocery(grocery1)
+			.groceryName(grocery1.getName())
+			.build();
+
+		recipeGrocery2 = RecipeGrocery.builder()
+			.recipe(recipe1)
+			.grocery(grocery2)
+			.groceryName(grocery2.getName())
+			.build();
 	}
 
 	@DisplayName("레시피 생성 테스트")
@@ -181,12 +206,12 @@ class RecipeControllerTest {
 
 		RecipeGroceryReq recipeGroceryReq = new RecipeGroceryReq(grocery1Id, grocery1.getName());
 		List<RecipeGroceryReq> recipeGroceriesReq = List.of(recipeGroceryReq);
-		RecipeReq recipeReq = new RecipeReq(recipe1.getTitle(), recipeGroceriesReq, recipe1.getContent());
+		RecipeCreateReq recipeCreateReq = new RecipeCreateReq(recipe1.getTitle(), recipeGroceriesReq, recipe1.getContent());
 
 		RecipeGroceryRes recipeGroceryRes = new RecipeGroceryRes(1L, recipe1Id, recipe1.getTitle(), grocery1Id, grocery1.getName());
 		RecipeRes recipeRes = new RecipeRes(recipe1Id, member1Id, member1.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe1Id, recipe1.getTitle(), recipe1.getContent(), List.of(recipeGroceryRes));
 
-		when(recipeService.create(any(RecipeReq.class), any(String.class))).thenReturn(recipeRes);
+		when(recipeService.create(any(RecipeCreateReq.class), any(String.class))).thenReturn(recipeRes);
 
 		//when
 		//then
@@ -195,7 +220,7 @@ class RecipeControllerTest {
 				.header("Authorization", "Bearer {ACCESS_TOKEN}")
 				.with(user(principalDetails))
 				.with(csrf().asHeader())
-				.content(objectMapper.writeValueAsString(recipeReq)))
+				.content(objectMapper.writeValueAsString(recipeCreateReq)))
 			.andExpect(content().json(objectMapper.writeValueAsString(recipeRes)))
 			.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.recipeId").value(recipeRes.recipeId()))
@@ -209,7 +234,6 @@ class RecipeControllerTest {
 			.andExpect(jsonPath("$.content").value(recipeRes.content()))
 			.andExpect(jsonPath("$.materials[0].groceryId").value(recipeRes.materials().get(0).groceryId()))
 			.andExpect(jsonPath("$.materials[0].groceryName").value(recipeRes.materials().get(0).groceryName()))
-
 			.andDo(print())
 			.andDo(document("recipe/recipe-create",
 				preprocessRequest(prettyPrint()),
@@ -242,465 +266,535 @@ class RecipeControllerTest {
 			));
 	}
 
-//	@DisplayName("레시피 스크랩 성공 테스트")
-//	@Test
-//	void scrap() throws Exception {
-//		//given
-//		Long scrapedRecipeId = 3L;
-//		Long originalRecipeId = 2L;
-//		Long writerId = 2L;
-//		Long ownerId = 1L;
-//
-//		RecipeRes recipeRes = new RecipeRes(scrapedRecipeId, writerId, member2.getNickName(), ownerId, member1.getNickName(), RecipeType.SCRAPED.name(), originalRecipeId, recipe1.getTitle(), recipe1.getMaterial(), recipe1.getContent());
-//
-//		when(recipeService.scrap(anyLong(), any(String.class))).thenReturn(recipeRes);
-//
-//		//when
-//		//then
-//		mockMvc.perform(RestDocumentationRequestBuilders.post("/api/recipes/scrap?recipe-id=" + originalRecipeId)
-//				.contentType(MediaType.APPLICATION_JSON)
-//				.header("Authorization", "Bearer {ACCESS_TOKEN}")
-//				.with(user(principalDetails))
-//				.with(csrf().asHeader()))
-//			.andExpect(content().json(objectMapper.writeValueAsString(recipeRes)))
-//			.andExpect(status().isOk())
-//			.andExpect(jsonPath("$.recipeId").value(recipeRes.recipeId()))
-//			.andExpect(jsonPath("$.writerId").value(recipeRes.writerId()))
-//			.andExpect(jsonPath("$.writerNickName").value(recipeRes.writerNickName()))
-//			.andExpect(jsonPath("$.ownerId").value(recipeRes.ownerId()))
-//			.andExpect(jsonPath("$.ownerNickName").value(recipeRes.ownerNickName()))
-//			.andExpect(jsonPath("$.recipeType").value(recipeRes.recipeType()))
-//			.andExpect(jsonPath("$.originalRecipeId").value(recipeRes.originalRecipeId()))
-//			.andExpect(jsonPath("$.title").value(recipeRes.title()))
-//			.andExpect(jsonPath("$.material").value(recipeRes.material()))
-//			.andExpect(jsonPath("$.content").value(recipeRes.content()))
-//			.andDo(print())
-//			.andDo(document("recipe/recipe-scrap",
-//				preprocessRequest(prettyPrint()),
-//				preprocessResponse(prettyPrint()),
-//				requestHeaders(
-//					headerWithName("Authorization").description("Access Token")
-//				),
-//				queryParameters(
-//					parameterWithName("recipe-id").description("스크랩 할 레시피 ID")
-//				),
-//				responseFields(
-//					fieldWithPath("recipeId").type(NUMBER).description("레시피 ID"),
-//					fieldWithPath("writerId").type(NUMBER).description("레시피 작성자 ID"),
-//					fieldWithPath("writerNickName").type(STRING).description("레시피 작성자 닉네임"),
-//					fieldWithPath("ownerId").type(NUMBER).description("레시피 소유자 ID"),
-//					fieldWithPath("ownerNickName").type(STRING).description("레시피 소유자 닉네임"),
-//					fieldWithPath("recipeType").type(STRING).description("레시피 타입"),
-//					fieldWithPath("originalRecipeId").type(NUMBER).description("스크랩 된 레시피인 경우 본래 레시피 ID"),
-//					fieldWithPath("title").type(STRING).description("레시피 제목"),
-//					fieldWithPath("material").type(STRING).description("레시피 재료"),
-//					fieldWithPath("content").type(STRING).description("레시피 내용")
-//				)
-//			));
-//	}
-//
-//	@DisplayName("레시피 스크랩 실패 테스트 - 본인이 작성한 레시피는 스크랩 불가")
-//	@Test
-//	void scrapFailure_invalidScrapAttemptToOwnRecipe() throws Exception {
-//		//given
-//		Long originalRecipeId = 2L;
-//
-//		doThrow(new BusinessException(ErrorCode.INVALID_SCRAP_ATTEMPT_TO_OWN_RECIPE)).when(
-//			recipeService).scrap(anyLong(), any(String.class));
-//
-//		//when
-//		//then
-//		mockMvc.perform(RestDocumentationRequestBuilders.post("/api/recipes/scrap?recipe-id=" + originalRecipeId)
-//				.contentType(MediaType.APPLICATION_JSON)
-//				.header("Authorization", "Bearer {ACCESS_TOKEN}")
-//				.with(user(principalDetails))
-//				.with(csrf().asHeader()))
-//			.andExpect(status().isBadRequest())
-//			.andExpect(jsonPath("$.timestamp").isNotEmpty())
-//			.andExpect(jsonPath("$.code").value("RC002"))
-//			.andExpect(jsonPath("$.errors").isEmpty())
-//			.andExpect(jsonPath("$.message").value("본인이 작성한 레시피는 스크랩할 수 없습니다."))
-//			.andDo(print())
-//			.andDo(document("recipe/recipe-failure-invalid-scrap-attempt-to-own-recipe",
-//				preprocessRequest(prettyPrint()),
-//				preprocessResponse(prettyPrint()),
-//				requestHeaders(
-//					headerWithName("Authorization").description("Access Token")
-//				),
-//				queryParameters(
-//					parameterWithName("recipe-id").description("스크랩 할 레시피 ID")
-//				),
-//				responseFields(
-//					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
-//					fieldWithPath("code").type(STRING).description("예외 코드"),
-//					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
-//					fieldWithPath("message").type(STRING).description("오류 메시지")
-//				)
-//			));
-//	}
-//
-//	@DisplayName("레시피 단건 조회 테스트")
-//	@Test
-//	void findById() throws Exception {
-//		//given
-//		Long recipe1Id = 1L;
-//		Long member1Id = 1L;
-//
-//		RecipeRes recipeRes = new RecipeRes(recipe1Id, member1Id, member1.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe1Id, recipe1.getTitle(), recipe1.getMaterial(), recipe1.getContent());
-//
-//		when(recipeService.findById(anyLong())).thenReturn(recipeRes);
-//
-//		//when
-//		//then
-//		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/recipes/{id}", recipe1Id)
-//				.contentType(MediaType.APPLICATION_JSON)
-//				.header("Authorization", "Bearer {ACCESS_TOKEN}")
-//				.with(user(principalDetails))
-//				.with(csrf().asHeader()))
-//			.andExpect(content().json(objectMapper.writeValueAsString(recipeRes)))
-//			.andExpect(status().isOk())
-//			.andExpect(jsonPath("$.recipeId").value(recipeRes.recipeId()))
-//			.andExpect(jsonPath("$.writerId").value(recipeRes.writerId()))
-//			.andExpect(jsonPath("$.writerNickName").value(recipeRes.writerNickName()))
-//			.andExpect(jsonPath("$.ownerId").value(recipeRes.ownerId()))
-//			.andExpect(jsonPath("$.ownerNickName").value(recipeRes.ownerNickName()))
-//			.andExpect(jsonPath("$.recipeType").value(recipeRes.recipeType()))
-//			.andExpect(jsonPath("$.originalRecipeId").value(recipeRes.originalRecipeId()))
-//			.andExpect(jsonPath("$.title").value(recipeRes.title()))
-//			.andExpect(jsonPath("$.material").value(recipeRes.material()))
-//			.andExpect(jsonPath("$.content").value(recipeRes.content()))
-//			.andDo(print())
-//			.andDo(document("recipe/recipe-find-by-id",
-//				preprocessRequest(prettyPrint()),
-//				preprocessResponse(prettyPrint()),
-//				requestHeaders(
-//					headerWithName("Authorization").description("Access Token")
-//				),
-//				pathParameters(parameterWithName("id").description("레시피 ID")),
-//				responseFields(
-//					fieldWithPath("recipeId").type(NUMBER).description("레시피 ID"),
-//					fieldWithPath("writerId").type(NUMBER).description("레시피 작성자 ID"),
-//					fieldWithPath("writerNickName").type(STRING).description("레시피 작성자 닉네임"),
-//					fieldWithPath("ownerId").type(NUMBER).description("레시피 소유자 ID"),
-//					fieldWithPath("ownerNickName").type(STRING).description("레시피 소유자 닉네임"),
-//					fieldWithPath("recipeType").type(STRING).description("레시피 타입"),
-//					fieldWithPath("originalRecipeId").type(NUMBER).description("스크랩 된 레시피인 경우 본래 레시피 ID"),
-//					fieldWithPath("title").type(STRING).description("레시피 제목"),
-//					fieldWithPath("material").type(STRING).description("레시피 재료"),
-//					fieldWithPath("content").type(STRING).description("레시피 내용")
-//				)
-//			));
-//	}
-//
-//	@DisplayName("사용자가 작성한 모든 레시피 조회 테스트")
-//	@Test
-//	void findAllByWriterId() throws Exception {
-//		//given
-//		Long member1Id = 1L;
-//		Long member2Id = 2L;
-//		Long recipe1Id = 1L;
-//		Long recipe3Id = 3L;
-//
-//		RecipeRes recipeRes1 = new RecipeRes(recipe1Id, member1Id, member1.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe1Id, recipe1.getTitle(), recipe1.getMaterial(), recipe1.getContent());
-//		RecipeRes recipeRes2 = new RecipeRes(recipe3Id, member1Id, member1.getNickName(), member2Id, member2.getNickName(), RecipeType.SCRAPED.name(), recipe3Id, recipe3.getTitle(), recipe3.getMaterial(), recipe3.getContent());
-//
-//		RecipesRes recipesRes = new RecipesRes(List.of(recipeRes1, recipeRes2));
-//
-//		when(recipeService.findAllByWriterId(member1.getUsername())).thenReturn(recipesRes);
-//
-//		//when
-//		//then
-//		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/recipes/writers")
-//				.contentType(MediaType.APPLICATION_JSON)
-//				.header("Authorization", "Bearer {ACCESS_TOKEN}")
-//				.with(user(principalDetails))
-//				.with(csrf().asHeader()))
-//			.andExpect(status().isOk())
-//			.andExpect(content().json(objectMapper.writeValueAsString(recipesRes)))
-//			.andExpect(jsonPath("$.recipes", hasSize(2)))
-//			.andExpect(jsonPath("$.recipes[0].recipeId").value(recipeRes1.recipeId()))
-//			.andExpect(jsonPath("$.recipes[0].writerId").value(recipeRes1.writerId()))
-//			.andExpect(jsonPath("$.recipes[0].writerNickName").value(recipeRes1.writerNickName()))
-//			.andExpect(jsonPath("$.recipes[0].ownerId").value(recipeRes1.ownerId()))
-//			.andExpect(jsonPath("$.recipes[0].ownerNickName").value(recipeRes1.ownerNickName()))
-//			.andExpect(jsonPath("$.recipes[0].recipeType").value(recipeRes1.recipeType()))
-//			.andExpect(jsonPath("$.recipes[0].originalRecipeId").value(recipeRes1.originalRecipeId()))
-//			.andExpect(jsonPath("$.recipes[0].title").value(recipeRes1.title()))
-//			.andExpect(jsonPath("$.recipes[0].material").value(recipeRes1.material()))
-//			.andExpect(jsonPath("$.recipes[0].content").value(recipeRes1.content()))
-//			.andDo(print())
-//			.andDo(document("recipe/recipe-find-all-by-writer-id",
-//				preprocessRequest(prettyPrint()),
-//				preprocessResponse(prettyPrint()),
-//				requestHeaders(
-//					headerWithName("Authorization").description("Access Token")
-//				),
-//				responseFields(
-//					fieldWithPath("recipes").type(ARRAY).description("레시피 배열"),
-//					fieldWithPath("recipes[].recipeId").type(NUMBER).description("레시피 ID"),
-//					fieldWithPath("recipes[].writerId").type(NUMBER).description("레시피 작성자 ID"),
-//					fieldWithPath("recipes[].writerNickName").type(STRING).description("레시피 작성자 닉네임"),
-//					fieldWithPath("recipes[].ownerId").type(NUMBER).description("레시피 소유자 ID"),
-//					fieldWithPath("recipes[].ownerNickName").type(STRING).description("레시피 소유자 닉네임"),
-//					fieldWithPath("recipes[].recipeType").type(STRING).description("레시피 타입"),
-//					fieldWithPath("recipes[].originalRecipeId").type(NUMBER).description("스크랩 된 레시피인 경우 본래 레시피 ID"),
-//					fieldWithPath("recipes[].title").type(STRING).description("레시피 제목"),
-//					fieldWithPath("recipes[].material").type(STRING).description("레시피 재료"),
-//					fieldWithPath("recipes[].content").type(STRING).description("레시피 내용")
-//				)
-//			));
-//	}
-//
-//	@DisplayName("사용자가 스크랩한(소유한) 모든 레시피 조회 테스트")
-//	@Test
-//	void findAllByOwnerId() throws Exception {
-//		//given
-//		Long member1Id = 1L;
-//		Long member2Id = 2L;
-//		Long recipe1Id = 1L;
-//		Long recipe2Id = 2L;
-//
-//		RecipeRes recipeRes1 = new RecipeRes(recipe1Id, member1Id, member1.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe1Id, recipe1.getTitle(), recipe1.getMaterial(), recipe1.getContent());
-//		RecipeRes recipeRes2 = new RecipeRes(recipe2Id, member2Id, member2.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe2Id, recipe2.getTitle(), recipe2.getMaterial(), recipe2.getContent());
-//
-//		RecipesRes recipesRes = new RecipesRes(List.of(recipeRes1, recipeRes2));
-//
-//		when(recipeService.findAllByOwnerId(member1.getUsername())).thenReturn(recipesRes);
-//
-//		//when
-//		//then
-//		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/recipes/owners")
-//				.contentType(MediaType.APPLICATION_JSON)
-//				.header("Authorization", "Bearer {ACCESS_TOKEN}")
-//				.with(user(principalDetails))
-//				.with(csrf().asHeader()))
-//			.andExpect(status().isOk())
-//			.andExpect(content().json(objectMapper.writeValueAsString(recipesRes)))
-//			.andExpect(jsonPath("$.recipes", hasSize(2)))
-//			.andExpect(jsonPath("$.recipes[0].recipeId").value(recipeRes1.recipeId()))
-//			.andExpect(jsonPath("$.recipes[0].writerId").value(recipeRes1.writerId()))
-//			.andExpect(jsonPath("$.recipes[0].writerNickName").value(recipeRes1.writerNickName()))
-//			.andExpect(jsonPath("$.recipes[0].ownerId").value(recipeRes1.ownerId()))
-//			.andExpect(jsonPath("$.recipes[0].ownerNickName").value(recipeRes1.ownerNickName()))
-//			.andExpect(jsonPath("$.recipes[0].recipeType").value(recipeRes1.recipeType()))
-//			.andExpect(jsonPath("$.recipes[0].originalRecipeId").value(recipeRes1.originalRecipeId()))
-//			.andExpect(jsonPath("$.recipes[0].title").value(recipeRes1.title()))
-//			.andExpect(jsonPath("$.recipes[0].material").value(recipeRes1.material()))
-//			.andExpect(jsonPath("$.recipes[0].content").value(recipeRes1.content()))
-//			.andDo(print())
-//			.andDo(document("recipe/recipe-find-all-by-owner-id",
-//				preprocessRequest(prettyPrint()),
-//				preprocessResponse(prettyPrint()),
-//				requestHeaders(
-//					headerWithName("Authorization").description("Access Token")
-//				),
-//				responseFields(
-//					fieldWithPath("recipes").type(ARRAY).description("레시피 배열"),
-//					fieldWithPath("recipes[].recipeId").type(NUMBER).description("레시피 ID"),
-//					fieldWithPath("recipes[].writerId").type(NUMBER).description("레시피 작성자 ID"),
-//					fieldWithPath("recipes[].writerNickName").type(STRING).description("레시피 작성자 닉네임"),
-//					fieldWithPath("recipes[].ownerId").type(NUMBER).description("레시피 소유자 ID"),
-//					fieldWithPath("recipes[].ownerNickName").type(STRING).description("레시피 소유자 닉네임"),
-//					fieldWithPath("recipes[].recipeType").type(STRING).description("레시피 타입"),
-//					fieldWithPath("recipes[].originalRecipeId").type(NUMBER).description("스크랩 된 레시피인 경우 본래 레시피 ID"),
-//					fieldWithPath("recipes[].title").type(STRING).description("레시피 제목"),
-//					fieldWithPath("recipes[].material").type(STRING).description("레시피 재료"),
-//					fieldWithPath("recipes[].content").type(STRING).description("레시피 내용")
-//				)
-//			));
-//	}
-//
-//	@DisplayName("사용자가 작성하고 스크랩한(소유한) 모든 레시피 조회 테스트")
-//	@Test
-//	void findAllByMemberId() throws Exception {
-//		//given
-//		Long member1Id = 1L;
-//		Long member2Id = 2L;
-//		Long recipe1Id = 1L;
-//		Long recipe2Id = 2L;
-//
-//		RecipeRes recipeRes1 = new RecipeRes(recipe1Id, member1Id, member1.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe1Id, recipe1.getTitle(), recipe1.getMaterial(), recipe1.getContent());
-//		RecipeRes recipeRes2 = new RecipeRes(recipe2Id, member2Id, member2.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe2Id, recipe2.getTitle(), recipe2.getMaterial(), recipe2.getContent());
-//
-//		RecipesRes recipesRes = new RecipesRes(List.of(recipeRes1, recipeRes2));
-//
-//		when(recipeService.findAllByMemberId(member1.getUsername())).thenReturn(recipesRes);
-//
-//		//when
-//		//then
-//		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/recipes/members")
-//				.contentType(MediaType.APPLICATION_JSON)
-//				.header("Authorization", "Bearer {ACCESS_TOKEN}")
-//				.with(user(principalDetails))
-//				.with(csrf().asHeader()))
-//			.andExpect(status().isOk())
-//			.andExpect(content().json(objectMapper.writeValueAsString(recipesRes)))
-//			.andExpect(jsonPath("$.recipes", hasSize(2)))
-//			.andExpect(jsonPath("$.recipes[0].recipeId").value(recipeRes1.recipeId()))
-//			.andExpect(jsonPath("$.recipes[0].writerId").value(recipeRes1.writerId()))
-//			.andExpect(jsonPath("$.recipes[0].writerNickName").value(recipeRes1.writerNickName()))
-//			.andExpect(jsonPath("$.recipes[0].ownerId").value(recipeRes1.ownerId()))
-//			.andExpect(jsonPath("$.recipes[0].ownerNickName").value(recipeRes1.ownerNickName()))
-//			.andExpect(jsonPath("$.recipes[0].recipeType").value(recipeRes1.recipeType()))
-//			.andExpect(jsonPath("$.recipes[0].originalRecipeId").value(recipeRes1.originalRecipeId()))
-//			.andExpect(jsonPath("$.recipes[0].title").value(recipeRes1.title()))
-//			.andExpect(jsonPath("$.recipes[0].material").value(recipeRes1.material()))
-//			.andExpect(jsonPath("$.recipes[0].content").value(recipeRes1.content()))
-//			.andDo(print())
-//			.andDo(document("recipe/recipe-find-all-by-owner-id",
-//				preprocessRequest(prettyPrint()),
-//				preprocessResponse(prettyPrint()),
-//				requestHeaders(
-//					headerWithName("Authorization").description("Access Token")
-//				),
-//				responseFields(
-//					fieldWithPath("recipes").type(ARRAY).description("레시피 배열"),
-//					fieldWithPath("recipes[].recipeId").type(NUMBER).description("레시피 ID"),
-//					fieldWithPath("recipes[].writerId").type(NUMBER).description("레시피 작성자 ID"),
-//					fieldWithPath("recipes[].writerNickName").type(STRING).description("레시피 작성자 닉네임"),
-//					fieldWithPath("recipes[].ownerId").type(NUMBER).description("레시피 소유자 ID"),
-//					fieldWithPath("recipes[].ownerNickName").type(STRING).description("레시피 소유자 닉네임"),
-//					fieldWithPath("recipes[].recipeType").type(STRING).description("레시피 타입"),
-//					fieldWithPath("recipes[].originalRecipeId").type(NUMBER).description("스크랩 된 레시피인 경우 본래 레시피 ID"),
-//					fieldWithPath("recipes[].title").type(STRING).description("레시피 제목"),
-//					fieldWithPath("recipes[].material").type(STRING).description("레시피 재료"),
-//					fieldWithPath("recipes[].content").type(STRING).description("레시피 내용")
-//				)
-//			));
-//	}
-//
-//	@DisplayName("사용자가 작성한 레시피 수정 성공 테스트")
-//	@Test
-//	void update() throws Exception {
-//		//given
-//		Long recipe1Id = 1L;
-//		Long member1Id = 1L;
-//
-//		RecipeReq recipeReq = new RecipeReq("제목수정", "재료수정", "내용수정");
-//		RecipeRes recipeRes = new RecipeRes(recipe1Id, member1Id, member1.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe1Id, recipeReq.title(), recipeReq.material(), recipeReq.content());
-//
-//		when(recipeService.update(anyLong(), any(RecipeReq.class), any(String.class))).thenReturn(recipeRes);
-//
-//		//when
-//		//then
-//		mockMvc.perform(RestDocumentationRequestBuilders.patch("/api/recipes/{id}", recipe1Id)
-//				.contentType(MediaType.APPLICATION_JSON)
-//				.header("Authorization", "Bearer {ACCESS_TOKEN}")
-//				.with(user(principalDetails))
-//				.with(csrf().asHeader())
-//				.content(objectMapper.writeValueAsString(recipeReq)))
-//			.andExpect(content().json(objectMapper.writeValueAsString(recipeRes)))
-//			.andExpect(status().isOk())
-//			.andExpect(jsonPath("$.recipeId").value(recipeRes.recipeId()))
-//			.andExpect(jsonPath("$.writerId").value(recipeRes.writerId()))
-//			.andExpect(jsonPath("$.writerNickName").value(recipeRes.writerNickName()))
-//			.andExpect(jsonPath("$.ownerId").value(recipeRes.ownerId()))
-//			.andExpect(jsonPath("$.ownerNickName").value(recipeRes.ownerNickName()))
-//			.andExpect(jsonPath("$.recipeType").value(recipeRes.recipeType()))
-//			.andExpect(jsonPath("$.originalRecipeId").value(recipeRes.originalRecipeId()))
-//			.andExpect(jsonPath("$.title").value(recipeRes.title()))
-//			.andExpect(jsonPath("$.material").value(recipeRes.material()))
-//			.andExpect(jsonPath("$.content").value(recipeRes.content()))
-//			.andDo(print())
-//			.andDo(document("recipe/recipe-update",
-//				preprocessRequest(prettyPrint()),
-//				preprocessResponse(prettyPrint()),
-//				requestHeaders(
-//					headerWithName("Authorization").description("Access Token")
-//				),
-//				pathParameters(parameterWithName("id").description("레시피 ID")),
-//				requestFields(
-//					fieldWithPath("title").description("수정할 레시피 제목"),
-//					fieldWithPath("material").description("수정할 레시피 재료"),
-//					fieldWithPath("content").description("수정할 레시피 내용")
-//				),
-//				responseFields(
-//					fieldWithPath("recipeId").type(NUMBER).description("레시피 ID"),
-//					fieldWithPath("writerId").type(NUMBER).description("레시피 작성자 ID"),
-//					fieldWithPath("writerNickName").type(STRING).description("레시피 작성자 닉네임"),
-//					fieldWithPath("ownerId").type(NUMBER).description("레시피 소유자 ID"),
-//					fieldWithPath("ownerNickName").type(STRING).description("레시피 소유자 닉네임"),
-//					fieldWithPath("recipeType").type(STRING).description("레시피 타입"),
-//					fieldWithPath("originalRecipeId").type(NUMBER).description("스크랩 된 레시피인 경우 본래 레시피 ID"),
-//					fieldWithPath("title").type(STRING).description("수정된 레시피 제목"),
-//					fieldWithPath("material").type(STRING).description("수정된 레시피 재료"),
-//					fieldWithPath("content").type(STRING).description("수정된 레시피 내용")
-//				)
-//			));
-//	}
-//
-//	@DisplayName("사용자가 작성한 레시피 수정 실패 테스트 - 스크랩한 레시피는 수정 불가")
-//	@Test
-//	void updateFailure_invalidUpdateAttemptToScrapedRecipe() throws Exception {
-//		//given
-//		Long recipe1Id = 1L;
-//
-//		RecipeReq recipeReq = new RecipeReq("제목수정", "재료수정", "내용수정");
-//
-//		doThrow(new BusinessException(ErrorCode.INVALID_UPDATE_ATTEMPT_TO_SCRAPED_RECIPE)).when(
-//			recipeService).update(anyLong(), any(RecipeReq.class), any(String.class));
-//
-//		//when
-//		//then
-//		mockMvc.perform(RestDocumentationRequestBuilders.patch("/api/recipes/{id}", recipe1Id)
-//				.contentType(MediaType.APPLICATION_JSON)
-//				.header("Authorization", "Bearer {ACCESS_TOKEN}")
-//				.with(user(principalDetails))
-//				.with(csrf().asHeader())
-//				.content(objectMapper.writeValueAsString(recipeReq)))
-//			.andExpect(status().isBadRequest())
-//			.andExpect(jsonPath("$.timestamp").isNotEmpty())
-//			.andExpect(jsonPath("$.code").value("RC003"))
-//			.andExpect(jsonPath("$.errors").isEmpty())
-//			.andExpect(jsonPath("$.message").value("스크랩한 레시피는 수정할 수 없습니다."))
-//			.andDo(print())
-//			.andDo(document("recipe/recipe-update-failure-invalid-update-attempt-to-scraped-recipe",
-//				preprocessRequest(prettyPrint()),
-//				preprocessResponse(prettyPrint()),
-//				requestHeaders(
-//					headerWithName("Authorization").description("Access Token")
-//				),
-//				pathParameters(parameterWithName("id").description("레시피 ID")),
-//				requestFields(
-//					fieldWithPath("title").description("수정할 레시피 제목"),
-//					fieldWithPath("material").description("수정할 레시피 재료"),
-//					fieldWithPath("content").description("수정할 레시피 내용")
-//				),
-//				responseFields(
-//					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
-//					fieldWithPath("code").type(STRING).description("예외 코드"),
-//					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
-//					fieldWithPath("message").type(STRING).description("오류 메시지")
-//				)
-//			));
-//	}
-//
-//	@DisplayName("레시피 삭제 테스트")
-//	@Test
-//	void delete() throws Exception {
-//		//given
-//		Long recipe1Id = 1L;
-//
-//		doNothing().when(recipeService).delete(anyLong(), any(String.class));
-//
-//		//when
-//		//then
-//		mockMvc.perform(RestDocumentationRequestBuilders.delete("/api/recipes/{id}", recipe1Id)
-//				.contentType(MediaType.APPLICATION_JSON)
-//				.header("Authorization", "Bearer {ACCESS_TOKEN}")
-//				.with(user(principalDetails))
-//				.with(csrf().asHeader()))
-//			.andExpect(status().isNoContent())
-//			.andDo(print())
-//			.andDo(document("recipe/recipe-delete",
-//				preprocessRequest(prettyPrint()),
-//				preprocessResponse(prettyPrint()),
-//				requestHeaders(
-//					headerWithName("Authorization").description("Access Token")
-//				),
-//				pathParameters(
-//					parameterWithName("id").description("레시피 ID")
-//				)
-//			));
-//	}
+	@DisplayName("레시피 스크랩 성공 테스트")
+	@Test
+	void scrap() throws Exception {
+		//given
+		Long scrapedRecipeId = 3L;
+		Long originalRecipeId = 2L;
+		Long writerId = 2L;
+		Long ownerId = 1L;
+		Long recipe1Id = 1L;
+		Long grocery1Id = 1L;
+		Long recipeGrocery1Id = 1L;
+
+		RecipeGroceryRes recipeGroceryRes = new RecipeGroceryRes(recipeGrocery1Id, recipe1Id, recipe1.getTitle(), grocery1Id, grocery1.getName());
+		RecipeRes recipeRes = new RecipeRes(scrapedRecipeId, writerId, member2.getNickName(), ownerId, member1.getNickName(), RecipeType.SCRAPED.name(), originalRecipeId, recipe1.getTitle(), recipe1.getContent(), List.of(recipeGroceryRes));
+
+		when(recipeService.scrap(anyLong(), any(String.class))).thenReturn(recipeRes);
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.post("/api/recipes/scrap?recipe-id=" + originalRecipeId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(content().json(objectMapper.writeValueAsString(recipeRes)))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.recipeId").value(recipeRes.recipeId()))
+			.andExpect(jsonPath("$.writerId").value(recipeRes.writerId()))
+			.andExpect(jsonPath("$.writerNickName").value(recipeRes.writerNickName()))
+			.andExpect(jsonPath("$.ownerId").value(recipeRes.ownerId()))
+			.andExpect(jsonPath("$.ownerNickName").value(recipeRes.ownerNickName()))
+			.andExpect(jsonPath("$.recipeType").value(recipeRes.recipeType()))
+			.andExpect(jsonPath("$.originalRecipeId").value(recipeRes.originalRecipeId()))
+			.andExpect(jsonPath("$.title").value(recipeRes.title()))
+			.andExpect(jsonPath("$.content").value(recipeRes.content()))
+			.andExpect(jsonPath("$.materials[0].groceryId").value(recipeRes.materials().get(0).groceryId()))
+			.andExpect(jsonPath("$.materials[0].groceryName").value(recipeRes.materials().get(0).groceryName()))
+			.andDo(print())
+			.andDo(document("recipe/recipe-scrap",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				queryParameters(
+					parameterWithName("recipe-id").description("스크랩 할 레시피 ID")
+				),
+				responseFields(
+					fieldWithPath("recipeId").type(NUMBER).description("레시피 ID"),
+					fieldWithPath("writerId").type(NUMBER).description("레시피 작성자 ID"),
+					fieldWithPath("writerNickName").type(STRING).description("레시피 작성자 닉네임"),
+					fieldWithPath("ownerId").type(NUMBER).description("레시피 소유자 ID"),
+					fieldWithPath("ownerNickName").type(STRING).description("레시피 소유자 닉네임"),
+					fieldWithPath("recipeType").type(STRING).description("레시피 타입"),
+					fieldWithPath("originalRecipeId").type(NUMBER).description("스크랩 된 레시피인 경우 본래 레시피 ID"),
+					fieldWithPath("title").type(STRING).description("레시피 제목"),
+					fieldWithPath("content").type(STRING).description("레시피 내용"),
+					fieldWithPath("materials[].recipeGroceryId").type(NUMBER).description("레시피 식재료 ID"),
+					fieldWithPath("materials[].recipeId").type(NUMBER).description("회원이 등록한 레시피 ID"),
+					fieldWithPath("materials[].recipeTitle").type(STRING).description("회원이 등록한 레시피 제목"),
+					fieldWithPath("materials[].groceryId").type(NUMBER).description("회원이 등록한 식재료 ID"),
+					fieldWithPath("materials[].groceryName").type(STRING).description("회원이 등록한 식재료 이름")
+				)
+			));
+	}
+
+	@DisplayName("레시피 스크랩 실패 테스트 - 본인이 작성한 레시피는 스크랩 불가")
+	@Test
+	void scrapFailure_invalidScrapAttemptToOwnRecipe() throws Exception {
+		//given
+		Long originalRecipeId = 2L;
+
+		doThrow(new BusinessException(ErrorCode.INVALID_SCRAP_ATTEMPT_TO_OWN_RECIPE)).when(
+			recipeService).scrap(anyLong(), any(String.class));
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.post("/api/recipes/scrap?recipe-id=" + originalRecipeId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("RC002"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("본인이 작성한 레시피는 스크랩할 수 없습니다."))
+			.andDo(print())
+			.andDo(document("recipe/recipe-failure-invalid-scrap-attempt-to-own-recipe",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				queryParameters(
+					parameterWithName("recipe-id").description("스크랩 할 레시피 ID")
+				),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("레시피 단건 조회 테스트")
+	@Test
+	void findById() throws Exception {
+		//given
+		Long recipe1Id = 1L;
+		Long member1Id = 1L;
+		Long grocery1Id = 1L;
+		Long recipeGroceryId = 1L;
+
+		RecipeGroceryRes recipeGroceryRes = new RecipeGroceryRes(recipeGroceryId, recipe1Id, recipe1.getTitle(), grocery1Id, grocery1.getName());
+		RecipeRes recipeRes = new RecipeRes(recipe1Id, member1Id, member1.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe1Id, recipe1.getTitle(), recipe1.getContent(), List.of(recipeGroceryRes));
+
+		when(recipeService.findById(anyLong())).thenReturn(recipeRes);
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/recipes/{id}", recipe1Id)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(content().json(objectMapper.writeValueAsString(recipeRes)))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.recipeId").value(recipeRes.recipeId()))
+			.andExpect(jsonPath("$.writerId").value(recipeRes.writerId()))
+			.andExpect(jsonPath("$.writerNickName").value(recipeRes.writerNickName()))
+			.andExpect(jsonPath("$.ownerId").value(recipeRes.ownerId()))
+			.andExpect(jsonPath("$.ownerNickName").value(recipeRes.ownerNickName()))
+			.andExpect(jsonPath("$.recipeType").value(recipeRes.recipeType()))
+			.andExpect(jsonPath("$.originalRecipeId").value(recipeRes.originalRecipeId()))
+			.andExpect(jsonPath("$.title").value(recipeRes.title()))
+			.andExpect(jsonPath("$.content").value(recipeRes.content()))
+			.andExpect(jsonPath("$.materials[0].recipeGroceryId").value(recipeRes.materials().get(0).recipeGroceryId()))
+			.andExpect(jsonPath("$.materials[0].recipeId").value(recipeRes.materials().get(0).recipeId()))
+			.andExpect(jsonPath("$.materials[0].recipeTitle").value(recipeRes.materials().get(0).recipeTitle()))
+			.andExpect(jsonPath("$.materials[0].groceryId").value(recipeRes.materials().get(0).groceryId()))
+			.andExpect(jsonPath("$.materials[0].groceryName").value(recipeRes.materials().get(0).groceryName()))
+			.andDo(print())
+			.andDo(document("recipe/recipe-find-by-id",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				pathParameters(parameterWithName("id").description("레시피 ID")),
+				responseFields(
+					fieldWithPath("recipeId").type(NUMBER).description("레시피 ID"),
+					fieldWithPath("writerId").type(NUMBER).description("레시피 작성자 ID"),
+					fieldWithPath("writerNickName").type(STRING).description("레시피 작성자 닉네임"),
+					fieldWithPath("ownerId").type(NUMBER).description("레시피 소유자 ID"),
+					fieldWithPath("ownerNickName").type(STRING).description("레시피 소유자 닉네임"),
+					fieldWithPath("recipeType").type(STRING).description("레시피 타입"),
+					fieldWithPath("originalRecipeId").type(NUMBER).description("스크랩 된 레시피인 경우 본래 레시피 ID"),
+					fieldWithPath("title").type(STRING).description("레시피 제목"),
+					fieldWithPath("content").type(STRING).description("레시피 내용"),
+					fieldWithPath("materials[].recipeGroceryId").type(NUMBER).description("레시피 식재료 ID"),
+					fieldWithPath("materials[].recipeId").type(NUMBER).description("회원이 등록한 레시피 ID"),
+					fieldWithPath("materials[].recipeTitle").type(STRING).description("회원이 등록한 레시피 제목"),
+					fieldWithPath("materials[].groceryId").type(NUMBER).description("회원이 등록한 식재료 ID"),
+					fieldWithPath("materials[].groceryName").type(STRING).description("회원이 등록한 식재료 이름")
+				)
+			));
+	}
+
+	@DisplayName("사용자가 작성한 모든 레시피 조회 테스트")
+	@Test
+	void findAllByWriterId() throws Exception {
+		//given
+		Long member1Id = 1L;
+		Long member2Id = 2L;
+		Long recipe1Id = 1L;
+		Long recipe3Id = 3L;
+		Long recipeGrocery1Id = 1L;
+		Long recipeGrocery2Id = 1L;
+		Long grocery1Id = 1L;
+		Long grocery2Id = 2L;
+
+		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipe1Id, recipe1.getTitle(), grocery1Id, grocery1.getName());
+		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipe3Id, recipe3.getTitle(), grocery2Id, grocery2.getName());
+
+		RecipeRes recipeRes1 = new RecipeRes(recipe1Id, member1Id, member1.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe1Id, recipe1.getTitle(), recipe1.getContent(), List.of(recipeGroceryRes1));
+		RecipeRes recipeRes2 = new RecipeRes(recipe3Id, member1Id, member1.getNickName(), member2Id, member2.getNickName(), RecipeType.SCRAPED.name(), recipe3Id, recipe3.getTitle(), recipe3.getContent(), List.of(recipeGroceryRes2));
+
+		RecipesRes recipesRes = new RecipesRes(List.of(recipeRes1, recipeRes2));
+
+		when(recipeService.findAllByWriterId(member1.getUsername())).thenReturn(recipesRes);
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/recipes/writers")
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isOk())
+			.andExpect(content().json(objectMapper.writeValueAsString(recipesRes)))
+			.andExpect(jsonPath("$.recipes", hasSize(2)))
+			.andExpect(jsonPath("$.recipes[0].recipeId").value(recipeRes1.recipeId()))
+			.andExpect(jsonPath("$.recipes[0].writerId").value(recipeRes1.writerId()))
+			.andExpect(jsonPath("$.recipes[0].writerNickName").value(recipeRes1.writerNickName()))
+			.andExpect(jsonPath("$.recipes[0].ownerId").value(recipeRes1.ownerId()))
+			.andExpect(jsonPath("$.recipes[0].ownerNickName").value(recipeRes1.ownerNickName()))
+			.andExpect(jsonPath("$.recipes[0].recipeType").value(recipeRes1.recipeType()))
+			.andExpect(jsonPath("$.recipes[0].originalRecipeId").value(recipeRes1.originalRecipeId()))
+			.andExpect(jsonPath("$.recipes[0].title").value(recipeRes1.title()))
+			.andExpect(jsonPath("$.recipes[0].content").value(recipeRes1.content()))
+			.andExpect(jsonPath("$.recipes[0].materials[0].recipeGroceryId").value(recipeRes1.materials().get(0).recipeGroceryId()))
+			.andExpect(jsonPath("$.recipes[0].materials[0].recipeId").value(recipeRes1.materials().get(0).recipeId()))
+			.andExpect(jsonPath("$.recipes[0].materials[0].recipeTitle").value(recipeRes1.materials().get(0).recipeTitle()))
+			.andExpect(jsonPath("$.recipes[0].materials[0].groceryId").value(recipeRes1.materials().get(0).groceryId()))
+			.andExpect(jsonPath("$.recipes[0].materials[0].groceryName").value(recipeRes1.materials().get(0).groceryName()))
+			.andDo(print())
+			.andDo(document("recipe/recipe-find-all-by-writer-id",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				responseFields(
+					fieldWithPath("recipes").type(ARRAY).description("레시피 배열"),
+					fieldWithPath("recipes[].recipeId").type(NUMBER).description("레시피 ID"),
+					fieldWithPath("recipes[].writerId").type(NUMBER).description("레시피 작성자 ID"),
+					fieldWithPath("recipes[].writerNickName").type(STRING).description("레시피 작성자 닉네임"),
+					fieldWithPath("recipes[].ownerId").type(NUMBER).description("레시피 소유자 ID"),
+					fieldWithPath("recipes[].ownerNickName").type(STRING).description("레시피 소유자 닉네임"),
+					fieldWithPath("recipes[].recipeType").type(STRING).description("레시피 타입"),
+					fieldWithPath("recipes[].originalRecipeId").type(NUMBER).description("스크랩 된 레시피인 경우 본래 레시피 ID"),
+					fieldWithPath("recipes[].title").type(STRING).description("레시피 제목"),
+					fieldWithPath("recipes[].content").type(STRING).description("레시피 내용"),
+					fieldWithPath("recipes[].materials[].recipeGroceryId").type(NUMBER).description("레시피 식재료 ID"),
+					fieldWithPath("recipes[].materials[].recipeId").type(NUMBER).description("회원이 등록한 레시피 ID"),
+					fieldWithPath("recipes[].materials[].recipeTitle").type(STRING).description("회원이 등록한 레시피 제목"),
+					fieldWithPath("recipes[].materials[].groceryId").type(NUMBER).description("회원이 등록한 식재료 ID"),
+					fieldWithPath("recipes[].materials[].groceryName").type(STRING).description("회원이 등록한 식재료 이름")
+				)
+			));
+	}
+
+	@DisplayName("사용자가 스크랩한(소유한) 모든 레시피 조회 테스트")
+	@Test
+	void findAllByOwnerId() throws Exception {
+		//given
+		Long member1Id = 1L;
+		Long member2Id = 2L;
+		Long recipe1Id = 1L;
+		Long recipe2Id = 2L;
+		Long recipeGrocery1Id = 1L;
+		Long recipeGrocery2Id = 1L;
+		Long grocery1Id = 1L;
+		Long grocery2Id = 2L;
+
+		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipe1Id, recipe1.getTitle(), grocery1Id, grocery1.getName());
+		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipe2Id, recipe2.getTitle(), grocery2Id, grocery2.getName());
+
+		RecipeRes recipeRes1 = new RecipeRes(recipe1Id, member1Id, member1.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe1Id, recipe1.getTitle(), recipe1.getContent(), List.of(recipeGroceryRes1));
+		RecipeRes recipeRes2 = new RecipeRes(recipe2Id, member2Id, member2.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe2Id, recipe2.getTitle(), recipe2.getContent(), List.of(recipeGroceryRes2));
+
+		RecipesRes recipesRes = new RecipesRes(List.of(recipeRes1, recipeRes2));
+
+		when(recipeService.findAllByOwnerId(member1.getUsername())).thenReturn(recipesRes);
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/recipes/owners")
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isOk())
+			.andExpect(content().json(objectMapper.writeValueAsString(recipesRes)))
+			.andExpect(jsonPath("$.recipes", hasSize(2)))
+			.andExpect(jsonPath("$.recipes[0].recipeId").value(recipeRes1.recipeId()))
+			.andExpect(jsonPath("$.recipes[0].writerId").value(recipeRes1.writerId()))
+			.andExpect(jsonPath("$.recipes[0].writerNickName").value(recipeRes1.writerNickName()))
+			.andExpect(jsonPath("$.recipes[0].ownerId").value(recipeRes1.ownerId()))
+			.andExpect(jsonPath("$.recipes[0].ownerNickName").value(recipeRes1.ownerNickName()))
+			.andExpect(jsonPath("$.recipes[0].recipeType").value(recipeRes1.recipeType()))
+			.andExpect(jsonPath("$.recipes[0].originalRecipeId").value(recipeRes1.originalRecipeId()))
+			.andExpect(jsonPath("$.recipes[0].title").value(recipeRes1.title()))
+			.andExpect(jsonPath("$.recipes[0].content").value(recipeRes1.content()))
+			.andExpect(jsonPath("$.recipes[0].materials[0].recipeGroceryId").value(recipeRes1.materials().get(0).recipeGroceryId()))
+			.andExpect(jsonPath("$.recipes[0].materials[0].recipeId").value(recipeRes1.materials().get(0).recipeId()))
+			.andExpect(jsonPath("$.recipes[0].materials[0].recipeTitle").value(recipeRes1.materials().get(0).recipeTitle()))
+			.andExpect(jsonPath("$.recipes[0].materials[0].groceryId").value(recipeRes1.materials().get(0).groceryId()))
+			.andExpect(jsonPath("$.recipes[0].materials[0].groceryName").value(recipeRes1.materials().get(0).groceryName()))
+			.andDo(print())
+			.andDo(document("recipe/recipe-find-all-by-owner-id",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				responseFields(
+					fieldWithPath("recipes").type(ARRAY).description("레시피 배열"),
+					fieldWithPath("recipes[].recipeId").type(NUMBER).description("레시피 ID"),
+					fieldWithPath("recipes[].writerId").type(NUMBER).description("레시피 작성자 ID"),
+					fieldWithPath("recipes[].writerNickName").type(STRING).description("레시피 작성자 닉네임"),
+					fieldWithPath("recipes[].ownerId").type(NUMBER).description("레시피 소유자 ID"),
+					fieldWithPath("recipes[].ownerNickName").type(STRING).description("레시피 소유자 닉네임"),
+					fieldWithPath("recipes[].recipeType").type(STRING).description("레시피 타입"),
+					fieldWithPath("recipes[].originalRecipeId").type(NUMBER).description("스크랩 된 레시피인 경우 본래 레시피 ID"),
+					fieldWithPath("recipes[].title").type(STRING).description("레시피 제목"),
+					fieldWithPath("recipes[].content").type(STRING).description("레시피 내용"),
+					fieldWithPath("recipes[].materials[].recipeGroceryId").type(NUMBER).description("레시피 식재료 ID"),
+					fieldWithPath("recipes[].materials[].recipeId").type(NUMBER).description("회원이 등록한 레시피 ID"),
+					fieldWithPath("recipes[].materials[].recipeTitle").type(STRING).description("회원이 등록한 레시피 제목"),
+					fieldWithPath("recipes[].materials[].groceryId").type(NUMBER).description("회원이 등록한 식재료 ID"),
+					fieldWithPath("recipes[].materials[].groceryName").type(STRING).description("회원이 등록한 식재료 이름")
+				)
+			));
+	}
+
+	@DisplayName("사용자가 작성하고 스크랩한(소유한) 모든 레시피 조회 테스트")
+	@Test
+	void findAllByMemberId() throws Exception {
+		//given
+		Long member1Id = 1L;
+		Long member2Id = 2L;
+		Long recipe1Id = 1L;
+		Long recipe2Id = 2L;
+		Long recipeGrocery1Id = 1L;
+		Long recipeGrocery2Id = 1L;
+		Long grocery1Id = 1L;
+		Long grocery2Id = 2L;
+
+		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipe1Id, recipe1.getTitle(), grocery1Id, grocery1.getName());
+		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipe2Id, recipe3.getTitle(), grocery2Id, grocery2.getName());
+
+
+		RecipeRes recipeRes1 = new RecipeRes(recipe1Id, member1Id, member1.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe1Id, recipe1.getTitle(), recipe1.getContent(), List.of(recipeGroceryRes1));
+		RecipeRes recipeRes2 = new RecipeRes(recipe2Id, member2Id, member2.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe2Id, recipe2.getTitle(), recipe2.getContent(), List.of(recipeGroceryRes2));
+
+		RecipesRes recipesRes = new RecipesRes(List.of(recipeRes1, recipeRes2));
+
+		when(recipeService.findAllByMemberId(member1.getUsername())).thenReturn(recipesRes);
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/recipes/members")
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isOk())
+			.andExpect(content().json(objectMapper.writeValueAsString(recipesRes)))
+			.andExpect(jsonPath("$.recipes", hasSize(2)))
+			.andExpect(jsonPath("$.recipes[0].recipeId").value(recipeRes1.recipeId()))
+			.andExpect(jsonPath("$.recipes[0].writerId").value(recipeRes1.writerId()))
+			.andExpect(jsonPath("$.recipes[0].writerNickName").value(recipeRes1.writerNickName()))
+			.andExpect(jsonPath("$.recipes[0].ownerId").value(recipeRes1.ownerId()))
+			.andExpect(jsonPath("$.recipes[0].ownerNickName").value(recipeRes1.ownerNickName()))
+			.andExpect(jsonPath("$.recipes[0].recipeType").value(recipeRes1.recipeType()))
+			.andExpect(jsonPath("$.recipes[0].originalRecipeId").value(recipeRes1.originalRecipeId()))
+			.andExpect(jsonPath("$.recipes[0].title").value(recipeRes1.title()))
+			.andExpect(jsonPath("$.recipes[0].content").value(recipeRes1.content()))
+			.andExpect(jsonPath("$.recipes[0].materials[0].recipeGroceryId").value(recipeRes1.materials().get(0).recipeGroceryId()))
+			.andExpect(jsonPath("$.recipes[0].materials[0].recipeId").value(recipeRes1.materials().get(0).recipeId()))
+			.andExpect(jsonPath("$.recipes[0].materials[0].recipeTitle").value(recipeRes1.materials().get(0).recipeTitle()))
+			.andExpect(jsonPath("$.recipes[0].materials[0].groceryId").value(recipeRes1.materials().get(0).groceryId()))
+			.andExpect(jsonPath("$.recipes[0].materials[0].groceryName").value(recipeRes1.materials().get(0).groceryName()))
+			.andDo(print())
+			.andDo(document("recipe/recipe-find-all-by-owner-id",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				responseFields(
+					fieldWithPath("recipes").type(ARRAY).description("레시피 배열"),
+					fieldWithPath("recipes[].recipeId").type(NUMBER).description("레시피 ID"),
+					fieldWithPath("recipes[].writerId").type(NUMBER).description("레시피 작성자 ID"),
+					fieldWithPath("recipes[].writerNickName").type(STRING).description("레시피 작성자 닉네임"),
+					fieldWithPath("recipes[].ownerId").type(NUMBER).description("레시피 소유자 ID"),
+					fieldWithPath("recipes[].ownerNickName").type(STRING).description("레시피 소유자 닉네임"),
+					fieldWithPath("recipes[].recipeType").type(STRING).description("레시피 타입"),
+					fieldWithPath("recipes[].originalRecipeId").type(NUMBER).description("스크랩 된 레시피인 경우 본래 레시피 ID"),
+					fieldWithPath("recipes[].title").type(STRING).description("레시피 제목"),
+					fieldWithPath("recipes[].content").type(STRING).description("레시피 내용"),
+					fieldWithPath("recipes[].materials[].recipeGroceryId").type(NUMBER).description("레시피 식재료 ID"),
+					fieldWithPath("recipes[].materials[].recipeId").type(NUMBER).description("회원이 등록한 레시피 ID"),
+					fieldWithPath("recipes[].materials[].recipeTitle").type(STRING).description("회원이 등록한 레시피 제목"),
+					fieldWithPath("recipes[].materials[].groceryId").type(NUMBER).description("회원이 등록한 식재료 ID"),
+					fieldWithPath("recipes[].materials[].groceryName").type(STRING).description("회원이 등록한 식재료 이름")
+				)
+			));
+	}
+
+	@DisplayName("사용자가 작성한 레시피 수정 성공 테스트")
+	@Test
+	void update() throws Exception {
+		//given
+		Long recipe1Id = 1L;
+		Long member1Id = 1L;
+		Long grocery1Id = 1L;
+
+		RecipeUpdateReq recipeUpdateReq = new RecipeUpdateReq("제목수정", "내용수정");
+
+		RecipeGroceryRes recipeGroceryRes = new RecipeGroceryRes(1L, recipe1Id, recipe1.getTitle(), grocery1Id, grocery1.getName());
+		RecipeRes recipeRes = new RecipeRes(recipe1Id, member1Id, member1.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe1Id, recipeUpdateReq.title(), recipeUpdateReq.content(), List.of(recipeGroceryRes));
+
+		when(recipeService.update(anyLong(), any(RecipeUpdateReq.class), any(String.class))).thenReturn(recipeRes);
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.patch("/api/recipes/{id}", recipe1Id)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader())
+				.content(objectMapper.writeValueAsString(recipeUpdateReq)))
+			.andExpect(content().json(objectMapper.writeValueAsString(recipeRes)))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.recipeId").value(recipeRes.recipeId()))
+			.andExpect(jsonPath("$.writerId").value(recipeRes.writerId()))
+			.andExpect(jsonPath("$.writerNickName").value(recipeRes.writerNickName()))
+			.andExpect(jsonPath("$.ownerId").value(recipeRes.ownerId()))
+			.andExpect(jsonPath("$.ownerNickName").value(recipeRes.ownerNickName()))
+			.andExpect(jsonPath("$.recipeType").value(recipeRes.recipeType()))
+			.andExpect(jsonPath("$.originalRecipeId").value(recipeRes.originalRecipeId()))
+			.andExpect(jsonPath("$.title").value(recipeRes.title()))
+			.andExpect(jsonPath("$.content").value(recipeRes.content()))
+			.andDo(print())
+			.andDo(document("recipe/recipe-update",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				pathParameters(parameterWithName("id").description("레시피 ID")),
+				requestFields(
+					fieldWithPath("title").description("수정할 레시피 제목"),
+					fieldWithPath("content").description("수정할 레시피 내용")
+				),
+				responseFields(
+					fieldWithPath("recipeId").type(NUMBER).description("레시피 ID"),
+					fieldWithPath("writerId").type(NUMBER).description("레시피 작성자 ID"),
+					fieldWithPath("writerNickName").type(STRING).description("레시피 작성자 닉네임"),
+					fieldWithPath("ownerId").type(NUMBER).description("레시피 소유자 ID"),
+					fieldWithPath("ownerNickName").type(STRING).description("레시피 소유자 닉네임"),
+					fieldWithPath("recipeType").type(STRING).description("레시피 타입"),
+					fieldWithPath("originalRecipeId").type(NUMBER).description("스크랩 된 레시피인 경우 본래 레시피 ID"),
+					fieldWithPath("title").type(STRING).description("수정된 레시피 제목"),
+					fieldWithPath("content").type(STRING).description("수정된 레시피 내용"),
+					fieldWithPath("materials[].recipeGroceryId").type(NUMBER).description("레시피 식재료 ID"),
+					fieldWithPath("materials[].recipeId").type(NUMBER).description("회원이 등록한 레시피 ID"),
+					fieldWithPath("materials[].recipeTitle").type(STRING).description("회원이 등록한 레시피 제목"),
+					fieldWithPath("materials[].groceryId").type(NUMBER).description("회원이 등록한 식재료 ID"),
+					fieldWithPath("materials[].groceryName").type(STRING).description("회원이 등록한 식재료 이름")
+				)
+			));
+	}
+
+	@DisplayName("사용자가 작성한 레시피 수정 실패 테스트 - 스크랩한 레시피는 수정 불가")
+	@Test
+	void updateFailure_invalidUpdateAttemptToScrapedRecipe() throws Exception {
+		//given
+		Long recipe1Id = 1L;
+
+		RecipeUpdateReq recipeUpdateReq = new RecipeUpdateReq("제목수정", "내용수정");
+
+		doThrow(new BusinessException(ErrorCode.INVALID_UPDATE_ATTEMPT_TO_SCRAPED_RECIPE)).when(
+			recipeService).update(anyLong(), any(RecipeUpdateReq.class), any(String.class));
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.patch("/api/recipes/{id}", recipe1Id)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader())
+				.content(objectMapper.writeValueAsString(recipeUpdateReq)))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("RC003"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("스크랩한 레시피는 수정할 수 없습니다."))
+			.andDo(print())
+			.andDo(document("recipe/recipe-update-failure-invalid-update-attempt-to-scraped-recipe",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				pathParameters(parameterWithName("id").description("레시피 ID")),
+				requestFields(
+					fieldWithPath("title").description("수정할 레시피 제목"),
+					fieldWithPath("content").description("수정할 레시피 내용")
+				),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("레시피 삭제 테스트")
+	@Test
+	void delete() throws Exception {
+		//given
+		Long recipe1Id = 1L;
+
+		doNothing().when(recipeService).delete(anyLong(), any(String.class));
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.delete("/api/recipes/{id}", recipe1Id)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isNoContent())
+			.andDo(print())
+			.andDo(document("recipe/recipe-delete",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				pathParameters(
+					parameterWithName("id").description("레시피 ID")
+				)
+			));
+	}
 }
