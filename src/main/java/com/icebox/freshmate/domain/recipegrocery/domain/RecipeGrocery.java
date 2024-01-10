@@ -51,4 +51,8 @@ public class RecipeGrocery {
 	public void addGrocery(Grocery grocery) {
 		this.grocery = grocery;
 	}
+
+	public void removeGrocery() {
+		this.grocery = null;
+	}
 }

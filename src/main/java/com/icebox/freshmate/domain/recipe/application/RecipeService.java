@@ -228,7 +228,7 @@ public class RecipeService {
 		List<RecipeGrocery> recipeGroceries = materials.stream()
 			.map(material -> {
 				RecipeGrocery recipeGrocery = getRecipeGrocery(material, memberId, recipe);
-				saveRecipeGrocery(recipe, recipeGrocery);
+				saveRecipeGrocery(recipe, recipeGrocery.getGrocery(), recipeGrocery);
 
 				return recipeGrocery;
 			})
@@ -237,8 +237,13 @@ public class RecipeService {
 		return RecipeGroceryRes.from(recipeGroceries);
 	}
 
-	private void saveRecipeGrocery(Recipe recipe, RecipeGrocery recipeGrocery) {
+	private void saveRecipeGrocery(Recipe recipe, Grocery grocery, RecipeGrocery recipeGrocery) {
 		recipe.addRecipeGrocery(recipeGrocery);
+
+		if (grocery != null) {
+			grocery.addRecipeGrocery(recipeGrocery);
+		}
+
 		recipeGroceryRepository.save(recipeGrocery);
 	}
 
@@ -280,7 +285,7 @@ public class RecipeService {
 	}
 
 	private void validateDuplicatedRecipeGrocery(Long recipeId, Long groceryId) {
-		if(recipeGroceryRepository.existsByRecipeIdAndGroceryId(recipeId, groceryId)) {
+		if (recipeGroceryRepository.existsByRecipeIdAndGroceryId(recipeId, groceryId)) {
 			log.warn("DUPLICATED_RECIPE_GROCERY : recipeId = {}, groceryId = {}", recipeId, groceryId);
 			throw new BusinessException(ErrorCode.DUPLICATED_RECIPE_GROCERY);
 		}

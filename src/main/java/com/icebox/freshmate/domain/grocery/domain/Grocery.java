@@ -94,8 +94,10 @@ public class Grocery extends BaseEntity {
 	}
 
 	public void addRecipeGrocery(RecipeGrocery recipeGrocery) {
-		recipeGrocery.addGrocery(this);
-		this.getRecipeGroceries().add(recipeGrocery);
+		if (recipeGrocery.getGrocery() != null) {
+			recipeGrocery.addGrocery(this);
+			this.getRecipeGroceries().add(recipeGrocery);
+		}
 	}
 
 	public void removeRecipeGrocery(RecipeGrocery recipeGrocery) {
