@@ -16,6 +16,8 @@ import com.icebox.freshmate.domain.grocery.domain.Grocery;
 import com.icebox.freshmate.domain.grocery.domain.GroceryRepository;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
+import com.icebox.freshmate.domain.recipegrocery.domain.RecipeGrocery;
+import com.icebox.freshmate.domain.recipegrocery.domain.RecipeGroceryRepository;
 import com.icebox.freshmate.domain.storage.domain.Storage;
 import com.icebox.freshmate.domain.storage.domain.StorageRepository;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
@@ -32,6 +34,7 @@ public class GroceryService {
 	private final GroceryRepository groceryRepository;
 	private final MemberRepository memberRepository;
 	private final StorageRepository storageRepository;
+	private final RecipeGroceryRepository recipeGroceryRepository;
 
 	public GroceryRes create(GroceryReq groceryReq, String username) {
 		Member member = getMemberByUsername(username);
@@ -75,6 +78,11 @@ public class GroceryService {
 		Member member = getMemberByUsername(username);
 		Grocery grocery = getGroceryByIdAndMemberId(id, member.getId());
 
+		for (RecipeGrocery recipeGrocery : grocery.getRecipeGroceries()) {
+			recipeGrocery.removeGrocery();
+		}
+
+		grocery.getRecipeGroceries().clear();
 		groceryRepository.delete(grocery);
 	}
 

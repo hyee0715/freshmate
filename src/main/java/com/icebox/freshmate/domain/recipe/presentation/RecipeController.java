@@ -20,6 +20,7 @@ import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeCreateRe
 import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeUpdateReq;
 import com.icebox.freshmate.domain.recipe.application.dto.response.RecipeRes;
 import com.icebox.freshmate.domain.recipe.application.dto.response.RecipesRes;
+import com.icebox.freshmate.domain.recipegrocery.application.dto.request.RecipeGroceryReq;
 
 import lombok.RequiredArgsConstructor;
 
@@ -87,11 +88,25 @@ public class RecipeController {
 		return ResponseEntity.ok(recipeRes);
 	}
 
+	@PatchMapping("/recipe-groceries/{recipeId}")
+	public ResponseEntity<RecipeRes> addRecipeGrocery(@PathVariable Long recipeId, @Validated @RequestBody RecipeGroceryReq recipeGroceryReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		RecipeRes recipeRes = recipeService.addRecipeGrocery(recipeId, recipeGroceryReq, principalDetails.getUsername());
+
+		return ResponseEntity.ok(recipeRes);
+	}
+
 	@DeleteMapping("/{id}")
-	public ResponseEntity<RecipeRes> delete(@PathVariable Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+	public ResponseEntity<Void> delete(@PathVariable Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		recipeService.delete(id, principalDetails.getUsername());
 
 		return ResponseEntity.noContent()
 			.build();
+	}
+
+	@DeleteMapping
+	public ResponseEntity<RecipeRes> removeRecipeGrocery(@RequestParam("recipe-groceries-id") Long recipeGroceryId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		RecipeRes recipeRes = recipeService.removeRecipeGrocery(recipeGroceryId, principalDetails.getUsername());
+
+		return ResponseEntity.ok(recipeRes);
 	}
 }

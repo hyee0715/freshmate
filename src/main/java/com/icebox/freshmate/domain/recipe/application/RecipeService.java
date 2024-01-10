@@ -137,11 +137,41 @@ public class RecipeService {
 		return RecipeRes.of(recipe, recipeGroceriesRes);
 	}
 
+	public RecipeRes addRecipeGrocery(Long recipeId, RecipeGroceryReq recipeGroceryReq, String username) {
+		Member member = getMemberByUsername(username);
+
+		Recipe recipe = getRecipeByIdAndOwnerId(recipeId, member.getId());
+		validateScrapedRecipe(recipe);
+
+		saveMaterials(List.of(recipeGroceryReq), recipe, member.getId());
+		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByRecipeId(recipe.getId());
+
+		List<RecipeGroceryRes> recipeGroceriesRes = RecipeGroceryRes.from(recipeGroceries);
+
+		return RecipeRes.of(recipe, recipeGroceriesRes);
+	}
+
 	public void delete(Long id, String username) {
 		Member writer = getMemberByUsername(username);
 		Recipe recipe = getRecipeByIdAndOwnerId(id, writer.getId());
 
 		recipeRepository.delete(recipe);
+	}
+
+	public RecipeRes removeRecipeGrocery(Long recipeGroceryId, String username) {
+		Member member = getMemberByUsername(username);
+		RecipeGrocery recipeGrocery = getRecipeGroceryById(recipeGroceryId);
+
+		Recipe recipe = getRecipeByIdAndOwnerId(recipeGrocery.getRecipe().getId(), member.getId());
+		validateScrapedRecipe(recipe);
+
+		recipeGrocery.getRecipe().removeRecipeGrocery(recipeGrocery);
+		recipeGroceryRepository.delete(recipeGrocery);
+
+		List<RecipeGrocery> recipeGroceries = recipe.getRecipeGroceries();
+		List<RecipeGroceryRes> recipeGroceriesRes = RecipeGroceryRes.from(recipeGroceries);
+
+		return RecipeRes.of(recipe, recipeGroceriesRes);
 	}
 
 	private Recipe getRecipeByIdAndOwnerId(Long recipeId, Long ownerId) {
@@ -198,7 +228,7 @@ public class RecipeService {
 		List<RecipeGrocery> recipeGroceries = materials.stream()
 			.map(material -> {
 				RecipeGrocery recipeGrocery = getRecipeGrocery(material, memberId, recipe);
-				saveRecipeGrocery(recipe, recipeGrocery);
+				saveRecipeGrocery(recipe, recipeGrocery.getGrocery(), recipeGrocery);
 
 				return recipeGrocery;
 			})
@@ -207,8 +237,13 @@ public class RecipeService {
 		return RecipeGroceryRes.from(recipeGroceries);
 	}
 
-	private void saveRecipeGrocery(Recipe recipe, RecipeGrocery recipeGrocery) {
+	private void saveRecipeGrocery(Recipe recipe, Grocery grocery, RecipeGrocery recipeGrocery) {
 		recipe.addRecipeGrocery(recipeGrocery);
+
+		if (grocery != null) {
+			grocery.addRecipeGrocery(recipeGrocery);
+		}
+
 		recipeGroceryRepository.save(recipeGrocery);
 	}
 
@@ -250,7 +285,7 @@ public class RecipeService {
 	}
 
 	private void validateDuplicatedRecipeGrocery(Long recipeId, Long groceryId) {
-		if(recipeGroceryRepository.existsByRecipeIdAndGroceryId(recipeId, groceryId)) {
+		if (recipeGroceryRepository.existsByRecipeIdAndGroceryId(recipeId, groceryId)) {
 			log.warn("DUPLICATED_RECIPE_GROCERY : recipeId = {}, groceryId = {}", recipeId, groceryId);
 			throw new BusinessException(ErrorCode.DUPLICATED_RECIPE_GROCERY);
 		}
@@ -263,5 +298,14 @@ public class RecipeService {
 			.grocery(grocery)
 			.groceryName(groceryName)
 			.build();
+	}
+
+	private RecipeGrocery getRecipeGroceryById(Long recipeGroceryId) {
+
+		return recipeGroceryRepository.findById(recipeGroceryId)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_RECIPE_GROCERY_BY_ID : recipeGroceryId = {}", recipeGroceryId);
+				return new EntityNotFoundException(NOT_FOUND_RECIPE_GROCERY);
+			});
 	}
 }

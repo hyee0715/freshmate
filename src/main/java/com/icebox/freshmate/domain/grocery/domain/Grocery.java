@@ -45,7 +45,7 @@ public class Grocery extends BaseEntity {
 	@JoinColumn(name = "storage_id")
 	private Storage storage;
 
-	@OneToMany(mappedBy = "grocery", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "grocery", cascade = CascadeType.ALL, orphanRemoval = false)
 	private List<RecipeGrocery> recipeGroceries = new ArrayList<>();
 
 	@Column(length = 50)
@@ -94,8 +94,10 @@ public class Grocery extends BaseEntity {
 	}
 
 	public void addRecipeGrocery(RecipeGrocery recipeGrocery) {
-		recipeGrocery.addGrocery(this);
-		this.getRecipeGroceries().add(recipeGrocery);
+		if (recipeGrocery.getGrocery() != null) {
+			recipeGrocery.addGrocery(this);
+			this.getRecipeGroceries().add(recipeGrocery);
+		}
 	}
 
 	public void removeRecipeGrocery(RecipeGrocery recipeGrocery) {
