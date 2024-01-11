@@ -37,12 +37,12 @@ public class PostController {
 			.body(postRes);
 	}
 
-//	@GetMapping("/{id}")
-//	public ResponseEntity<PostRes> findById(@PathVariable Long id) {
-//		PostRes postRes = postService.findById(id);
-//
-//		return ResponseEntity.ok(postRes);
-//	}
+	@GetMapping("/{id}")
+	public ResponseEntity<PostRes> findById(@PathVariable Long id) {
+		PostRes postRes = postService.findById(id);
+
+		return ResponseEntity.ok(postRes);
+	}
 
 	@GetMapping
 	public ResponseEntity<PostsRes> findAllByMemberId(@RequestParam("member-id") Long memberId) {

@@ -3,6 +3,7 @@ package com.icebox.freshmate.domain.post.application;
 import static com.icebox.freshmate.global.error.ErrorCode.INVALID_ATTEMPT_TO_POST_RECIPE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_POST;
+import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_RECIPE;
 
 import java.util.List;
 import java.util.Objects;
@@ -55,27 +56,15 @@ public class PostService {
 		return PostRes.of(savedPost, recipeGroceriesRes);
 	}
 
-	private List<RecipeGroceryRes> getRecipeGroceryResList(Recipe recipe) {
+	@Transactional(readOnly = true)
+	public PostRes findById(Long id) {
+		Post post = getPostById(id);
+		Recipe recipe = post.getRecipe();
 
-		return Optional.ofNullable(recipe)
-			.map(existingRecipe -> recipeGroceryRepository.findAllByRecipeId(existingRecipe.getId()))
-			.map(RecipeGroceryRes::from)
-			.orElse(null);
+		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
+
+		return PostRes.of(post, recipeGroceriesRes);
 	}
-
-	private Recipe getNullableRecipe(Long recipeId) {
-
-		return Optional.ofNullable(recipeId)
-			.flatMap(recipeRepository::findById)
-			.orElse(null);
-	}
-
-//	@Transactional(readOnly = true)
-//	public PostRes findById(Long id) {
-//		Post post = getPostById(id);
-//
-//		return PostRes.of(post);
-//	}
 
 	@Transactional(readOnly = true)
 	public PostsRes findAllByMemberId(Long memberId) {
@@ -120,13 +109,13 @@ public class PostService {
 			});
 	}
 
-//	private Post getPostById(Long postId) {
-//		return postRepository.findById(postId)
-//			.orElseThrow(() -> {
-//				log.warn("GET:READ:NOT_FOUND_POST_BY_ID : {}", postId);
-//				return new EntityNotFoundException(NOT_FOUND_POST);
-//			});
-//	}
+	private Post getPostById(Long postId) {
+		return postRepository.findById(postId)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_POST_BY_ID : {}", postId);
+				return new EntityNotFoundException(NOT_FOUND_POST);
+			});
+	}
 
 	private Member getMemberByUsername(String username) {
 		return memberRepository.findByUsername(username)
@@ -136,13 +125,13 @@ public class PostService {
 			});
 	}
 
-//	private Recipe getRecipeById(Long recipeId) {
-//		return recipeRepository.findById(recipeId)
-//			.orElseThrow(() -> {
-//				log.warn("GET:READ:NOT_FOUND_RECIPE_BY_ID : {}", recipeId);
-//				return new EntityNotFoundException(NOT_FOUND_RECIPE);
-//			});
-//	}
+	private Recipe getRecipeById(Long recipeId) {
+		return recipeRepository.findById(recipeId)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_RECIPE_BY_ID : {}", recipeId);
+				return new EntityNotFoundException(NOT_FOUND_RECIPE);
+			});
+	}
 
 	private void validateScrapedRecipe(Recipe recipe, Member member) {
 		Optional.ofNullable(recipe)
@@ -155,5 +144,20 @@ public class PostService {
 					throw new BusinessException(INVALID_ATTEMPT_TO_POST_RECIPE);
 				}
 			});
+	}
+
+	private List<RecipeGroceryRes> getRecipeGroceryResList(Recipe recipe) {
+
+		return Optional.ofNullable(recipe)
+			.map(existingRecipe -> recipeGroceryRepository.findAllByRecipeId(existingRecipe.getId()))
+			.map(RecipeGroceryRes::from)
+			.orElse(null);
+	}
+
+	private Recipe getNullableRecipe(Long recipeId) {
+
+		return Optional.ofNullable(recipeId)
+			.flatMap(recipeRepository::findById)
+			.orElse(null);
 	}
 }
