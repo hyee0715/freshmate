@@ -37,12 +37,12 @@ public class PostController {
 			.body(postRes);
 	}
 
-	@GetMapping("/{id}")
-	public ResponseEntity<PostRes> findById(@PathVariable Long id) {
-		PostRes postRes = postService.findById(id);
-
-		return ResponseEntity.ok(postRes);
-	}
+//	@GetMapping("/{id}")
+//	public ResponseEntity<PostRes> findById(@PathVariable Long id) {
+//		PostRes postRes = postService.findById(id);
+//
+//		return ResponseEntity.ok(postRes);
+//	}
 
 	@GetMapping
 	public ResponseEntity<PostsRes> findAllByMemberId(@RequestParam("member-id") Long memberId) {
@@ -51,12 +51,12 @@ public class PostController {
 		return ResponseEntity.ok(postsRes);
 	}
 
-	@PatchMapping("/{id}")
-	public ResponseEntity<PostRes> update(@PathVariable Long id, @Validated @RequestBody PostReq postReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		PostRes postRes = postService.update(id, postReq, principalDetails.getUsername());
-
-		return ResponseEntity.ok(postRes);
-	}
+//	@PatchMapping("/{id}")
+//	public ResponseEntity<PostRes> update(@PathVariable Long id, @Validated @RequestBody PostReq postReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+//		PostRes postRes = postService.update(id, postReq, principalDetails.getUsername());
+//
+//		return ResponseEntity.ok(postRes);
+//	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {

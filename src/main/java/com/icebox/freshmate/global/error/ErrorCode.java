@@ -43,6 +43,7 @@ public enum ErrorCode {
 	NOT_FOUND_RECIPE("RC001", "레시피가 존재하지 않습니다."),
 	INVALID_SCRAP_ATTEMPT_TO_OWN_RECIPE("RC002", "본인이 작성한 레시피는 스크랩할 수 없습니다."),
 	INVALID_UPDATE_ATTEMPT_TO_SCRAPED_RECIPE("RC003", "스크랩한 레시피는 수정할 수 없습니다."),
+	INVALID_ATTEMPT_TO_POST_RECIPE("RC004", "본인이 작성하지 않은 레시피는 게시글로 공유할 수 없습니다."),
 
 	//레시피의 식재료
 	INVALID_RECIPE_GROCERY_NAME("RG001", "레시피에 추가하려는 식재료 ID와 이름의 정보가 일치하지 않습니다."),
