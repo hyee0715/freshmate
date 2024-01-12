@@ -3,7 +3,6 @@ package com.icebox.freshmate.domain.post.application;
 import static com.icebox.freshmate.global.error.ErrorCode.INVALID_ATTEMPT_TO_POST_RECIPE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_POST;
-import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_RECIPE;
 
 import java.util.List;
 import java.util.Objects;
@@ -23,7 +22,6 @@ import com.icebox.freshmate.domain.recipe.domain.Recipe;
 import com.icebox.freshmate.domain.recipe.domain.RecipeRepository;
 import com.icebox.freshmate.domain.recipe.domain.RecipeType;
 import com.icebox.freshmate.domain.recipegrocery.application.dto.response.RecipeGroceryRes;
-import com.icebox.freshmate.domain.recipegrocery.domain.RecipeGrocery;
 import com.icebox.freshmate.domain.recipegrocery.domain.RecipeGroceryRepository;
 import com.icebox.freshmate.global.error.exception.BusinessException;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
@@ -125,14 +123,6 @@ public class PostService {
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_MEMBER_BY_MEMBER_USERNAME : {}", username);
 				return new EntityNotFoundException(NOT_FOUND_MEMBER);
-			});
-	}
-
-	private Recipe getRecipeById(Long recipeId) {
-		return recipeRepository.findById(recipeId)
-			.orElseThrow(() -> {
-				log.warn("GET:READ:NOT_FOUND_RECIPE_BY_ID : {}", recipeId);
-				return new EntityNotFoundException(NOT_FOUND_RECIPE);
 			});
 	}
 
