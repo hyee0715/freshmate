@@ -1,6 +1,7 @@
 package com.icebox.freshmate.domain.post.domain;
 
 import com.icebox.freshmate.domain.member.domain.Member;
+import com.icebox.freshmate.domain.recipe.domain.Recipe;
 import com.icebox.freshmate.global.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -33,6 +34,10 @@ public class Post extends BaseEntity {
 	@JoinColumn(name = "member_id")
 	private Member member;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "recipe_id")
+	private Recipe recipe;
+
 	@Column(length = 200)
 	private String title;
 
@@ -40,8 +45,9 @@ public class Post extends BaseEntity {
 	private String content;
 
 	@Builder
-	public Post(Member member, String title, String content) {
+	public Post(Member member, Recipe recipe, String title, String content) {
 		this.member = member;
+		this.recipe = recipe;
 		this.title = title;
 		this.content = content;
 	}
@@ -49,5 +55,6 @@ public class Post extends BaseEntity {
 	public void update(Post post) {
 		this.title = post.getTitle();
 		this.content = post.getContent();
+		this.recipe = post.getRecipe();
 	}
 }
