@@ -64,6 +64,13 @@ public class GroceryBucketService {
 		return GroceryBucketRes.from(groceryBucket);
 	}
 
+	public void delete(Long id, String username) {
+		Member member = getMemberByUsername(username);
+		GroceryBucket groceryBucket = getGroceryBucketByIdAndMemberId(id, member.getId());
+
+		groceryBucketRepository.delete(groceryBucket);
+	}
+
 	private Member getMemberByUsername(String username) {
 
 		return memberRepository.findByUsername(username)
