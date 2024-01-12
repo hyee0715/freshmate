@@ -51,4 +51,10 @@ public class GroceryBucket {
 		this.groceryType = groceryType;
 		this.groceryDescription = groceryDescription;
 	}
+
+	public void update(GroceryBucket groceryBucket) {
+		this.groceryName = groceryBucket.getGroceryName();
+		this.groceryType = groceryBucket.getGroceryType();
+		this.groceryDescription = groceryBucket.getGroceryDescription();
+	}
 }

@@ -54,6 +54,16 @@ public class GroceryBucketService {
 		return GroceryBucketsRes.from(groceryBuckets);
 	}
 
+	public GroceryBucketRes update(Long id, GroceryBucketReq groceryBucketReq, String username) {
+		Member member = getMemberByUsername(username);
+		GroceryBucket groceryBucket = getGroceryBucketByIdAndMemberId(id, member.getId());
+
+		GroceryBucket updateGroceryBucket = GroceryBucketReq.toGroceryBucket(groceryBucketReq, member);
+		groceryBucket.update(updateGroceryBucket);
+
+		return GroceryBucketRes.from(groceryBucket);
+	}
+
 	private Member getMemberByUsername(String username) {
 
 		return memberRepository.findByUsername(username)
@@ -68,6 +78,15 @@ public class GroceryBucketService {
 		return groceryBucketRepository.findById(groceryId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_GROCERY_BUCKET_BY_ID : {}", groceryId);
+				return new EntityNotFoundException(NOT_FOUND_GROCERY_BUCKET);
+			});
+	}
+
+	private GroceryBucket getGroceryBucketByIdAndMemberId(Long groceryId, Long memberId) {
+
+		return groceryBucketRepository.findByIdAndMemberId(groceryId, memberId)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_GROCERY_BUCKET_BY_ID_AND_MEMBER_ID : groceryId = {}, memberId = {}", groceryId, memberId);
 				return new EntityNotFoundException(NOT_FOUND_GROCERY_BUCKET);
 			});
 	}
