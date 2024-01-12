@@ -1,10 +1,14 @@
 package com.icebox.freshmate.domain.post.application.dto.response;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.icebox.freshmate.domain.post.domain.Post;
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
 import com.icebox.freshmate.domain.recipegrocery.application.dto.response.RecipeGroceryRes;
+import com.icebox.freshmate.domain.recipegrocery.domain.RecipeGrocery;
 
 public record PostsRes(
 	List<PostRes> posts
@@ -22,9 +26,11 @@ public record PostsRes(
 	}
 
 	private static List<RecipeGroceryRes> getRecipeGroceryResList(Recipe recipe) {
-
-		return recipe.getRecipeGroceries().stream()
+		return Optional.ofNullable(recipe)
+			.map(Recipe::getRecipeGroceries)
+			.orElse(Collections.emptyList())
+			.stream()
 			.map(RecipeGroceryRes::from)
-			.toList();
+			.collect(Collectors.toList());
 	}
 }
