@@ -74,17 +74,20 @@ public class PostService {
 		return PostsRes.from(posts);
 	}
 
-//	public PostRes update(Long postId, PostReq postReq, String username) {
-//		Member member = getMemberByUsername(username);
-//		Post post = getPostByIdAndMemberId(postId, member.getId());
-//		Recipe recipe = recipeRepository.findById(postReq.recipeId())
-//			.orElse(null);
-//
-//		Post updatePost = PostReq.toPost(postReq, member, recipe);
-//		post.update(updatePost);
-//
-//		return PostRes.of(post);
-//	}
+	public PostRes update(Long postId, PostReq postReq, String username) {
+		Member member = getMemberByUsername(username);
+		Post post = getPostByIdAndMemberId(postId, member.getId());
+		Recipe recipe = getNullableRecipe(postReq.recipeId());
+
+		validateScrapedRecipe(recipe, member);
+
+		Post updatePost = PostReq.toPost(postReq, member, recipe);
+		post.update(updatePost);
+
+		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
+
+		return PostRes.of(post, recipeGroceriesRes);
+	}
 
 	public void delete(Long postId, String username) {
 		Member member = getMemberByUsername(username);

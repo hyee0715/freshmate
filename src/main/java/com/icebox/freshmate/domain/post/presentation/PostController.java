@@ -51,12 +51,12 @@ public class PostController {
 		return ResponseEntity.ok(postsRes);
 	}
 
-//	@PatchMapping("/{id}")
-//	public ResponseEntity<PostRes> update(@PathVariable Long id, @Validated @RequestBody PostReq postReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-//		PostRes postRes = postService.update(id, postReq, principalDetails.getUsername());
-//
-//		return ResponseEntity.ok(postRes);
-//	}
+	@PatchMapping("/{id}")
+	public ResponseEntity<PostRes> update(@PathVariable Long id, @Validated @RequestBody PostReq postReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		PostRes postRes = postService.update(id, postReq, principalDetails.getUsername());
+
+		return ResponseEntity.ok(postRes);
+	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
