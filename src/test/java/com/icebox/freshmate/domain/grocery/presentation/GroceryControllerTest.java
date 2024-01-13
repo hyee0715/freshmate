@@ -202,7 +202,6 @@ class GroceryControllerTest {
 
 		LocalDateTime createdAt = LocalDateTime.now();
 
-
 		GroceryRes groceryRes = new GroceryRes(groceryId, grocery.getName(), grocery.getGroceryType().name(), grocery.getQuantity(), grocery.getDescription(), grocery.getExpirationDate(), storageId, grocery.getStorage().getName(), grocery.getGroceryExpirationType().name(), createdAt);
 
 		when(groceryService.findById(groceryId)).thenReturn(groceryRes);
