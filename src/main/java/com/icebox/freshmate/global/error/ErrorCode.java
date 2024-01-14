@@ -53,6 +53,11 @@ public enum ErrorCode {
 	DUPLICATED_RECIPE_GROCERY("RG002", "해당 레시피에 이미 같은 식재료가 등록되어 있습니다."),
 	NOT_FOUND_RECIPE_GROCERY("RG003", "레시피의 식재료 정보가 존재하지 않습니다."),
 
+	//즐겨 찾는 레시피
+	RECIPE_OWNER_MISMATCH_TO_CREATE_RECIPE_BUCKET("RB001", "레시피 소유자의 정보와 즐겨 찾는 레시피로 등록하려는 사용자의 정보가 일치하지 않습니다."),
+	DUPLICATED_RECIPE_BUCKET("RB002", "해당 레시피는 이미 즐겨 찾는 레시피로 등록되어 있습니다."),
+	NOT_FOUND_RECIPE_BUCKET("RB003", "즐겨 찾는 레시피가 존재하지 않습니다."),
+
 	//게시글
 	NOT_FOUND_POST("P001", "게시글이 존재하지 않습니다."),
 
