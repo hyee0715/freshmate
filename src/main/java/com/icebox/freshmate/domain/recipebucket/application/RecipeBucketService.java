@@ -74,6 +74,23 @@ public class RecipeBucketService {
 		return RecipeBucketsRes.from(recipeBuckets);
 	}
 
+	public void delete(Long id, String username) {
+		Member member = getMemberByUsername(username);
+
+		RecipeBucket recipeBucket = getRecipeBucketByIdAndMemberId(id, member.getId());
+
+		recipeBucketRepository.delete(recipeBucket);
+	}
+
+	private RecipeBucket getRecipeBucketByIdAndMemberId(Long recipeBucketId, Long memberId) {
+
+		return recipeBucketRepository.findByIdAndMemberId(recipeBucketId, memberId)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_RECIPE_BUCKET_BY_ID_AND_MEMBER_ID : recipeBucketId = {}, memberId = {}", recipeBucketId, memberId);
+				return new EntityNotFoundException(NOT_FOUND_RECIPE_BUCKET);
+			});
+	}
+
 	private RecipeBucket getRecipeBucketById(Long recipeBucketId) {
 
 		return recipeBucketRepository.findById(recipeBucketId)
