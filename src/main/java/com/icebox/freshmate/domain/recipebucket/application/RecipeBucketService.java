@@ -3,6 +3,7 @@ package com.icebox.freshmate.domain.recipebucket.application;
 import static com.icebox.freshmate.global.error.ErrorCode.DUPLICATED_RECIPE_BUCKET;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_RECIPE;
+import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_RECIPE_BUCKET;
 import static com.icebox.freshmate.global.error.ErrorCode.RECIPE_OWNER_MISMATCH_TO_CREATE_RECIPE_BUCKET;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import com.icebox.freshmate.domain.recipe.domain.Recipe;
 import com.icebox.freshmate.domain.recipe.domain.RecipeRepository;
 import com.icebox.freshmate.domain.recipebucket.application.dto.request.RecipeBucketReq;
 import com.icebox.freshmate.domain.recipebucket.application.dto.response.RecipeBucketRes;
+import com.icebox.freshmate.domain.recipebucket.application.dto.response.RecipeBucketsRes;
 import com.icebox.freshmate.domain.recipebucket.domain.RecipeBucket;
 import com.icebox.freshmate.domain.recipebucket.domain.RecipeBucketRepository;
 import com.icebox.freshmate.domain.recipegrocery.application.dto.response.RecipeGroceryRes;
@@ -51,6 +53,34 @@ public class RecipeBucketService {
 		List<RecipeGroceryRes> recipeGroceriesRes = RecipeGroceryRes.from(recipeGroceries);
 
 		return RecipeBucketRes.of(savedRecipeBucket, recipeGroceriesRes);
+	}
+
+	@Transactional(readOnly = true)
+	public RecipeBucketRes findById(Long id) {
+		RecipeBucket recipeBucket = getRecipeBucketById(id);
+
+		List<RecipeGrocery> recipeGroceries = recipeBucket.getRecipe().getRecipeGroceries();
+		List<RecipeGroceryRes> recipeGroceriesRes = RecipeGroceryRes.from(recipeGroceries);
+
+		return RecipeBucketRes.of(recipeBucket, recipeGroceriesRes);
+	}
+
+	@Transactional(readOnly = true)
+	public RecipeBucketsRes findAllByMemberId(String username) {
+		Member member = getMemberByUsername(username);
+
+		List<RecipeBucket> recipeBuckets = recipeBucketRepository.findAllByMemberId(member.getId());
+
+		return RecipeBucketsRes.from(recipeBuckets);
+	}
+
+	private RecipeBucket getRecipeBucketById(Long recipeBucketId) {
+
+		return recipeBucketRepository.findById(recipeBucketId)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_RECIPE_BUCKET_BY_ID : {}", recipeBucketId);
+				return new EntityNotFoundException(NOT_FOUND_RECIPE_BUCKET);
+			});
 	}
 
 	private Member getMemberByUsername(String username) {
