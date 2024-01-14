@@ -1,0 +1,74 @@
+= REST Docs Recipe Bucket API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+[[Recipe-Bucket-API]]
+== POST: 즐겨 찾는 레시피 생성
+=== 성공
+
+.Request
+include::{snippets}/recipe-bucket/recipe-bucket-create/http-request.adoc[]
+.Request Headers
+include::{snippets}/recipe-bucket/recipe-bucket-create/request-headers.adoc[]
+.Request Fields
+include::{snippets}/recipe-bucket/recipe-bucket-create/request-fields.adoc[]
+.Request Body
+include::{snippets}/recipe-bucket/recipe-bucket-create/request-body.adoc[]
+
+.Response
+include::{snippets}/recipe-bucket/recipe-bucket-create/http-response.adoc[]
+.Response Fields
+include::{snippets}/recipe-bucket/recipe-bucket-create/response-fields.adoc[]
+.Response body
+include::{snippets}/recipe-bucket/recipe-bucket-create/response-body.adoc[]
+
+---
+== GET: 즐겨 찾는 레시피 단건 조회
+=== 성공
+
+.Request
+include::{snippets}/recipe-bucket/recipe-bucket-find-by-id/http-request.adoc[]
+.Path Parameters
+include::{snippets}/recipe-bucket/recipe-bucket-find-by-id/path-parameters.adoc[]
+
+.Response
+include::{snippets}/recipe-bucket/recipe-bucket-find-by-id/http-response.adoc[]
+.Response Fields
+include::{snippets}/recipe-bucket/recipe-bucket-find-by-id/response-fields.adoc[]
+.Response body
+include::{snippets}/recipe-bucket/recipe-bucket-find-by-id/response-body.adoc[]
+
+---
+== GET: 사용자의 즐겨 찾는 레시피 목록 조회
+=== 성공
+
+.Request
+include::{snippets}/recipe-bucket/recipe-bucket-find-all-by-member-id/http-request.adoc[]
+.Request Headers
+include::{snippets}/recipe-bucket/recipe-bucket-find-all-by-member-id/request-headers.adoc[]
+
+.Response
+include::{snippets}/recipe-bucket/recipe-bucket-find-all-by-member-id/http-response.adoc[]
+.Response Fields
+include::{snippets}/recipe-bucket/recipe-bucket-find-all-by-member-id/response-fields.adoc[]
+.Response body
+include::{snippets}/recipe-bucket/recipe-bucket-find-all-by-member-id/response-body.adoc[]
+
+---
+== POST: 즐겨 찾는 레시피 삭제
+=== 성공
+
+.Request
+include::{snippets}/recipe-bucket/recipe-bucket-delete/http-request.adoc[]
+.Path Parameters
+include::{snippets}/recipe-bucket/recipe-bucket-delete/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/recipe-bucket/recipe-bucket-delete/request-headers.adoc[]
+
+.Response
+include::{snippets}/recipe-bucket/recipe-bucket-delete/http-response.adoc[]
+
+---
