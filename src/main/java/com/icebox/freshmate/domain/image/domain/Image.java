@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @Getter
 public abstract class Image {
 
-	protected String filename;
+	protected String fileName;
 
-	public Image(String filename) {
-		this.filename = filename;
+	public Image(String fileName) {
+		this.fileName = fileName;
 	}
 }

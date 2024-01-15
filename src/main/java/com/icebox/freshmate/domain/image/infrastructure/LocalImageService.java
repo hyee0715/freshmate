@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.icebox.freshmate.domain.image.application.ImageService;
 import com.icebox.freshmate.domain.image.application.dto.request.ImageDeleteReq;
 import com.icebox.freshmate.domain.image.application.dto.request.ImageUploadReq;
+import com.icebox.freshmate.domain.image.application.dto.response.ImageRes;
 import com.icebox.freshmate.domain.image.application.dto.response.ImagesRes;
 import com.icebox.freshmate.domain.image.exception.ImageIOException;
 import com.icebox.freshmate.domain.image.exception.InvalidFileTypeException;
@@ -42,24 +43,43 @@ public class LocalImageService implements ImageService {
 
 	@Override
 	public ImagesRes store(ImageUploadReq request) {
-		List<String> paths = request.files()
-			.stream()
+		List<ImageRes> imagesRes = request.files().stream()
 			.peek(this::validateFileExtension)
-			.map(this::save)
+			.map(this::saveImageFile)
 			.toList();
 
-		return ImagesRes.from(paths);
+		return ImagesRes.from(imagesRes);
 	}
 
-	private String getFullPath(MultipartFile multipartFile) {
-		String fileNameToStore = createFileNameToStore(multipartFile.getOriginalFilename());
+	@Override
+	public void delete(ImageDeleteReq request) {
 
-		return getFullPath(fileNameToStore);
+		request.filePaths().stream()
+			.peek(fileName -> log.info("delete fileName = {}", fileName))
+			.map(File::new)
+			.forEach(File::delete);
 	}
 
-	private String save(MultipartFile multipartFile) {
-		String fullPath = getFullPath(multipartFile);
+	private ImageRes saveImageFile(MultipartFile multipartFile) {
+		String fileName = getFileName(multipartFile);
+		String fullPath = getFullPath(fileName);
+		String savedFullPath = save(fullPath, multipartFile);
 
+		return ImageRes.of(fileName, savedFullPath);
+	}
+
+	private String getFileName(MultipartFile multipartFile) {
+		String ext = getExtension(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+
+		return getRandomUuidFileName() + "." + ext;
+	}
+
+	private String getRandomUuidFileName() {
+
+		return UUID.randomUUID().toString();
+	}
+
+	private String save(String fullPath, MultipartFile multipartFile) {
 		try {
 			multipartFile.transferTo(new File(fullPath));
 
@@ -69,14 +89,14 @@ public class LocalImageService implements ImageService {
 		}
 	}
 
-	private String getFileName() {
+	private String getDirectoryFileName(String rawFileName) {
 		StringBuilder fileName = new StringBuilder();
 
 		String directoryPath = makeDirectoryPath();
 		fileName.append(directoryPath);
-
 		makeDirectory(directoryPath);
-		fileName.append(UUID.randomUUID());
+
+		fileName.append(rawFileName);
 
 		return fileName.toString();
 	}
@@ -100,19 +120,10 @@ public class LocalImageService implements ImageService {
 		return now.format(DateTimeFormatter.ofPattern("yyyy/MM/dd/"));
 	}
 
-	public String getFullPath(String fileName) {
+	private String getFullPath(String fileName) {
+		String directoryFileName = getDirectoryFileName(fileName);
 
-		return fileDir + fileName;
-	}
-
-	@Override
-	public void delete(ImageDeleteReq request) {
-		for (String fileName : request.fileNames()) {
-			log.info("delete fileName = {}", fileName);
-			File file = new File(fileName);
-
-			file.delete();
-		}
+		return fileDir + directoryFileName;
 	}
 
 	private void validateFileExtension(MultipartFile file) {
@@ -138,12 +149,5 @@ public class LocalImageService implements ImageService {
 	private String getExtension(String fileName) {
 		int pos = fileName.lastIndexOf(".");
 		return fileName.substring(pos + 1);
-	}
-
-	private String createFileNameToStore(String originalFileName) {
-		String ext = getExtension(originalFileName);
-		String fileName = getFileName();
-
-		return fileName + "." + ext;
 	}
 }
