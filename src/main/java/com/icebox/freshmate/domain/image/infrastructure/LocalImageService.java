@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.icebox.freshmate.domain.image.application.ImageService;
+import com.icebox.freshmate.domain.image.application.dto.request.ImageDeleteReq;
 import com.icebox.freshmate.domain.image.application.dto.request.ImageUploadReq;
 import com.icebox.freshmate.domain.image.application.dto.response.ImagesRes;
 import com.icebox.freshmate.domain.image.exception.ImageIOException;
@@ -53,7 +54,7 @@ public class LocalImageService implements ImageService {
 	private String getFullPath(MultipartFile multipartFile) {
 		String fileNameToStore = createFileNameToStore(multipartFile.getOriginalFilename());
 
-		return makeFullPath(fileNameToStore);
+		return getFullPath(fileNameToStore);
 	}
 
 	private String save(MultipartFile multipartFile) {
@@ -99,9 +100,19 @@ public class LocalImageService implements ImageService {
 		return now.format(DateTimeFormatter.ofPattern("yyyy/MM/dd/"));
 	}
 
-	private String makeFullPath(String fileName) {
+	public String getFullPath(String fileName) {
 
 		return fileDir + fileName;
+	}
+
+	@Override
+	public void delete(ImageDeleteReq request) {
+		for (String fileName : request.fileNames()) {
+			log.info("delete fileName = {}", fileName);
+			File file = new File(fileName);
+
+			file.delete();
+		}
 	}
 
 	private void validateFileExtension(MultipartFile file) {
