@@ -62,7 +62,14 @@ public enum ErrorCode {
 	NOT_FOUND_POST("P001", "게시글이 존재하지 않습니다."),
 
 	//댓글
-	NOT_FOUND_COMMENT("CM001", "댓글이 존재하지 않습니다.");
+	NOT_FOUND_COMMENT("CM001", "댓글이 존재하지 않습니다."),
+
+	//이미지
+	NOT_FOUND_IMAGE("I001", "이미지가 존재하지 않습니다."),
+	EMPTY_IMAGE("I002", "이미지가 비어있습니다."),
+	INVALID_IMAGE_FORMAT("I003", "지원하지 않는 이미지 파일 형식입니다."),
+	EXCESSIVE_IMAGE_COUNT("I004", "업로드 가능한 이미지 최대 개수를 초과하였습니다.");
+
 
 	private final String code;
 	private final String message;
