@@ -62,7 +62,7 @@ public class RecipeService {
 		List<RecipeGroceryRes> recipeGroceriesRes = saveMaterials(recipeCreateReq.materials(), recipe, member.getId());
 
 		ImagesRes imagesRes = saveImages(recipe, imageUploadReq);
-		List<ImageRes> images = getImageResList(imagesRes);
+		List<ImageRes> images = getImagesRes(imagesRes);
 
 		return RecipeRes.of(recipe, recipeGroceriesRes, images);
 	}
@@ -75,8 +75,8 @@ public class RecipeService {
 
 		Recipe savedRecipe = saveScrapedRecipe(recipe, writer, owner);
 
-		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(savedRecipe.getOriginalRecipeId());
-		List<ImageRes> recipeImageRes = getRecipeImageResList(savedRecipe.getOriginalRecipeId());
+		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceriesRes(savedRecipe.getOriginalRecipeId());
+		List<ImageRes> recipeImageRes = getRecipeImagesRes(savedRecipe.getOriginalRecipeId());
 
 		return RecipeRes.of(savedRecipe, recipeGroceriesRes, recipeImageRes);
 	}
@@ -85,8 +85,8 @@ public class RecipeService {
 	public RecipeRes findById(Long id) {
 		Recipe recipe = getRecipeById(id);
 
-		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
-		List<ImageRes> imagesRes = getRecipeImageResList(recipe);
+		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceriesRes(recipe);
+		List<ImageRes> imagesRes = getRecipeImagesRes(recipe);
 
 		return RecipeRes.of(recipe, recipeGroceriesRes, imagesRes);
 	}
@@ -128,8 +128,8 @@ public class RecipeService {
 		Recipe updateRecipe = RecipeUpdateReq.toRecipe(recipeUpdateReq, owner);
 		recipe.update(updateRecipe);
 
-		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
-		List<ImageRes> imagesRes = getRecipeImageResList(recipe);
+		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceriesRes(recipe);
+		List<ImageRes> imagesRes = getRecipeImagesRes(recipe);
 
 		return RecipeRes.of(recipe, recipeGroceriesRes, imagesRes);
 	}
@@ -142,8 +142,8 @@ public class RecipeService {
 
 		saveMaterials(List.of(recipeGroceryReq), recipe, member.getId());
 
-		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
-		List<ImageRes> imagesRes = getRecipeImageResList(recipe);
+		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceriesRes(recipe);
+		List<ImageRes> imagesRes = getRecipeImagesRes(recipe);
 
 		return RecipeRes.of(recipe, recipeGroceriesRes, imagesRes);
 	}
@@ -157,8 +157,8 @@ public class RecipeService {
 		validateImageListIsEmpty(imageUploadReq.files());
 		saveImages(recipe, imageUploadReq);
 
-		List<ImageRes> images = getImageResList(recipe.getRecipeImages());
-		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
+		List<ImageRes> images = getImagesRes(recipe.getRecipeImages());
+		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceriesRes(recipe);
 
 		return RecipeRes.of(recipe, recipeGroceriesRes, images);
 	}
@@ -179,8 +179,8 @@ public class RecipeService {
 
 		deleteRecipeGrocery(recipeGrocery);
 
-		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
-		List<ImageRes> imagesRes = getRecipeImageResList(recipe);
+		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceriesRes(recipe);
+		List<ImageRes> imagesRes = getRecipeImagesRes(recipe);
 
 		return RecipeRes.of(recipe, recipeGroceriesRes, imagesRes);
 	}
@@ -197,8 +197,8 @@ public class RecipeService {
 
 		deleteRecipeImage(recipeImage, imageDeleteReq);
 
-		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
-		List<ImageRes> imagesRes = getRecipeImageResList(recipe);
+		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceriesRes(recipe);
+		List<ImageRes> imagesRes = getRecipeImagesRes(recipe);
 
 		return RecipeRes.of(recipe, recipeGroceriesRes, imagesRes);
 	}
@@ -396,14 +396,14 @@ public class RecipeService {
 			});
 	}
 
-	private List<ImageRes> getImageResList(ImagesRes imagesRes) {
+	private List<ImageRes> getImagesRes(ImagesRes imagesRes) {
 
 		return Optional.ofNullable(imagesRes)
 			.map(ImagesRes::images)
 			.orElse(null);
 	}
 
-	private List<ImageRes> getImageResList(List<RecipeImage> recipeImages) {
+	private List<ImageRes> getImagesRes(List<RecipeImage> recipeImages) {
 
 		return recipeImages.stream()
 			.map(recipeImage -> ImageRes.of(recipeImage.getFileName(), recipeImage.getPath()))
@@ -440,25 +440,25 @@ public class RecipeService {
 			.build();
 	}
 
-	private List<ImageRes> getRecipeImageResList(Recipe recipe) {
+	private List<ImageRes> getRecipeImagesRes(Recipe recipe) {
 		List<RecipeImage> recipeImages = recipe.getRecipeImages();
 
-		return getImageResList(recipeImages);
+		return getImagesRes(recipeImages);
 	}
 
-	private List<ImageRes> getRecipeImageResList(Long recipeId) {
+	private List<ImageRes> getRecipeImagesRes(Long recipeId) {
 		List<RecipeImage> recipeImages = recipeImageRepository.findAllByRecipeId(recipeId);
 
-		return getImageResList(recipeImages);
+		return getImagesRes(recipeImages);
 	}
 
-	private List<RecipeGroceryRes> getRecipeGroceryResList(Recipe recipe) {
+	private List<RecipeGroceryRes> getRecipeGroceriesRes(Recipe recipe) {
 		List<RecipeGrocery> recipeGroceries = recipe.getRecipeGroceries();
 
 		return RecipeGroceryRes.from(recipeGroceries);
 	}
 
-	private List<RecipeGroceryRes> getRecipeGroceryResList(Long recipeId) {
+	private List<RecipeGroceryRes> getRecipeGroceriesRes(Long recipeId) {
 		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByRecipeId(recipeId);
 
 		return RecipeGroceryRes.from(recipeGroceries);
