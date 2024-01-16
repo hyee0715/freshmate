@@ -130,7 +130,7 @@ class PostControllerTest {
 			.storage(storage)
 			.name("양배추")
 			.groceryType(GroceryType.VEGETABLES)
-			.quantity(1)
+			.quantity("1개")
 			.description("필수 식재료")
 			.expirationDate(LocalDate.now().plusDays(7))
 			.build();
@@ -139,7 +139,7 @@ class PostControllerTest {
 			.storage(storage)
 			.name("배추")
 			.groceryType(GroceryType.VEGETABLES)
-			.quantity(2)
+			.quantity("2개")
 			.description("김장용")
 			.expirationDate(LocalDate.now().plusDays(7))
 			.build();
@@ -156,12 +156,14 @@ class PostControllerTest {
 			.recipe(recipe)
 			.grocery(grocery1)
 			.groceryName(grocery1.getName())
+			.groceryQuantity(grocery1.getQuantity())
 			.build();
 
 		recipeGrocery2 = RecipeGrocery.builder()
 			.recipe(recipe)
 			.grocery(grocery2)
 			.groceryName(grocery2.getName())
+			.groceryQuantity(grocery2.getQuantity())
 			.build();
 
 		recipe.addRecipeGrocery(recipeGrocery1);
@@ -188,8 +190,8 @@ class PostControllerTest {
 		Long grocery1Id = 1L;
 		Long grocery2Id = 2L;
 
-		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipeId, recipe.getTitle(), grocery1Id, grocery1.getName());
-		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipeId, recipe.getTitle(), grocery2Id, grocery2.getName());
+		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipeId, recipe.getTitle(), grocery1Id, grocery1.getName(), grocery1.getQuantity());
+		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipeId, recipe.getTitle(), grocery2Id, grocery2.getName(), grocery2.getQuantity());
 
 		PostReq postReq = new PostReq(post.getTitle(), post.getContent(), recipeId);
 		PostRes postRes = new PostRes(postId, memberId, post.getTitle(), post.getContent(), recipeId, recipeWriterId, recipe.getWriter().getNickName(), recipe.getTitle(), recipe.getContent(), List.of(recipeGroceryRes1, recipeGroceryRes2));
@@ -220,6 +222,7 @@ class PostControllerTest {
 			.andExpect(jsonPath("$.recipeMaterials[0].recipeTitle").value(post.getRecipe().getRecipeGroceries().get(0).getRecipe().getTitle()))
 			.andExpect(jsonPath("$.recipeMaterials[0].groceryId").value(grocery1Id))
 			.andExpect(jsonPath("$.recipeMaterials[0].groceryName").value(post.getRecipe().getRecipeGroceries().get(0).getGroceryName()))
+			.andExpect(jsonPath("$.recipeMaterials[0].groceryQuantity").value(post.getRecipe().getRecipeGroceries().get(0).getGroceryQuantity()))
 			.andDo(print())
 			.andDo(document("post/post-create",
 				preprocessRequest(prettyPrint()),
@@ -247,7 +250,8 @@ class PostControllerTest {
 					fieldWithPath("recipeMaterials[].recipeId").type(NUMBER).description("게시글에 공유된 레시피 ID"),
 					fieldWithPath("recipeMaterials[].recipeTitle").type(STRING).description("게시글에 공유된 레시피 제목"),
 					fieldWithPath("recipeMaterials[].groceryId").type(NUMBER).description("게시글에 공유된 레시피의 식재료 ID"),
-					fieldWithPath("recipeMaterials[].groceryName").type(STRING).description("게시글에 공유된 레시피의 식재료 이름")
+					fieldWithPath("recipeMaterials[].groceryName").type(STRING).description("게시글에 공유된 레시피의 식재료 이름"),
+					fieldWithPath("recipeMaterials[].groceryQuantity").type(STRING).description("게시글에 공유된 레시피의 식재료 수량")
 				)
 			));
 	}
@@ -265,8 +269,8 @@ class PostControllerTest {
 		Long grocery1Id = 1L;
 		Long grocery2Id = 2L;
 
-		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipeId, recipe.getTitle(), grocery1Id, grocery1.getName());
-		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipeId, recipe.getTitle(), grocery2Id, grocery2.getName());
+		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipeId, recipe.getTitle(), grocery1Id, grocery1.getName(), grocery1.getQuantity());
+		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipeId, recipe.getTitle(), grocery2Id, grocery2.getName(), grocery2.getQuantity());
 
 		PostRes postRes = new PostRes(postId, memberId, post.getTitle(), post.getContent(), recipeId, recipeWriterId, recipe.getWriter().getNickName(), recipe.getTitle(), recipe.getContent(), List.of(recipeGroceryRes1, recipeGroceryRes2));
 
@@ -294,6 +298,7 @@ class PostControllerTest {
 			.andExpect(jsonPath("$.recipeMaterials[0].recipeTitle").value(post.getRecipe().getRecipeGroceries().get(0).getRecipe().getTitle()))
 			.andExpect(jsonPath("$.recipeMaterials[0].groceryId").value(grocery1Id))
 			.andExpect(jsonPath("$.recipeMaterials[0].groceryName").value(post.getRecipe().getRecipeGroceries().get(0).getGroceryName()))
+			.andExpect(jsonPath("$.recipeMaterials[0].groceryQuantity").value(post.getRecipe().getRecipeGroceries().get(0).getGroceryQuantity()))
 			.andDo(print())
 			.andDo(document("post/post-find-by-id",
 				preprocessRequest(prettyPrint()),
@@ -314,7 +319,8 @@ class PostControllerTest {
 					fieldWithPath("recipeMaterials[].recipeId").type(NUMBER).description("게시글에 공유된 레시피 ID"),
 					fieldWithPath("recipeMaterials[].recipeTitle").type(STRING).description("게시글에 공유된 레시피 제목"),
 					fieldWithPath("recipeMaterials[].groceryId").type(NUMBER).description("게시글에 공유된 레시피의 식재료 ID"),
-					fieldWithPath("recipeMaterials[].groceryName").type(STRING).description("게시글에 공유된 레시피의 식재료 이름")
+					fieldWithPath("recipeMaterials[].groceryName").type(STRING).description("게시글에 공유된 레시피의 식재료 이름"),
+					fieldWithPath("recipeMaterials[].groceryQuantity").type(STRING).description("게시글에 공유된 레시피의 식재료 수량")
 				)
 			));
 	}
@@ -338,8 +344,8 @@ class PostControllerTest {
 			.recipe(recipe)
 			.build();
 
-		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipeId, recipe.getTitle(), grocery1Id, grocery1.getName());
-		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipeId, recipe.getTitle(), grocery2Id, grocery2.getName());
+		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipeId, recipe.getTitle(), grocery1Id, grocery1.getName(), grocery1.getQuantity());
+		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipeId, recipe.getTitle(), grocery2Id, grocery2.getName(), grocery2.getQuantity());
 
 		PostRes postRes1 = new PostRes(1L, memberId, post.getTitle(), post.getContent(), recipeId, recipeWriterId, post.getRecipe().getWriter().getNickName(), post.getRecipe().getTitle(), post.getRecipe().getContent(), List.of(recipeGroceryRes1, recipeGroceryRes2));
 		PostRes postRes2 = new PostRes(2L, memberId, post2.getTitle(), post2.getContent(), recipeId, recipeWriterId, post2.getRecipe().getWriter().getNickName(), post2.getRecipe().getTitle(), post2.getRecipe().getContent(), List.of(recipeGroceryRes1, recipeGroceryRes2));
@@ -371,6 +377,7 @@ class PostControllerTest {
 			.andExpect(jsonPath("$.posts[0].recipeMaterials[0].recipeTitle").value(postRes1.recipeMaterials().get(0).recipeTitle()))
 			.andExpect(jsonPath("$.posts[0].recipeMaterials[0].groceryId").value(grocery1Id))
 			.andExpect(jsonPath("$.posts[0].recipeMaterials[0].groceryName").value(postRes1.recipeMaterials().get(0).groceryName()))
+			.andExpect(jsonPath("$.posts[0].recipeMaterials[0].groceryQuantity").value(postRes1.recipeMaterials().get(0).groceryQuantity()))
 			.andDo(print())
 			.andDo(document("post/post-find-all-by-member-id",
 				preprocessRequest(prettyPrint()),
@@ -394,7 +401,8 @@ class PostControllerTest {
 					fieldWithPath("posts[].recipeMaterials[].recipeId").type(NUMBER).description("게시글에 공유된 레시피 ID"),
 					fieldWithPath("posts[].recipeMaterials[].recipeTitle").type(STRING).description("게시글에 공유된 레시피 제목"),
 					fieldWithPath("posts[].recipeMaterials[].groceryId").type(NUMBER).description("게시글에 공유된 레시피의 식재료 ID"),
-					fieldWithPath("posts[].recipeMaterials[].groceryName").type(STRING).description("게시글에 공유된 레시피의 식재료 이름")
+					fieldWithPath("posts[].recipeMaterials[].groceryName").type(STRING).description("게시글에 공유된 레시피의 식재료 이름"),
+					fieldWithPath("posts[].recipeMaterials[].groceryQuantity").type(STRING).description("게시글에 공유된 레시피의 식재료 수량")
 				)
 			));
 	}
@@ -412,8 +420,8 @@ class PostControllerTest {
 		Long grocery1Id = 1L;
 		Long grocery2Id = 2L;
 
-		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipeId, recipe.getTitle(), grocery1Id, grocery1.getName());
-		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipeId, recipe.getTitle(), grocery2Id, grocery2.getName());
+		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipeId, recipe.getTitle(), grocery1Id, grocery1.getName(), grocery1.getQuantity());
+		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipeId, recipe.getTitle(), grocery2Id, grocery2.getName(), grocery2.getQuantity());
 
 		PostReq postReq = new PostReq("제목 수정", "내용 수정", recipeId);
 		PostRes postRes = new PostRes(postId, memberId, postReq.title(), postReq.content(), recipeId, recipeWriterId, recipe.getWriter().getNickName(), recipe.getTitle(), recipe.getContent(), List.of(recipeGroceryRes1, recipeGroceryRes2));
@@ -444,6 +452,7 @@ class PostControllerTest {
 			.andExpect(jsonPath("$.recipeMaterials[0].recipeTitle").value(post.getRecipe().getRecipeGroceries().get(0).getRecipe().getTitle()))
 			.andExpect(jsonPath("$.recipeMaterials[0].groceryId").value(grocery1Id))
 			.andExpect(jsonPath("$.recipeMaterials[0].groceryName").value(post.getRecipe().getRecipeGroceries().get(0).getGroceryName()))
+			.andExpect(jsonPath("$.recipeMaterials[0].groceryQuantity").value(post.getRecipe().getRecipeGroceries().get(0).getGroceryQuantity()))
 			.andDo(print())
 			.andDo(document("post/post-update",
 				preprocessRequest(prettyPrint()),
@@ -472,7 +481,8 @@ class PostControllerTest {
 					fieldWithPath("recipeMaterials[].recipeId").type(NUMBER).description("게시글에 공유된 레시피 ID"),
 					fieldWithPath("recipeMaterials[].recipeTitle").type(STRING).description("게시글에 공유된 레시피 제목"),
 					fieldWithPath("recipeMaterials[].groceryId").type(NUMBER).description("게시글에 공유된 레시피의 식재료 ID"),
-					fieldWithPath("recipeMaterials[].groceryName").type(STRING).description("게시글에 공유된 레시피의 식재료 이름")
+					fieldWithPath("recipeMaterials[].groceryName").type(STRING).description("게시글에 공유된 레시피의 식재료 이름"),
+					fieldWithPath("recipeMaterials[].groceryQuantity").type(STRING).description("게시글에 공유된 레시피의 식재료 수량")
 				)
 			));
 	}
