@@ -111,10 +111,10 @@ public class RecipeController {
 			.build();
 	}
 
-//	@DeleteMapping
-//	public ResponseEntity<RecipeRes> removeRecipeGrocery(@RequestParam("recipe-groceries-id") Long recipeGroceryId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-//		RecipeRes recipeRes = recipeService.removeRecipeGrocery(recipeGroceryId, principalDetails.getUsername());
-//
-//		return ResponseEntity.ok(recipeRes);
-//	}
+	@DeleteMapping
+	public ResponseEntity<RecipeRes> removeRecipeGrocery(@RequestParam("recipe-groceries-id") Long recipeGroceryId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		RecipeRes recipeRes = recipeService.removeRecipeGrocery(recipeGroceryId, principalDetails.getUsername());
+
+		return ResponseEntity.ok(recipeRes);
+	}
 }

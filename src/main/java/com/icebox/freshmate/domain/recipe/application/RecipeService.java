@@ -121,11 +121,10 @@ public class RecipeService {
 	}
 
 	private List<RecipeGroceryRes> getRecipeGroceryResList(Recipe recipe) {
-		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByRecipeId(recipe.getId());
+		List<RecipeGrocery> recipeGroceries = recipe.getRecipeGroceries();
 
 		return RecipeGroceryRes.from(recipeGroceries);
 	}
-
 
 	public RecipeRes update(Long id, RecipeUpdateReq recipeUpdateReq, String username) {
 		Member owner = getMemberByUsername(username);
@@ -162,21 +161,26 @@ public class RecipeService {
 		recipeRepository.delete(recipe);
 	}
 
-//	public RecipeRes removeRecipeGrocery(Long recipeGroceryId, String username) {
-//		Member member = getMemberByUsername(username);
-//		RecipeGrocery recipeGrocery = getRecipeGroceryById(recipeGroceryId);
-//
-//		Recipe recipe = getRecipeByIdAndOwnerId(recipeGrocery.getRecipe().getId(), member.getId());
-//		validateScrapedRecipe(recipe);
-//
-//		recipeGrocery.getRecipe().removeRecipeGrocery(recipeGrocery);
-//		recipeGroceryRepository.delete(recipeGrocery);
-//
-//		List<RecipeGrocery> recipeGroceries = recipe.getRecipeGroceries();
-//		List<RecipeGroceryRes> recipeGroceriesRes = RecipeGroceryRes.from(recipeGroceries);
-//
-//		return RecipeRes.of(recipe, recipeGroceriesRes);
-//	}
+	public RecipeRes removeRecipeGrocery(Long recipeGroceryId, String username) {
+		Member member = getMemberByUsername(username);
+		RecipeGrocery recipeGrocery = getRecipeGroceryById(recipeGroceryId);
+
+		Recipe recipe = getRecipeByIdAndOwnerId(recipeGrocery.getRecipe().getId(), member.getId());
+		validateScrapedRecipe(recipe);
+
+		deleteRecipeGrocery(recipeGrocery);
+
+		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
+		List<ImageRes> imagesRes = getRecipeImageResList(recipe);
+
+		return RecipeRes.of(recipe, recipeGroceriesRes, imagesRes);
+	}
+
+	private void deleteRecipeGrocery(RecipeGrocery recipeGrocery) {
+		recipeGrocery.getRecipe().removeRecipeGrocery(recipeGrocery);
+		recipeGrocery.getGrocery().removeRecipeGrocery(recipeGrocery);
+		recipeGroceryRepository.delete(recipeGrocery);
+	}
 
 	private Recipe getRecipeByIdAndOwnerId(Long recipeId, Long ownerId) {
 		return recipeRepository.findByIdAndOwnerId(recipeId, ownerId)
