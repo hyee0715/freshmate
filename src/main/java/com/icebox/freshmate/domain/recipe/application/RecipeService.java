@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.icebox.freshmate.domain.grocery.domain.Grocery;
 import com.icebox.freshmate.domain.grocery.domain.GroceryRepository;
 import com.icebox.freshmate.domain.image.application.ImageService;
+import com.icebox.freshmate.domain.image.application.dto.request.ImageDeleteReq;
 import com.icebox.freshmate.domain.image.application.dto.request.ImageUploadReq;
 import com.icebox.freshmate.domain.image.application.dto.response.ImageRes;
 import com.icebox.freshmate.domain.image.application.dto.response.ImagesRes;
@@ -191,6 +192,48 @@ public class RecipeService {
 		List<ImageRes> imagesRes = getRecipeImageResList(recipe);
 
 		return RecipeRes.of(recipe, recipeGroceriesRes, imagesRes);
+	}
+
+	public RecipeRes removeRecipeImage(Long recipeId, ImageDeleteReq imageDeleteReq, String username) {
+		Member member = getMemberByUsername(username);
+
+		Recipe recipe = getRecipeByIdAndOwnerId(recipeId, member.getId());
+		validateScrapedRecipe(recipe);
+		validateDeleteImageCount(imageDeleteReq.filePaths());
+
+		String imagePath = imageDeleteReq.filePaths().get(0);
+		RecipeImage recipeImage = getRecipeImageByRecipeIdAndPath(recipe.getOriginalRecipeId(), imagePath);
+
+		deleteRecipeImage(recipeImage, imageDeleteReq);
+
+		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
+		List<ImageRes> imagesRes = getRecipeImageResList(recipe);
+
+		return RecipeRes.of(recipe, recipeGroceriesRes, imagesRes);
+	}
+
+	private void deleteRecipeImage(RecipeImage recipeImage, ImageDeleteReq imageDeleteReq) {
+		recipeImage.getRecipe().removeRecipeImage(recipeImage);
+		recipeImageRepository.delete(recipeImage);
+		imageService.delete(imageDeleteReq);
+	}
+
+	private RecipeImage getRecipeImageByRecipeIdAndPath(Long recipeId, String imagePath) {
+
+		return recipeImageRepository.findByRecipeIdAndPath(recipeId, imagePath)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_RECIPE_IMAGE_BY_RECIPE_ID_AND_PATH : recipeId = {}, imagePath = {}", recipeId, imagePath);
+
+				return new EntityNotFoundException(NOT_FOUND_MEMBER);
+			});
+	}
+
+	private void validateDeleteImageCount(List<String> imagePaths) {
+		if (imagePaths.size() != 1) {
+			log.warn("DELETE:WRITE:EXCESSIVE_DELETE_IMAGE_COUNT : requested image path count = {}", imagePaths.size());
+
+			throw new BusinessException(EXCESSIVE_DELETE_IMAGE_COUNT);
+		}
 	}
 
 	private Recipe saveRecipe(RecipeCreateReq recipeCreateReq, Member member) {

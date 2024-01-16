@@ -96,4 +96,8 @@ public class Recipe {
 		recipeImage.addRecipe(this);
 		this.getRecipeImages().add(recipeImage);
 	}
+
+	public void removeRecipeImage(RecipeImage recipeImage) {
+		this.getRecipeImages().remove(recipeImage);
+	}
 }

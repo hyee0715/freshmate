@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.icebox.freshmate.domain.auth.application.PrincipalDetails;
+import com.icebox.freshmate.domain.image.application.dto.request.ImageDeleteReq;
 import com.icebox.freshmate.domain.image.application.dto.request.ImageUploadReq;
 import com.icebox.freshmate.domain.recipe.application.RecipeService;
 import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeCreateReq;
@@ -122,6 +123,13 @@ public class RecipeController {
 	@DeleteMapping
 	public ResponseEntity<RecipeRes> removeRecipeGrocery(@RequestParam("recipe-groceries-id") Long recipeGroceryId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		RecipeRes recipeRes = recipeService.removeRecipeGrocery(recipeGroceryId, principalDetails.getUsername());
+
+		return ResponseEntity.ok(recipeRes);
+	}
+
+	@DeleteMapping("/recipe-images/{recipeId}")
+	public ResponseEntity<RecipeRes> removeRecipeImage(@PathVariable Long recipeId, @RequestBody ImageDeleteReq imageDeleteReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		RecipeRes recipeRes = recipeService.removeRecipeImage(recipeId, imageDeleteReq, principalDetails.getUsername());
 
 		return ResponseEntity.ok(recipeRes);
 	}
