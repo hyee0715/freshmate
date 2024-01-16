@@ -287,7 +287,7 @@ public class RecipeService {
 			})
 			.orElse(null);
 
-		return buildRecipeGrocery(recipe, grocery, recipeGroceryReq.groceryName());
+		return buildRecipeGrocery(recipe, grocery, recipeGroceryReq.groceryName(), recipeGroceryReq.groceryQuantity());
 	}
 
 	private Grocery getGroceryByIdAndMemberId(Long groceryId, Long memberId) {
@@ -326,12 +326,13 @@ public class RecipeService {
 		}
 	}
 
-	private RecipeGrocery buildRecipeGrocery(Recipe recipe, Grocery grocery, String groceryName) {
+	private RecipeGrocery buildRecipeGrocery(Recipe recipe, Grocery grocery, String groceryName, String groceryQuantity) {
 
 		return RecipeGrocery.builder()
 			.recipe(recipe)
 			.grocery(grocery)
 			.groceryName(groceryName)
+			.groceryQuantity(groceryQuantity)
 			.build();
 	}
 

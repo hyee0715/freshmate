@@ -48,13 +48,13 @@ public class Grocery extends BaseEntity {
 	@OneToMany(mappedBy = "grocery", cascade = CascadeType.ALL)
 	private List<RecipeGrocery> recipeGroceries = new ArrayList<>();
 
-	@Column(length = 50)
+	@Column(length = 100)
 	private String name;
 
 	@Enumerated(EnumType.STRING)
 	private GroceryType groceryType;
 
-	@Column(length = 50)
+	@Column(length = 100)
 	private String quantity;
 
 	@Column(length = 400)
