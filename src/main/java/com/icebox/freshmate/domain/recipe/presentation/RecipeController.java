@@ -89,12 +89,12 @@ public class RecipeController {
 		return ResponseEntity.ok(recipesRes);
 	}
 
-//	@PatchMapping("/{id}")
-//	public ResponseEntity<RecipeRes> update(@PathVariable Long id, @Validated @RequestBody RecipeUpdateReq recipeUpdateReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-//		RecipeRes recipeRes = recipeService.update(id, recipeUpdateReq, principalDetails.getUsername());
-//
-//		return ResponseEntity.ok(recipeRes);
-//	}
+	@PatchMapping("/{id}")
+	public ResponseEntity<RecipeRes> update(@PathVariable Long id, @Validated @RequestBody RecipeUpdateReq recipeUpdateReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		RecipeRes recipeRes = recipeService.update(id, recipeUpdateReq, principalDetails.getUsername());
+
+		return ResponseEntity.ok(recipeRes);
+	}
 //
 //	@PatchMapping("/recipe-groceries/{recipeId}")
 //	public ResponseEntity<RecipeRes> addRecipeGrocery(@PathVariable Long recipeId, @Validated @RequestBody RecipeGroceryReq recipeGroceryReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {

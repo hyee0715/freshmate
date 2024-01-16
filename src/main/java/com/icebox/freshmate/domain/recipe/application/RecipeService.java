@@ -73,11 +73,8 @@ public class RecipeService {
 	public RecipeRes findById(Long id) {
 		Recipe recipe = getRecipeById(id);
 
-		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByRecipeId(recipe.getId());
-		List<RecipeGroceryRes> recipeGroceriesRes = RecipeGroceryRes.from(recipeGroceries);
-
-		List<RecipeImage> recipeImages = recipe.getRecipeImages();
-		List<ImageRes> imagesRes = getImageResList(recipeImages);
+		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
+		List<ImageRes> imagesRes = getRecipeImageResList(recipe);
 
 		return RecipeRes.of(recipe, recipeGroceriesRes, imagesRes);
 	}
@@ -123,19 +120,26 @@ public class RecipeService {
 		return RecipesRes.from(recipes);
 	}
 
-//	public RecipeRes update(Long id, RecipeUpdateReq recipeUpdateReq, String username) {
-//		Member owner = getMemberByUsername(username);
-//		Recipe recipe = getRecipeByIdAndOwnerId(id, owner.getId());
-//		validateScrapedRecipe(recipe);
-//
-//		Recipe updateRecipe = RecipeUpdateReq.toRecipe(recipeUpdateReq, owner);
-//		recipe.update(updateRecipe);
-//
-//		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByRecipeId(recipe.getId());
-//		List<RecipeGroceryRes> recipeGroceriesRes = RecipeGroceryRes.from(recipeGroceries);
-//
-//		return RecipeRes.of(recipe, recipeGroceriesRes);
-//	}
+	private List<RecipeGroceryRes> getRecipeGroceryResList(Recipe recipe) {
+		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByRecipeId(recipe.getId());
+
+		return RecipeGroceryRes.from(recipeGroceries);
+	}
+
+
+	public RecipeRes update(Long id, RecipeUpdateReq recipeUpdateReq, String username) {
+		Member owner = getMemberByUsername(username);
+		Recipe recipe = getRecipeByIdAndOwnerId(id, owner.getId());
+		validateScrapedRecipe(recipe);
+
+		Recipe updateRecipe = RecipeUpdateReq.toRecipe(recipeUpdateReq, owner);
+		recipe.update(updateRecipe);
+
+		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
+		List<ImageRes> imagesRes = getRecipeImageResList(recipe);
+
+		return RecipeRes.of(recipe, recipeGroceriesRes, imagesRes);
+	}
 
 //	public RecipeRes addRecipeGrocery(Long recipeId, RecipeGroceryReq recipeGroceryReq, String username) {
 //		Member member = getMemberByUsername(username);
@@ -178,6 +182,7 @@ public class RecipeService {
 		return recipeRepository.findByIdAndOwnerId(recipeId, ownerId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_RECIPE_BY_ID_AND_OWNER_ID : recipeId = {}, ownerId = {}", recipeId, ownerId);
+
 				return new EntityNotFoundException(NOT_FOUND_RECIPE);
 			});
 	}
@@ -186,6 +191,7 @@ public class RecipeService {
 		return recipeRepository.findById(recipeId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_RECIPE_BY_ID : {}", recipeId);
+
 				return new EntityNotFoundException(NOT_FOUND_RECIPE);
 			});
 	}
@@ -194,6 +200,7 @@ public class RecipeService {
 		return memberRepository.findByUsername(username)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_MEMBER_BY_MEMBER_USERNAME : {}", username);
+
 				return new EntityNotFoundException(NOT_FOUND_MEMBER);
 			});
 	}
@@ -201,6 +208,7 @@ public class RecipeService {
 	private void validateOwnerAndWriterToScrap(Long ownerId, Long writerId) {
 		if (Objects.equals(ownerId, writerId)) {
 			log.warn("POST:WRITE:INVALID_SCRAP_ATTEMPT_TO_OWN_RECIPE : ownerId = {}, writerId = {}", ownerId, writerId);
+
 			throw new BusinessException(INVALID_SCRAP_ATTEMPT_TO_OWN_RECIPE);
 		}
 	}
@@ -208,8 +216,8 @@ public class RecipeService {
 	private void validateScrapedRecipe(Recipe recipe) {
 		if (recipe.getRecipeType().equals(RecipeType.SCRAPED)) {
 			log.warn("PATCH:WRITE:INVALID_UPDATE_ATTEMPT_TO_SCRAPED_RECIPE : recipeId = {}", recipe.getId());
-			throw new BusinessException(INVALID_UPDATE_ATTEMPT_TO_SCRAPED_RECIPE);
 
+			throw new BusinessException(INVALID_UPDATE_ATTEMPT_TO_SCRAPED_RECIPE);
 		}
 	}
 
@@ -262,17 +270,21 @@ public class RecipeService {
 	}
 
 	private Grocery getGroceryByIdAndMemberId(Long groceryId, Long memberId) {
+
 		return groceryRepository.findByIdAndMemberId(groceryId, memberId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_STORAGE_BY_ID_AND_MEMBER_ID : groceryId = {}, memberId = {}", groceryId, memberId);
+
 				return new EntityNotFoundException(NOT_FOUND_GROCERY);
 			});
 	}
 
 	private Grocery getGroceryById(Long groceryId) {
+
 		return groceryRepository.findById(groceryId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_STORAGE_BY_ID : groceryId = {}", groceryId);
+
 				return new EntityNotFoundException(NOT_FOUND_GROCERY);
 			});
 	}
@@ -280,6 +292,7 @@ public class RecipeService {
 	private void validateRecipeGroceryName(Grocery grocery, String requestedGroceryName) {
 		if (!grocery.getName().equals(requestedGroceryName)) {
 			log.warn("INVALID_RECIPE_GROCERY_NAME : groceryId = {}, groceryName = {}, requestGroceryName = {}", grocery.getId(), grocery.getName(), requestedGroceryName);
+
 			throw new BusinessException(ErrorCode.INVALID_RECIPE_GROCERY_NAME);
 		}
 	}
@@ -287,6 +300,7 @@ public class RecipeService {
 	private void validateDuplicatedRecipeGrocery(Long recipeId, Long groceryId) {
 		if (recipeGroceryRepository.existsByRecipeIdAndGroceryId(recipeId, groceryId)) {
 			log.warn("DUPLICATED_RECIPE_GROCERY : recipeId = {}, groceryId = {}", recipeId, groceryId);
+
 			throw new BusinessException(ErrorCode.DUPLICATED_RECIPE_GROCERY);
 		}
 	}
@@ -305,6 +319,7 @@ public class RecipeService {
 		return recipeGroceryRepository.findById(recipeGroceryId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_RECIPE_GROCERY_BY_ID : recipeGroceryId = {}", recipeGroceryId);
+
 				return new EntityNotFoundException(NOT_FOUND_RECIPE_GROCERY);
 			});
 	}
@@ -330,6 +345,7 @@ public class RecipeService {
 			.map(imagesRes -> {
 				List<RecipeImage> recipeImages = saveImages(recipe, imagesRes);
 				recipe.addRecipeImages(recipeImages);
+
 				return imagesRes;
 			})
 			.orElse(null);
@@ -350,5 +366,11 @@ public class RecipeService {
 			.path(imageRes.path())
 			.recipe(recipe)
 			.build();
+	}
+
+	private List<ImageRes> getRecipeImageResList(Recipe recipe) {
+		List<RecipeImage> recipeImages = recipe.getRecipeImages();
+
+		return getImageResList(recipeImages);
 	}
 }
