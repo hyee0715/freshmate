@@ -57,16 +57,14 @@ public class RecipeService {
 	public RecipeRes create(RecipeCreateReq recipeCreateReq, ImageUploadReq imageUploadReq, String username) {
 		Member member = getMemberByUsername(username);
 
-		Recipe recipe = RecipeCreateReq.toRecipe(recipeCreateReq, member);
-		Recipe savedRecipe = recipeRepository.save(recipe);
-		savedRecipe.updateOriginalRecipeId(savedRecipe.getId());
+		Recipe recipe = saveRecipe(recipeCreateReq, member);
 
-		List<RecipeGroceryRes> recipeGroceriesRes = saveMaterials(recipeCreateReq.materials(), savedRecipe, member.getId());
+		List<RecipeGroceryRes> recipeGroceriesRes = saveMaterials(recipeCreateReq.materials(), recipe, member.getId());
 
 		ImagesRes imagesRes = saveImages(recipe, imageUploadReq);
 		List<ImageRes> images = getImageResList(imagesRes);
 
-		return RecipeRes.of(savedRecipe, recipeGroceriesRes, images);
+		return RecipeRes.of(recipe, recipeGroceriesRes, images);
 	}
 
 	@Transactional(readOnly = true)
@@ -112,18 +110,9 @@ public class RecipeService {
 
 		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByGroceryId(grocery.getId());
 
-		List<Recipe> recipes = recipeGroceries.stream()
-			.map(x -> x.getRecipe().getId())
-			.map(this::getRecipeById)
-			.toList();
+		List<Recipe> recipes = getRecipesFromRecipeGroceries(recipeGroceries);
 
 		return RecipesRes.from(recipes);
-	}
-
-	private List<RecipeGroceryRes> getRecipeGroceryResList(Recipe recipe) {
-		List<RecipeGrocery> recipeGroceries = recipe.getRecipeGroceries();
-
-		return RecipeGroceryRes.from(recipeGroceries);
 	}
 
 	public RecipeRes update(Long id, RecipeUpdateReq recipeUpdateReq, String username) {
@@ -176,6 +165,14 @@ public class RecipeService {
 		return RecipeRes.of(recipe, recipeGroceriesRes, imagesRes);
 	}
 
+	private Recipe saveRecipe(RecipeCreateReq recipeCreateReq, Member member) {
+		Recipe recipe = RecipeCreateReq.toRecipe(recipeCreateReq, member);
+		Recipe savedRecipe = recipeRepository.save(recipe);
+		savedRecipe.updateOriginalRecipeId(savedRecipe.getId());
+
+		return savedRecipe;
+	}
+
 	private void deleteRecipeGrocery(RecipeGrocery recipeGrocery) {
 		recipeGrocery.getRecipe().removeRecipeGrocery(recipeGrocery);
 		recipeGrocery.getGrocery().removeRecipeGrocery(recipeGrocery);
@@ -209,13 +206,13 @@ public class RecipeService {
 			});
 	}
 
-	private void validateOwnerAndWriterToScrap(Long ownerId, Long writerId) {
-		if (Objects.equals(ownerId, writerId)) {
-			log.warn("POST:WRITE:INVALID_SCRAP_ATTEMPT_TO_OWN_RECIPE : ownerId = {}, writerId = {}", ownerId, writerId);
-
-			throw new BusinessException(INVALID_SCRAP_ATTEMPT_TO_OWN_RECIPE);
-		}
-	}
+//	private void validateOwnerAndWriterToScrap(Long ownerId, Long writerId) {
+//		if (Objects.equals(ownerId, writerId)) {
+//			log.warn("POST:WRITE:INVALID_SCRAP_ATTEMPT_TO_OWN_RECIPE : ownerId = {}, writerId = {}", ownerId, writerId);
+//
+//			throw new BusinessException(INVALID_SCRAP_ATTEMPT_TO_OWN_RECIPE);
+//		}
+//	}
 
 	private void validateScrapedRecipe(Recipe recipe) {
 		if (recipe.getRecipeType().equals(RecipeType.SCRAPED)) {
@@ -225,16 +222,16 @@ public class RecipeService {
 		}
 	}
 
-	private Recipe toScrappedRecipe(Recipe recipe, Member writer, Member owner) {
-
-		return Recipe.builder()
-			.writer(writer)
-			.owner(owner)
-			.recipeType(RecipeType.SCRAPED)
-			.title(recipe.getTitle())
-			.content(recipe.getContent())
-			.build();
-	}
+//	private Recipe toScrappedRecipe(Recipe recipe, Member writer, Member owner) {
+//
+//		return Recipe.builder()
+//			.writer(writer)
+//			.owner(owner)
+//			.recipeType(RecipeType.SCRAPED)
+//			.title(recipe.getTitle())
+//			.content(recipe.getContent())
+//			.build();
+//	}
 
 	private List<RecipeGroceryRes> saveMaterials(List<RecipeGroceryReq> materials, Recipe recipe, Long memberId) {
 		List<RecipeGrocery> recipeGroceries = materials.stream()
@@ -376,5 +373,19 @@ public class RecipeService {
 		List<RecipeImage> recipeImages = recipe.getRecipeImages();
 
 		return getImageResList(recipeImages);
+	}
+
+	private List<RecipeGroceryRes> getRecipeGroceryResList(Recipe recipe) {
+		List<RecipeGrocery> recipeGroceries = recipe.getRecipeGroceries();
+
+		return RecipeGroceryRes.from(recipeGroceries);
+	}
+
+	private List<Recipe> getRecipesFromRecipeGroceries(List<RecipeGrocery> recipeGroceries) {
+
+		return recipeGroceries.stream()
+			.map(recipeGrocery -> recipeGrocery.getRecipe().getId())
+			.map(this::getRecipeById)
+			.toList();
 	}
 }
