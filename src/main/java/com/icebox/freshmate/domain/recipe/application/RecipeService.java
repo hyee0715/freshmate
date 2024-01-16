@@ -110,15 +110,6 @@ public class RecipeService {
 	}
 
 	@Transactional(readOnly = true)
-	public RecipesRes findAllByMemberId(String username) {
-		Member member = getMemberByUsername(username);
-
-		List<Recipe> recipes = recipeRepository.findAllByMemberId(member.getId());
-
-		return RecipesRes.from(recipes);
-	}
-
-	@Transactional(readOnly = true)
 	public RecipesRes findAllByGroceryId(Long groceryId) {
 		Grocery grocery = getGroceryById(groceryId);
 

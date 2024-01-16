@@ -75,13 +75,6 @@ public class RecipeController {
 		return ResponseEntity.ok(recipesRes);
 	}
 
-	@GetMapping("/members")
-	public ResponseEntity<RecipesRes> findAllByMemberId(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-		RecipesRes recipesRes = recipeService.findAllByMemberId(principalDetails.getUsername());
-
-		return ResponseEntity.ok(recipesRes);
-	}
-
 	@GetMapping
 	public ResponseEntity<RecipesRes> findAllByGroceryId(@RequestParam("grocery-id") Long groceryId) {
 		RecipesRes recipesRes = recipeService.findAllByGroceryId(groceryId);
