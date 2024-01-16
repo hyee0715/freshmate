@@ -94,6 +94,6 @@ public class Recipe {
 
 	public void addRecipeImage(RecipeImage recipeImage) {
 		recipeImage.addRecipe(this);
-		this.recipeImages.add(recipeImage);
+		this.getRecipeImages().add(recipeImage);
 	}
 }
