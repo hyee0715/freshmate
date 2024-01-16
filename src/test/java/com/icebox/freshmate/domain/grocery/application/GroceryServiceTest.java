@@ -76,7 +76,7 @@ class GroceryServiceTest {
 			.storage(storage)
 			.name("양배추")
 			.groceryType(GroceryType.VEGETABLES)
-			.quantity(1)
+			.quantity("1개")
 			.description("필수 식재료")
 			.expirationDate(LocalDate.now().plusDays(7))
 			.build();
@@ -134,7 +134,7 @@ class GroceryServiceTest {
 			.storage(storage)
 			.name("햄")
 			.groceryType(GroceryType.MEAT)
-			.quantity(3)
+			.quantity("3개")
 			.description("김밥 재료")
 			.expirationDate(LocalDate.now().plusDays(14))
 			.build();
@@ -166,7 +166,7 @@ class GroceryServiceTest {
 		when(storageRepository.findByIdAndMemberId(any(), any())).thenReturn(Optional.of(storage));
 		when(groceryRepository.findByIdAndMemberId(any(), any())).thenReturn(Optional.of(grocery));
 
-		GroceryReq groceryReq = new GroceryReq("식료품 수정", GroceryType.SNACKS.name(), 2, "수정", LocalDate.now().plusDays(2), storageId);
+		GroceryReq groceryReq = new GroceryReq("식료품 수정", GroceryType.SNACKS.name(), "10개", "수정", LocalDate.now().plusDays(2), storageId);
 
 		//when
 		GroceryRes groceryRes = groceryService.update(groceryId, groceryReq, member.getUsername());
