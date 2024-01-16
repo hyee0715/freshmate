@@ -123,7 +123,7 @@ class GroceryControllerTest {
 			.storage(storage)
 			.name("양배추")
 			.groceryType(GroceryType.VEGETABLES)
-			.quantity(1)
+			.quantity("1개")
 			.description("필수 식재료")
 			.expirationDate(LocalDate.now().plusDays(7))
 			.build();
@@ -182,7 +182,7 @@ class GroceryControllerTest {
 					fieldWithPath("groceryId").type(NUMBER).description("식료품 ID"),
 					fieldWithPath("groceryName").type(STRING).description("식료품 이름"),
 					fieldWithPath("groceryType").type(STRING).description("식료품 타입"),
-					fieldWithPath("quantity").type(NUMBER).description("식료품 수량"),
+					fieldWithPath("quantity").type(STRING).description("식료품 수량"),
 					fieldWithPath("description").type(STRING).description("식료품 설명"),
 					fieldWithPath("expirationDate").type(STRING).description("식료품 유통기한"),
 					fieldWithPath("storageId").type(NUMBER).description("냉장고 저장소 ID"),
@@ -233,7 +233,7 @@ class GroceryControllerTest {
 					fieldWithPath("groceryId").type(NUMBER).description("식료품 ID"),
 					fieldWithPath("groceryName").type(STRING).description("식료품 이름"),
 					fieldWithPath("groceryType").type(STRING).description("식료품 타입"),
-					fieldWithPath("quantity").type(NUMBER).description("식료품 수량"),
+					fieldWithPath("quantity").type(STRING).description("식료품 수량"),
 					fieldWithPath("description").type(STRING).description("식료품 설명"),
 					fieldWithPath("expirationDate").type(STRING).description("식료품 유통기한"),
 					fieldWithPath("storageId").type(NUMBER).description("냉장고 저장소 ID"),
@@ -256,7 +256,7 @@ class GroceryControllerTest {
 			.storage(storage)
 			.name("배추")
 			.groceryType(GroceryType.VEGETABLES)
-			.quantity(2)
+			.quantity("2개")
 			.description("김장용")
 			.expirationDate(LocalDate.now().plusDays(7))
 			.build();
@@ -301,7 +301,7 @@ class GroceryControllerTest {
 					fieldWithPath("groceries[].groceryId").type(NUMBER).description("식료품 ID"),
 					fieldWithPath("groceries[].groceryName").type(STRING).description("식료품 이름"),
 					fieldWithPath("groceries[].groceryType").type(STRING).description("식료품 타입"),
-					fieldWithPath("groceries[].quantity").type(NUMBER).description("식료품 수량"),
+					fieldWithPath("groceries[].quantity").type(STRING).description("식료품 수량"),
 					fieldWithPath("groceries[].description").type(STRING).description("식료품 설명"),
 					fieldWithPath("groceries[].expirationDate").type(STRING).description("식료품 유통기한"),
 					fieldWithPath("groceries[].storageId").type(NUMBER).description("냉장고 저장소 ID"),
@@ -321,7 +321,7 @@ class GroceryControllerTest {
 
 		LocalDateTime createdAt = LocalDateTime.now();
 
-		GroceryReq groceryReq = new GroceryReq("식료품 수정", GroceryType.SNACKS.name(), 2, "수정", LocalDate.now().plusDays(2), storageId);
+		GroceryReq groceryReq = new GroceryReq("식료품 수정", GroceryType.SNACKS.name(), "10개", "수정", LocalDate.now().plusDays(2), storageId);
 		GroceryRes groceryRes = new GroceryRes(groceryId, groceryReq.name(), groceryReq.groceryType(), groceryReq.quantity(), groceryReq.description(), groceryReq.expirationDate(), storageId, grocery.getStorage().getName(), grocery.getGroceryExpirationType().name(), createdAt);
 
 		when(groceryService.update(eq(groceryId), any(GroceryReq.class), anyString())).thenReturn(groceryRes);
@@ -366,7 +366,7 @@ class GroceryControllerTest {
 					fieldWithPath("groceryId").type(NUMBER).description("식료품 ID"),
 					fieldWithPath("groceryName").type(STRING).description("식료품 이름"),
 					fieldWithPath("groceryType").type(STRING).description("식료품 타입"),
-					fieldWithPath("quantity").type(NUMBER).description("식료품 수량"),
+					fieldWithPath("quantity").type(STRING).description("식료품 수량"),
 					fieldWithPath("description").type(STRING).description("식료품 설명"),
 					fieldWithPath("expirationDate").type(STRING).description("식료품 유통기한"),
 					fieldWithPath("storageId").type(NUMBER).description("냉장고 저장소 ID"),
