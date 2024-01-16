@@ -86,7 +86,7 @@ class RecipeBucketServiceTest {
 			.storage(storage)
 			.name("양배추")
 			.groceryType(GroceryType.VEGETABLES)
-			.quantity(1)
+			.quantity("1개")
 			.description("필수 식재료")
 			.expirationDate(LocalDate.now().plusDays(7))
 			.build();
@@ -95,7 +95,7 @@ class RecipeBucketServiceTest {
 			.storage(storage)
 			.name("배추")
 			.groceryType(GroceryType.VEGETABLES)
-			.quantity(1)
+			.quantity("1개")
 			.description("필수 식재료")
 			.expirationDate(LocalDate.now().plusDays(7))
 			.build();
