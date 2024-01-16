@@ -4,11 +4,9 @@ import static com.icebox.freshmate.global.error.ErrorCode.*;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_RECIPE;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,6 +63,20 @@ public class RecipeService {
 		List<ImageRes> images = getImageResList(imagesRes);
 
 		return RecipeRes.of(recipe, recipeGroceriesRes, images);
+	}
+
+	public RecipeRes scrap(Long recipeId, String username) {
+		Member owner = getMemberByUsername(username);
+		Recipe recipe = getRecipeById(recipeId);
+		Member writer = recipe.getWriter();
+		validateOwnerAndWriterToScrap(owner.getId(), writer.getId());
+
+		Recipe savedRecipe = saveScrapedRecipe(recipe, writer, owner);
+
+		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(savedRecipe.getOriginalRecipeId());
+		List<ImageRes> recipeImageRes = getRecipeImageResList(savedRecipe.getOriginalRecipeId());
+
+		return RecipeRes.of(savedRecipe, recipeGroceriesRes, recipeImageRes);
 	}
 
 	@Transactional(readOnly = true)
@@ -173,6 +185,14 @@ public class RecipeService {
 		return savedRecipe;
 	}
 
+	private Recipe saveScrapedRecipe(Recipe recipe, Member writer, Member owner) {
+		Recipe originalRecipe = toScrappedRecipe(recipe, writer, owner);
+		Recipe savedRecipe = recipeRepository.save(originalRecipe);
+		savedRecipe.updateOriginalRecipeId(recipe.getId());
+
+		return savedRecipe;
+	}
+
 	private void deleteRecipeGrocery(RecipeGrocery recipeGrocery) {
 		recipeGrocery.getRecipe().removeRecipeGrocery(recipeGrocery);
 		recipeGrocery.getGrocery().removeRecipeGrocery(recipeGrocery);
@@ -206,13 +226,13 @@ public class RecipeService {
 			});
 	}
 
-//	private void validateOwnerAndWriterToScrap(Long ownerId, Long writerId) {
-//		if (Objects.equals(ownerId, writerId)) {
-//			log.warn("POST:WRITE:INVALID_SCRAP_ATTEMPT_TO_OWN_RECIPE : ownerId = {}, writerId = {}", ownerId, writerId);
-//
-//			throw new BusinessException(INVALID_SCRAP_ATTEMPT_TO_OWN_RECIPE);
-//		}
-//	}
+	private void validateOwnerAndWriterToScrap(Long ownerId, Long writerId) {
+		if (Objects.equals(ownerId, writerId)) {
+			log.warn("POST:WRITE:INVALID_SCRAP_ATTEMPT_TO_OWN_RECIPE : ownerId = {}, writerId = {}", ownerId, writerId);
+
+			throw new BusinessException(INVALID_SCRAP_ATTEMPT_TO_OWN_RECIPE);
+		}
+	}
 
 	private void validateScrapedRecipe(Recipe recipe) {
 		if (recipe.getRecipeType().equals(RecipeType.SCRAPED)) {
@@ -222,16 +242,16 @@ public class RecipeService {
 		}
 	}
 
-//	private Recipe toScrappedRecipe(Recipe recipe, Member writer, Member owner) {
-//
-//		return Recipe.builder()
-//			.writer(writer)
-//			.owner(owner)
-//			.recipeType(RecipeType.SCRAPED)
-//			.title(recipe.getTitle())
-//			.content(recipe.getContent())
-//			.build();
-//	}
+	private Recipe toScrappedRecipe(Recipe recipe, Member writer, Member owner) {
+
+		return Recipe.builder()
+			.writer(writer)
+			.owner(owner)
+			.recipeType(RecipeType.SCRAPED)
+			.title(recipe.getTitle())
+			.content(recipe.getContent())
+			.build();
+	}
 
 	private List<RecipeGroceryRes> saveMaterials(List<RecipeGroceryReq> materials, Recipe recipe, Long memberId) {
 		List<RecipeGrocery> recipeGroceries = materials.stream()
@@ -375,8 +395,20 @@ public class RecipeService {
 		return getImageResList(recipeImages);
 	}
 
+	private List<ImageRes> getRecipeImageResList(Long recipeId) {
+		List<RecipeImage> recipeImages = recipeImageRepository.findAllByRecipeId(recipeId);
+
+		return getImageResList(recipeImages);
+	}
+
 	private List<RecipeGroceryRes> getRecipeGroceryResList(Recipe recipe) {
 		List<RecipeGrocery> recipeGroceries = recipe.getRecipeGroceries();
+
+		return RecipeGroceryRes.from(recipeGroceries);
+	}
+
+	private List<RecipeGroceryRes> getRecipeGroceryResList(Long recipeId) {
+		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByRecipeId(recipeId);
 
 		return RecipeGroceryRes.from(recipeGroceries);
 	}

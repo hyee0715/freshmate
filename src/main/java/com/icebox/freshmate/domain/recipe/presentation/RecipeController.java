@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.icebox.freshmate.domain.auth.application.PrincipalDetails;
-import com.icebox.freshmate.domain.image.application.ImageService;
 import com.icebox.freshmate.domain.image.application.dto.request.ImageUploadReq;
 import com.icebox.freshmate.domain.recipe.application.RecipeService;
 import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeCreateReq;
@@ -47,13 +46,13 @@ public class RecipeController {
 			.body(recipeRes);
 	}
 
-//	@PostMapping("/scrap")
-//	public ResponseEntity<RecipeRes> scrap(@RequestParam("recipe-id") Long recipeId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-//		RecipeRes recipeRes = recipeService.scrap(recipeId, principalDetails.getUsername());
-//
-//		return ResponseEntity.ok(recipeRes);
-//	}
-//
+	@PostMapping("/scrap")
+	public ResponseEntity<RecipeRes> scrap(@RequestParam("recipe-id") Long recipeId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		RecipeRes recipeRes = recipeService.scrap(recipeId, principalDetails.getUsername());
+
+		return ResponseEntity.ok(recipeRes);
+	}
+
 	@GetMapping("/{id}")
 	public ResponseEntity<RecipeRes> findById(@PathVariable Long id) {
 		RecipeRes recipeRes = recipeService.findById(id);
