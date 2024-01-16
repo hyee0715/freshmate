@@ -141,19 +141,19 @@ public class RecipeService {
 		return RecipeRes.of(recipe, recipeGroceriesRes, imagesRes);
 	}
 
-//	public RecipeRes addRecipeGrocery(Long recipeId, RecipeGroceryReq recipeGroceryReq, String username) {
-//		Member member = getMemberByUsername(username);
-//
-//		Recipe recipe = getRecipeByIdAndOwnerId(recipeId, member.getId());
-//		validateScrapedRecipe(recipe);
-//
-//		saveMaterials(List.of(recipeGroceryReq), recipe, member.getId());
-//		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByRecipeId(recipe.getId());
-//
-//		List<RecipeGroceryRes> recipeGroceriesRes = RecipeGroceryRes.from(recipeGroceries);
-//
-//		return RecipeRes.of(recipe, recipeGroceriesRes);
-//	}
+	public RecipeRes addRecipeGrocery(Long recipeId, RecipeGroceryReq recipeGroceryReq, String username) {
+		Member member = getMemberByUsername(username);
+
+		Recipe recipe = getRecipeByIdAndOwnerId(recipeId, member.getId());
+		validateScrapedRecipe(recipe);
+
+		saveMaterials(List.of(recipeGroceryReq), recipe, member.getId());
+
+		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
+		List<ImageRes> imagesRes = getRecipeImageResList(recipe);
+
+		return RecipeRes.of(recipe, recipeGroceriesRes, imagesRes);
+	}
 
 	public void delete(Long id, String username) {
 		Member writer = getMemberByUsername(username);

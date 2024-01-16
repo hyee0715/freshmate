@@ -95,13 +95,13 @@ public class RecipeController {
 
 		return ResponseEntity.ok(recipeRes);
 	}
-//
-//	@PatchMapping("/recipe-groceries/{recipeId}")
-//	public ResponseEntity<RecipeRes> addRecipeGrocery(@PathVariable Long recipeId, @Validated @RequestBody RecipeGroceryReq recipeGroceryReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-//		RecipeRes recipeRes = recipeService.addRecipeGrocery(recipeId, recipeGroceryReq, principalDetails.getUsername());
-//
-//		return ResponseEntity.ok(recipeRes);
-//	}
+
+	@PatchMapping("/recipe-groceries/{recipeId}")
+	public ResponseEntity<RecipeRes> addRecipeGrocery(@PathVariable Long recipeId, @Validated @RequestBody RecipeGroceryReq recipeGroceryReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		RecipeRes recipeRes = recipeService.addRecipeGrocery(recipeId, recipeGroceryReq, principalDetails.getUsername());
+
+		return ResponseEntity.ok(recipeRes);
+	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
