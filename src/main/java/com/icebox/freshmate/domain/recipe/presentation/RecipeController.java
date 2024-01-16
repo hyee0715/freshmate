@@ -102,6 +102,15 @@ public class RecipeController {
 		return ResponseEntity.ok(recipeRes);
 	}
 
+	@PatchMapping("/recipe-images/{recipeId}")
+	public ResponseEntity<RecipeRes> addRecipeImage(@PathVariable Long recipeId, MultipartFile imageFile, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		ImageUploadReq imageUploadReq = new ImageUploadReq(List.of(imageFile));
+
+		RecipeRes recipeRes = recipeService.addRecipeImage(recipeId, imageUploadReq, principalDetails.getUsername());
+
+		return ResponseEntity.ok(recipeRes);
+	}
+
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		recipeService.delete(id, principalDetails.getUsername());

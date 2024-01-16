@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.icebox.freshmate.domain.grocery.domain.Grocery;
 import com.icebox.freshmate.domain.grocery.domain.GroceryRepository;
@@ -153,6 +154,21 @@ public class RecipeService {
 		List<ImageRes> imagesRes = getRecipeImageResList(recipe);
 
 		return RecipeRes.of(recipe, recipeGroceriesRes, imagesRes);
+	}
+
+	public RecipeRes addRecipeImage(Long recipeId, ImageUploadReq imageUploadReq, String username) {
+		Member member = getMemberByUsername(username);
+
+		Recipe recipe = getRecipeByIdAndOwnerId(recipeId, member.getId());
+		validateScrapedRecipe(recipe);
+
+		validateImageListIsEmpty(imageUploadReq.files());
+		saveImages(recipe, imageUploadReq);
+
+		List<ImageRes> images = getImageResList(recipe.getRecipeImages());
+		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
+
+		return RecipeRes.of(recipe, recipeGroceriesRes, images);
 	}
 
 	public void delete(Long id, String username) {
@@ -420,5 +436,13 @@ public class RecipeService {
 			.map(recipeGrocery -> recipeGrocery.getRecipe().getId())
 			.map(this::getRecipeById)
 			.toList();
+	}
+
+	private void validateImageListIsEmpty(List<MultipartFile> images) {
+		if (images.size() == 1 && Objects.equals(images.get(0).getOriginalFilename(), "")) {
+			log.warn("PATCH:WRITE:EMPTY_IMAGE");
+
+			throw new BusinessException(EMPTY_IMAGE);
+		}
 	}
 }
