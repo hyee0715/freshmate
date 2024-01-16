@@ -69,15 +69,18 @@ public class RecipeService {
 		return RecipeRes.of(savedRecipe, recipeGroceriesRes, images);
 	}
 
-//	@Transactional(readOnly = true)
-//	public RecipeRes findById(Long id) {
-//		Recipe recipe = getRecipeById(id);
-//
-//		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByRecipeId(recipe.getId());
-//		List<RecipeGroceryRes> recipeGroceriesRes = RecipeGroceryRes.from(recipeGroceries);
-//
-//		return RecipeRes.of(recipe, recipeGroceriesRes);
-//	}
+	@Transactional(readOnly = true)
+	public RecipeRes findById(Long id) {
+		Recipe recipe = getRecipeById(id);
+
+		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByRecipeId(recipe.getId());
+		List<RecipeGroceryRes> recipeGroceriesRes = RecipeGroceryRes.from(recipeGroceries);
+
+		List<RecipeImage> recipeImages = recipe.getRecipeImages();
+		List<ImageRes> imagesRes = getImageResList(recipeImages);
+
+		return RecipeRes.of(recipe, recipeGroceriesRes, imagesRes);
+	}
 
 	@Transactional(readOnly = true)
 	public RecipesRes findAllByWriterId(String username) {
@@ -311,6 +314,13 @@ public class RecipeService {
 		return Optional.ofNullable(imagesRes)
 			.map(ImagesRes::images)
 			.orElse(null);
+	}
+
+	private List<ImageRes> getImageResList(List<RecipeImage> recipeImages) {
+
+		return recipeImages.stream()
+			.map(recipeImage -> ImageRes.of(recipeImage.getFileName(), recipeImage.getPath()))
+			.toList();
 	}
 
 	private ImagesRes saveImages(Recipe recipe, ImageUploadReq imageUploadReq) {
