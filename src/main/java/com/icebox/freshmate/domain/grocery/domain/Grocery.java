@@ -45,7 +45,7 @@ public class Grocery extends BaseEntity {
 	@JoinColumn(name = "storage_id")
 	private Storage storage;
 
-	@OneToMany(mappedBy = "grocery", cascade = CascadeType.ALL, orphanRemoval = false)
+	@OneToMany(mappedBy = "grocery", cascade = CascadeType.ALL)
 	private List<RecipeGrocery> recipeGroceries = new ArrayList<>();
 
 	@Column(length = 50)
@@ -54,7 +54,8 @@ public class Grocery extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private GroceryType groceryType;
 
-	private int quantity;
+	@Column(length = 50)
+	private String quantity;
 
 	@Column(length = 400)
 	private String description;
@@ -65,7 +66,7 @@ public class Grocery extends BaseEntity {
 	private GroceryExpirationType groceryExpirationType;
 
 	@Builder
-	public Grocery(Storage storage, String name, GroceryType groceryType, int quantity, String description, LocalDate expirationDate) {
+	public Grocery(Storage storage, String name, GroceryType groceryType, String quantity, String description, LocalDate expirationDate) {
 		this.storage = storage;
 		this.name = name;
 		this.groceryType = groceryType;

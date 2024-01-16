@@ -17,8 +17,9 @@ public record GroceryReq(
 
 	String groceryType,
 
-	@Min(value = 1, message = "식료품 수량은 1개 이상부터 등록 가능합니다.")
-	int quantity,
+	@NotBlank(message = "식료품 수량을 입력해주세요.")
+	@Length(min = 1, max = 50, message = "식료품 수량은 1자 이상 50자 이하로 등록 가능합니다.")
+	String quantity,
 
 	@Length(min = 1, max = 400, message = "식료품 설명은 1자 이상 400자 이하로 등록 가능합니다.")
 	String description,

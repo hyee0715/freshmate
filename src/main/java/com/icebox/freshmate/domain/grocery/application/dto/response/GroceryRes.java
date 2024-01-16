@@ -12,7 +12,7 @@ public record GroceryRes(
 	Long groceryId,
 	String groceryName,
 	String groceryType,
-	int quantity,
+	String quantity,
 	String description,
 
 	@JsonFormat(shape = STRING, pattern = "YYYY-MM-dd", timezone = "Asia/Seoul")
