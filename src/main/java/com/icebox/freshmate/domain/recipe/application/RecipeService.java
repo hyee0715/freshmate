@@ -4,15 +4,21 @@ import static com.icebox.freshmate.global.error.ErrorCode.*;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_RECIPE;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.icebox.freshmate.domain.grocery.domain.Grocery;
 import com.icebox.freshmate.domain.grocery.domain.GroceryRepository;
+import com.icebox.freshmate.domain.image.application.ImageService;
+import com.icebox.freshmate.domain.image.application.dto.request.ImageUploadReq;
+import com.icebox.freshmate.domain.image.application.dto.response.ImageRes;
+import com.icebox.freshmate.domain.image.application.dto.response.ImagesRes;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
 import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeCreateReq;
@@ -20,6 +26,8 @@ import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeUpdateRe
 import com.icebox.freshmate.domain.recipe.application.dto.response.RecipeRes;
 import com.icebox.freshmate.domain.recipe.application.dto.response.RecipesRes;
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
+import com.icebox.freshmate.domain.recipe.domain.RecipeImage;
+import com.icebox.freshmate.domain.recipe.domain.RecipeImageRepository;
 import com.icebox.freshmate.domain.recipe.domain.RecipeRepository;
 import com.icebox.freshmate.domain.recipe.domain.RecipeType;
 import com.icebox.freshmate.domain.recipegrocery.application.dto.request.RecipeGroceryReq;
@@ -43,8 +51,10 @@ public class RecipeService {
 	private final MemberRepository memberRepository;
 	private final RecipeGroceryRepository recipeGroceryRepository;
 	private final GroceryRepository groceryRepository;
+	private final RecipeImageRepository recipeImageRepository;
+	private final ImageService imageService;
 
-	public RecipeRes create(RecipeCreateReq recipeCreateReq, String username) {
+	public RecipeRes create(RecipeCreateReq recipeCreateReq, ImageUploadReq imageUploadReq, String username) {
 		Member member = getMemberByUsername(username);
 
 		Recipe recipe = RecipeCreateReq.toRecipe(recipeCreateReq, member);
@@ -53,34 +63,21 @@ public class RecipeService {
 
 		List<RecipeGroceryRes> recipeGroceriesRes = saveMaterials(recipeCreateReq.materials(), savedRecipe, member.getId());
 
-		return RecipeRes.of(savedRecipe, recipeGroceriesRes);
+		ImagesRes imagesRes = saveImages(recipe, imageUploadReq);
+		List<ImageRes> images = getImageResList(imagesRes);
+
+		return RecipeRes.of(savedRecipe, recipeGroceriesRes, images);
 	}
 
-	public RecipeRes scrap(Long recipeId, String username) {
-		Member owner = getMemberByUsername(username);
-		Recipe recipe = getRecipeById(recipeId);
-		Member writer = recipe.getWriter();
-		validateOwnerAndWriterToScrap(owner.getId(), writer.getId());
-
-		Recipe originalRecipe = toScrappedRecipe(recipe, writer, owner);
-		Recipe savedRecipe = recipeRepository.save(originalRecipe);
-		savedRecipe.updateOriginalRecipeId(recipe.getId());
-
-		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByRecipeId(savedRecipe.getOriginalRecipeId());
-		List<RecipeGroceryRes> recipeGroceriesRes = RecipeGroceryRes.from(recipeGroceries);
-
-		return RecipeRes.of(savedRecipe, recipeGroceriesRes);
-	}
-
-	@Transactional(readOnly = true)
-	public RecipeRes findById(Long id) {
-		Recipe recipe = getRecipeById(id);
-
-		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByRecipeId(recipe.getId());
-		List<RecipeGroceryRes> recipeGroceriesRes = RecipeGroceryRes.from(recipeGroceries);
-
-		return RecipeRes.of(recipe, recipeGroceriesRes);
-	}
+//	@Transactional(readOnly = true)
+//	public RecipeRes findById(Long id) {
+//		Recipe recipe = getRecipeById(id);
+//
+//		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByRecipeId(recipe.getId());
+//		List<RecipeGroceryRes> recipeGroceriesRes = RecipeGroceryRes.from(recipeGroceries);
+//
+//		return RecipeRes.of(recipe, recipeGroceriesRes);
+//	}
 
 	@Transactional(readOnly = true)
 	public RecipesRes findAllByWriterId(String username) {
@@ -123,33 +120,33 @@ public class RecipeService {
 		return RecipesRes.from(recipes);
 	}
 
-	public RecipeRes update(Long id, RecipeUpdateReq recipeUpdateReq, String username) {
-		Member owner = getMemberByUsername(username);
-		Recipe recipe = getRecipeByIdAndOwnerId(id, owner.getId());
-		validateScrapedRecipe(recipe);
+//	public RecipeRes update(Long id, RecipeUpdateReq recipeUpdateReq, String username) {
+//		Member owner = getMemberByUsername(username);
+//		Recipe recipe = getRecipeByIdAndOwnerId(id, owner.getId());
+//		validateScrapedRecipe(recipe);
+//
+//		Recipe updateRecipe = RecipeUpdateReq.toRecipe(recipeUpdateReq, owner);
+//		recipe.update(updateRecipe);
+//
+//		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByRecipeId(recipe.getId());
+//		List<RecipeGroceryRes> recipeGroceriesRes = RecipeGroceryRes.from(recipeGroceries);
+//
+//		return RecipeRes.of(recipe, recipeGroceriesRes);
+//	}
 
-		Recipe updateRecipe = RecipeUpdateReq.toRecipe(recipeUpdateReq, owner);
-		recipe.update(updateRecipe);
-
-		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByRecipeId(recipe.getId());
-		List<RecipeGroceryRes> recipeGroceriesRes = RecipeGroceryRes.from(recipeGroceries);
-
-		return RecipeRes.of(recipe, recipeGroceriesRes);
-	}
-
-	public RecipeRes addRecipeGrocery(Long recipeId, RecipeGroceryReq recipeGroceryReq, String username) {
-		Member member = getMemberByUsername(username);
-
-		Recipe recipe = getRecipeByIdAndOwnerId(recipeId, member.getId());
-		validateScrapedRecipe(recipe);
-
-		saveMaterials(List.of(recipeGroceryReq), recipe, member.getId());
-		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByRecipeId(recipe.getId());
-
-		List<RecipeGroceryRes> recipeGroceriesRes = RecipeGroceryRes.from(recipeGroceries);
-
-		return RecipeRes.of(recipe, recipeGroceriesRes);
-	}
+//	public RecipeRes addRecipeGrocery(Long recipeId, RecipeGroceryReq recipeGroceryReq, String username) {
+//		Member member = getMemberByUsername(username);
+//
+//		Recipe recipe = getRecipeByIdAndOwnerId(recipeId, member.getId());
+//		validateScrapedRecipe(recipe);
+//
+//		saveMaterials(List.of(recipeGroceryReq), recipe, member.getId());
+//		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByRecipeId(recipe.getId());
+//
+//		List<RecipeGroceryRes> recipeGroceriesRes = RecipeGroceryRes.from(recipeGroceries);
+//
+//		return RecipeRes.of(recipe, recipeGroceriesRes);
+//	}
 
 	public void delete(Long id, String username) {
 		Member writer = getMemberByUsername(username);
@@ -158,21 +155,21 @@ public class RecipeService {
 		recipeRepository.delete(recipe);
 	}
 
-	public RecipeRes removeRecipeGrocery(Long recipeGroceryId, String username) {
-		Member member = getMemberByUsername(username);
-		RecipeGrocery recipeGrocery = getRecipeGroceryById(recipeGroceryId);
-
-		Recipe recipe = getRecipeByIdAndOwnerId(recipeGrocery.getRecipe().getId(), member.getId());
-		validateScrapedRecipe(recipe);
-
-		recipeGrocery.getRecipe().removeRecipeGrocery(recipeGrocery);
-		recipeGroceryRepository.delete(recipeGrocery);
-
-		List<RecipeGrocery> recipeGroceries = recipe.getRecipeGroceries();
-		List<RecipeGroceryRes> recipeGroceriesRes = RecipeGroceryRes.from(recipeGroceries);
-
-		return RecipeRes.of(recipe, recipeGroceriesRes);
-	}
+//	public RecipeRes removeRecipeGrocery(Long recipeGroceryId, String username) {
+//		Member member = getMemberByUsername(username);
+//		RecipeGrocery recipeGrocery = getRecipeGroceryById(recipeGroceryId);
+//
+//		Recipe recipe = getRecipeByIdAndOwnerId(recipeGrocery.getRecipe().getId(), member.getId());
+//		validateScrapedRecipe(recipe);
+//
+//		recipeGrocery.getRecipe().removeRecipeGrocery(recipeGrocery);
+//		recipeGroceryRepository.delete(recipeGrocery);
+//
+//		List<RecipeGrocery> recipeGroceries = recipe.getRecipeGroceries();
+//		List<RecipeGroceryRes> recipeGroceriesRes = RecipeGroceryRes.from(recipeGroceries);
+//
+//		return RecipeRes.of(recipe, recipeGroceriesRes);
+//	}
 
 	private Recipe getRecipeByIdAndOwnerId(Long recipeId, Long ownerId) {
 		return recipeRepository.findByIdAndOwnerId(recipeId, ownerId)
@@ -307,5 +304,41 @@ public class RecipeService {
 				log.warn("GET:READ:NOT_FOUND_RECIPE_GROCERY_BY_ID : recipeGroceryId = {}", recipeGroceryId);
 				return new EntityNotFoundException(NOT_FOUND_RECIPE_GROCERY);
 			});
+	}
+
+	private List<ImageRes> getImageResList(ImagesRes imagesRes) {
+
+		return Optional.ofNullable(imagesRes)
+			.map(ImagesRes::images)
+			.orElse(null);
+	}
+
+	private ImagesRes saveImages(Recipe recipe, ImageUploadReq imageUploadReq) {
+
+		return Optional.ofNullable(imageUploadReq.files())
+			.map(files -> imageService.store(imageUploadReq))
+			.map(imagesRes -> {
+				List<RecipeImage> recipeImages = saveImages(recipe, imagesRes);
+				recipe.addRecipeImages(recipeImages);
+				return imagesRes;
+			})
+			.orElse(null);
+	}
+
+	private List<RecipeImage> saveImages(Recipe recipe, ImagesRes imagesRes) {
+
+		return imagesRes.images().stream()
+			.map(imageRes -> buildRecipeImage(imageRes, recipe))
+			.peek(recipeImageRepository::save)
+			.toList();
+	}
+
+	private RecipeImage buildRecipeImage(ImageRes imageRes, Recipe recipe) {
+
+		return RecipeImage.builder()
+			.fileName(imageRes.fileName())
+			.path(imageRes.path())
+			.recipe(recipe)
+			.build();
 	}
 }

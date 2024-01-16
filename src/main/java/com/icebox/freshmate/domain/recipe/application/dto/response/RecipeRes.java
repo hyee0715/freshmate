@@ -2,6 +2,7 @@ package com.icebox.freshmate.domain.recipe.application.dto.response;
 
 import java.util.List;
 
+import com.icebox.freshmate.domain.image.application.dto.response.ImageRes;
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
 import com.icebox.freshmate.domain.recipegrocery.application.dto.response.RecipeGroceryRes;
 
@@ -16,10 +17,11 @@ public record RecipeRes(
 	String title,
 	String content,
 
-	List<RecipeGroceryRes> materials
+	List<RecipeGroceryRes> materials,
+	List<ImageRes> images
 ) {
 
-	public static RecipeRes of(Recipe recipe, List<RecipeGroceryRes> recipeGroceriesRes) {
+	public static RecipeRes of(Recipe recipe, List<RecipeGroceryRes> recipeGroceriesRes, List<ImageRes> imagesRes) {
 
 		return new RecipeRes(
 			recipe.getId(),
@@ -31,7 +33,8 @@ public record RecipeRes(
 			recipe.getOriginalRecipeId(),
 			recipe.getTitle(),
 			recipe.getContent(),
-			recipeGroceriesRes
+			recipeGroceriesRes,
+			imagesRes
 		);
 	}
 }
