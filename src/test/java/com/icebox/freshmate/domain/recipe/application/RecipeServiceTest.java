@@ -18,10 +18,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 
 import com.icebox.freshmate.domain.grocery.domain.Grocery;
 import com.icebox.freshmate.domain.grocery.domain.GroceryRepository;
 import com.icebox.freshmate.domain.grocery.domain.GroceryType;
+import com.icebox.freshmate.domain.image.application.ImageService;
+import com.icebox.freshmate.domain.image.application.dto.request.ImageUploadReq;
+import com.icebox.freshmate.domain.image.application.dto.response.ImageRes;
+import com.icebox.freshmate.domain.image.application.dto.response.ImagesRes;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
 import com.icebox.freshmate.domain.member.domain.Role;
@@ -30,6 +35,8 @@ import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeUpdateRe
 import com.icebox.freshmate.domain.recipe.application.dto.response.RecipeRes;
 import com.icebox.freshmate.domain.recipe.application.dto.response.RecipesRes;
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
+import com.icebox.freshmate.domain.recipe.domain.RecipeImage;
+import com.icebox.freshmate.domain.recipe.domain.RecipeImageRepository;
 import com.icebox.freshmate.domain.recipe.domain.RecipeRepository;
 import com.icebox.freshmate.domain.recipe.domain.RecipeType;
 import com.icebox.freshmate.domain.recipegrocery.application.dto.request.RecipeGroceryReq;
@@ -58,6 +65,12 @@ class RecipeServiceTest {
 	@Mock
 	private RecipeGroceryRepository recipeGroceryRepository;
 
+	@Mock
+	private RecipeImageRepository recipeImageRepository;
+
+	@Mock
+	private ImageService imageService;
+
 	private Member member1;
 	private Recipe recipe1;
 	private Recipe recipe2;
@@ -68,6 +81,7 @@ class RecipeServiceTest {
 	private Grocery grocery2;
 	private RecipeGrocery recipeGrocery1;
 	private RecipeGrocery recipeGrocery2;
+	private RecipeImage recipeImage1;
 
 	@BeforeEach
 	void setUp() {
@@ -126,7 +140,7 @@ class RecipeServiceTest {
 			.storage(storage)
 			.name("양배추")
 			.groceryType(GroceryType.VEGETABLES)
-			.quantity(1)
+			.quantity("1개")
 			.description("필수 식재료")
 			.expirationDate(LocalDate.now().plusDays(7))
 			.build();
@@ -135,7 +149,7 @@ class RecipeServiceTest {
 			.storage(storage)
 			.name("배추")
 			.groceryType(GroceryType.VEGETABLES)
-			.quantity(1)
+			.quantity("1개")
 			.description("필수 식재료")
 			.expirationDate(LocalDate.now().plusDays(7))
 			.build();
@@ -144,29 +158,54 @@ class RecipeServiceTest {
 			.recipe(recipe1)
 			.grocery(grocery1)
 			.groceryName(grocery1.getName())
+			.groceryQuantity(grocery1.getQuantity())
 			.build();
 
 		recipeGrocery2 = RecipeGrocery.builder()
 			.recipe(recipe1)
 			.grocery(grocery2)
 			.groceryName(grocery2.getName())
+			.groceryQuantity(grocery2.getQuantity())
 			.build();
+
+		recipe1.addRecipeGrocery(recipeGrocery1);
+		recipe1.addRecipeGrocery(recipeGrocery2);
+
+		String imageFileName = "image.jpg";
+		String imagePath = "http://fake-image-url.com/image.jpg";
+
+		recipeImage1 = RecipeImage
+			.builder()
+			.recipe(recipe1)
+			.fileName(imageFileName)
+			.path(imagePath)
+			.build();
+
+		recipe1.addRecipeImage(recipeImage1);
 	}
 
 	@DisplayName("레시피 생성 테스트")
 	@Test
 	void create() {
 		//given
-		RecipeGroceryReq recipeGroceryReq = new RecipeGroceryReq(1L, grocery1.getName());
+		RecipeGroceryReq recipeGroceryReq = new RecipeGroceryReq(1L, grocery1.getName(), grocery1.getQuantity());
 		List<RecipeGroceryReq> recipeGroceriesReq = List.of(recipeGroceryReq);
 		RecipeCreateReq recipeCreateReq = new RecipeCreateReq(recipe1.getTitle(), recipeGroceriesReq, recipe1.getContent());
+
+		MockMultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", "Spring Framework".getBytes());
+		ImageUploadReq imageUploadReq = new ImageUploadReq(List.of(file));
+
+		ImageRes imageRes = new ImageRes(recipeImage1.getFileName(), recipeImage1.getPath());
+		ImagesRes imagesRes = new ImagesRes(List.of(imageRes));
 
 		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member1));
 		when(recipeRepository.save(any(Recipe.class))).thenReturn(recipe1);
 		when(groceryRepository.findByIdAndMemberId(any(), any())).thenReturn(Optional.of(grocery1));
+		when(recipeImageRepository.save(any(RecipeImage.class))).thenReturn(recipeImage1);
+		when(imageService.store(any(ImageUploadReq.class))).thenReturn(imagesRes);
 
 		//when
-		RecipeRes recipeRes = recipeService.create(recipeCreateReq, member1.getUsername());
+		RecipeRes recipeRes = recipeService.create(recipeCreateReq, imageUploadReq, member1.getUsername());
 
 		//then
 		assertThat(recipeRes.writerNickName()).isEqualTo(recipe1.getWriter().getNickName());
@@ -176,6 +215,8 @@ class RecipeServiceTest {
 		assertThat(recipeRes.content()).isEqualTo(recipe1.getContent());
 		assertThat(recipeRes.materials().get(0).recipeTitle()).isEqualTo(recipe1.getTitle());
 		assertThat(recipeRes.materials().get(0).groceryName()).isEqualTo(grocery1.getName());
+		assertThat(recipeRes.images().get(0).fileName()).isEqualTo(recipeImage1.getFileName());
+		assertThat(recipeRes.images().get(0).path()).isEqualTo(recipeImage1.getPath());
 	}
 
 	@DisplayName("레시피 단건 조회 테스트")
@@ -185,7 +226,6 @@ class RecipeServiceTest {
 		Long recipeId = 1L;
 
 		when(recipeRepository.findById(anyLong())).thenReturn(Optional.of(recipe1));
-		when(recipeGroceryRepository.findAllByRecipeId(any())).thenReturn(List.of(recipeGrocery1));
 
 		//when
 		RecipeRes recipeRes = recipeService.findById(recipeId);
@@ -198,6 +238,8 @@ class RecipeServiceTest {
 		assertThat(recipeRes.content()).isEqualTo(recipe1.getContent());
 		assertThat(recipeRes.materials().get(0).recipeTitle()).isEqualTo(recipeGrocery1.getRecipe().getTitle());
 		assertThat(recipeRes.materials().get(0).groceryName()).isEqualTo(recipeGrocery1.getGroceryName());
+		assertThat(recipeRes.images().get(0).fileName()).isEqualTo(recipeImage1.getFileName());
+		assertThat(recipeRes.images().get(0).path()).isEqualTo(recipeImage1.getPath());
 	}
 
 	@DisplayName("사용자가 작성한 모든 레시피 조회 테스트")
@@ -216,7 +258,10 @@ class RecipeServiceTest {
 		assertThat(recipesRes.recipes().get(0).ownerNickName()).isEqualTo(recipe1.getOwner().getNickName());
 		assertThat(recipesRes.recipes().get(0).recipeType()).isEqualTo(recipe1.getRecipeType().name());
 		assertThat(recipesRes.recipes().get(0).title()).isEqualTo(recipe1.getTitle());
-		assertThat(recipesRes.recipes().get(0).content()).isEqualTo(recipe1.getContent());
+		assertThat(recipesRes.recipes().get(0).materials().get(0).recipeTitle()).isEqualTo(recipeGrocery1.getRecipe().getTitle());
+		assertThat(recipesRes.recipes().get(0).materials().get(0).groceryName()).isEqualTo(recipeGrocery1.getGroceryName());
+		assertThat(recipesRes.recipes().get(0).images().get(0).fileName()).isEqualTo(recipeImage1.getFileName());
+		assertThat(recipesRes.recipes().get(0).images().get(0).path()).isEqualTo(recipeImage1.getPath());
 	}
 
 	@DisplayName("사용자가 스크랩한(소유한) 모든 레시피 조회 테스트")
@@ -235,26 +280,10 @@ class RecipeServiceTest {
 		assertThat(recipesRes.recipes().get(0).ownerNickName()).isEqualTo(recipe1.getOwner().getNickName());
 		assertThat(recipesRes.recipes().get(0).recipeType()).isEqualTo(recipe1.getRecipeType().name());
 		assertThat(recipesRes.recipes().get(0).title()).isEqualTo(recipe1.getTitle());
-		assertThat(recipesRes.recipes().get(0).content()).isEqualTo(recipe1.getContent());
-	}
-
-	@DisplayName("사용자가 작성하고 스크랩한(소유한) 모든 레시피 조회 테스트")
-	@Test
-	void findAllByMemberId() {
-		//given
-		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member1));
-		when(recipeRepository.findAllByWriterId(any())).thenReturn(List.of(recipe1, recipe2, recipe3));
-
-		//when
-		RecipesRes recipesRes = recipeService.findAllByWriterId(member1.getUsername());
-
-		//then
-		assertThat(recipesRes.recipes()).hasSize(3);
-		assertThat(recipesRes.recipes().get(0).writerNickName()).isEqualTo(recipe1.getWriter().getNickName());
-		assertThat(recipesRes.recipes().get(0).ownerNickName()).isEqualTo(recipe1.getOwner().getNickName());
-		assertThat(recipesRes.recipes().get(0).recipeType()).isEqualTo(recipe1.getRecipeType().name());
-		assertThat(recipesRes.recipes().get(0).title()).isEqualTo(recipe1.getTitle());
-		assertThat(recipesRes.recipes().get(0).content()).isEqualTo(recipe1.getContent());
+		assertThat(recipesRes.recipes().get(0).materials().get(0).recipeTitle()).isEqualTo(recipeGrocery1.getRecipe().getTitle());
+		assertThat(recipesRes.recipes().get(0).materials().get(0).groceryName()).isEqualTo(recipeGrocery1.getGroceryName());
+		assertThat(recipesRes.recipes().get(0).images().get(0).fileName()).isEqualTo(recipeImage1.getFileName());
+		assertThat(recipesRes.recipes().get(0).images().get(0).path()).isEqualTo(recipeImage1.getPath());
 	}
 
 	@DisplayName("사용자가 작성한 레시피 수정 성공 테스트")
@@ -265,7 +294,6 @@ class RecipeServiceTest {
 
 		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member1));
 		when(recipeRepository.findByIdAndOwnerId(any(), any())).thenReturn(Optional.of(recipe1));
-		when(recipeGroceryRepository.findAllByRecipeId(any())).thenReturn(List.of(recipeGrocery1));
 
 		String updateTitle = "수정된제목";
 		String updateContent = "수정된내용";
@@ -281,6 +309,10 @@ class RecipeServiceTest {
 		assertThat(recipeRes.recipeType()).isEqualTo(recipe1.getRecipeType().name());
 		assertThat(recipeRes.title()).isEqualTo(updateTitle);
 		assertThat(recipeRes.content()).isEqualTo(updateContent);
+		assertThat(recipeRes.materials().get(0).recipeTitle()).isEqualTo(recipeGrocery1.getRecipe().getTitle());
+		assertThat(recipeRes.materials().get(0).groceryName()).isEqualTo(recipeGrocery1.getGroceryName());
+		assertThat(recipeRes.images().get(0).fileName()).isEqualTo(recipeImage1.getFileName());
+		assertThat(recipeRes.images().get(0).path()).isEqualTo(recipeImage1.getPath());
 	}
 
 	@DisplayName("사용자가 작성한 레시피 수정 실패 테스트 - 스크랩한 레시피는 수정 불가")
