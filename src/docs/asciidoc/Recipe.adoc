@@ -13,10 +13,10 @@
 include::{snippets}/recipe/recipe-create/http-request.adoc[]
 .Request Headers
 include::{snippets}/recipe/recipe-create/request-headers.adoc[]
-.Request Fields
-include::{snippets}/recipe/recipe-create/request-fields.adoc[]
-.Request Body
-include::{snippets}/recipe/recipe-create/request-body.adoc[]
+.Request MultiParts
+include::{snippets}/recipe/recipe-create/request-parts.adoc[]
+.Request MultiPart - recipeCreateReq fields
+include::{snippets}/recipe/recipe-create/request-part-recipeCreateReq-fields.adoc[]
 
 .Response
 include::{snippets}/recipe/recipe-create/http-response.adoc[]
@@ -35,8 +35,6 @@ include::{snippets}/recipe/recipe-scrap/http-request.adoc[]
 include::{snippets}/recipe/recipe-scrap/query-parameters.adoc[]
 .Request Headers
 include::{snippets}/recipe/recipe-scrap/request-headers.adoc[]
-.Request Body
-include::{snippets}/recipe/recipe-scrap/request-body.adoc[]
 
 .Response
 include::{snippets}/recipe/recipe-scrap/http-response.adoc[]
@@ -46,7 +44,6 @@ include::{snippets}/recipe/recipe-scrap/response-fields.adoc[]
 include::{snippets}/recipe/recipe-scrap/response-body.adoc[]
 
 ---
-== POST: 레시피 스크랩
 === 실패 - 본인이 작성한 레시피는 스크랩 불가
 
 .Request
@@ -114,22 +111,6 @@ include::{snippets}/recipe/recipe-find-all-by-owner-id/response-fields.adoc[]
 include::{snippets}/recipe/recipe-find-all-by-owner-id/response-body.adoc[]
 
 ---
-== GET: 사용자가 작성하고 스크랩한(소유한) 모든 레시피 조회
-=== 성공
-
-.Request
-include::{snippets}/recipe/recipe-find-all-by-owner-id/http-request.adoc[]
-.Request Headers
-include::{snippets}/recipe/recipe-find-all-by-owner-id/request-headers.adoc[]
-
-.Response
-include::{snippets}/recipe/recipe-find-all-by-owner-id/http-response.adoc[]
-.Response Fields
-include::{snippets}/recipe/recipe-find-all-by-owner-id/response-fields.adoc[]
-.Response body
-include::{snippets}/recipe/recipe-find-all-by-owner-id/response-body.adoc[]
-
----
 == PATCH: 사용자가 작성한 레시피 수정
 === 성공
 
@@ -152,7 +133,6 @@ include::{snippets}/recipe/recipe-update/response-fields.adoc[]
 include::{snippets}/recipe/recipe-update/response-body.adoc[]
 
 ---
-== PATCH: 사용자가 작성한 레시피 수정
 === 실패 - 스크랩한 레시피는 수정 불가
 
 .Request
@@ -163,7 +143,6 @@ include::{snippets}/recipe/recipe-update-failure-invalid-update-attempt-to-scrap
 include::{snippets}/recipe/recipe-update-failure-invalid-update-attempt-to-scraped-recipe/request-headers.adoc[]
 .Request Fields
 include::{snippets}/recipe/recipe-update-failure-invalid-update-attempt-to-scraped-recipe/request-fields.adoc[]
-include::{snippets}/recipe/recipe-find-all-by-owner-id/request-body.adoc[]
 .Request Body
 include::{snippets}/recipe/recipe-update-failure-invalid-update-attempt-to-scraped-recipe/request-body.adoc[]
 
