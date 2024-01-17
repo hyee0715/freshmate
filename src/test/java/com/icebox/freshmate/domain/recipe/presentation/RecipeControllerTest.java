@@ -18,10 +18,13 @@ import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -42,6 +45,7 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
@@ -53,6 +57,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icebox.freshmate.domain.auth.application.PrincipalDetails;
 import com.icebox.freshmate.domain.grocery.domain.Grocery;
 import com.icebox.freshmate.domain.grocery.domain.GroceryType;
+import com.icebox.freshmate.domain.image.application.dto.request.ImageUploadReq;
+import com.icebox.freshmate.domain.image.application.dto.response.ImageRes;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.Role;
 import com.icebox.freshmate.domain.recipe.application.RecipeService;
@@ -61,6 +67,7 @@ import com.icebox.freshmate.domain.recipe.application.dto.request.RecipeUpdateRe
 import com.icebox.freshmate.domain.recipe.application.dto.response.RecipeRes;
 import com.icebox.freshmate.domain.recipe.application.dto.response.RecipesRes;
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
+import com.icebox.freshmate.domain.recipe.domain.RecipeImage;
 import com.icebox.freshmate.domain.recipe.domain.RecipeType;
 import com.icebox.freshmate.domain.recipegrocery.application.dto.request.RecipeGroceryReq;
 import com.icebox.freshmate.domain.recipegrocery.application.dto.response.RecipeGroceryRes;
@@ -103,6 +110,8 @@ class RecipeControllerTest {
 	private Grocery grocery2;
 	private RecipeGrocery recipeGrocery1;
 	private RecipeGrocery recipeGrocery2;
+	private RecipeImage recipeImage1;
+	private RecipeImage recipeImage2;
 
 	@BeforeEach
 	void setUp(RestDocumentationContextProvider restDocumentationContextProvider) {
@@ -169,7 +178,7 @@ class RecipeControllerTest {
 			.storage(storage)
 			.name("양배추")
 			.groceryType(GroceryType.VEGETABLES)
-			.quantity(1)
+			.quantity("1개")
 			.description("필수 식재료")
 			.expirationDate(LocalDate.now().plusDays(7))
 			.build();
@@ -178,7 +187,7 @@ class RecipeControllerTest {
 			.storage(storage)
 			.name("배추")
 			.groceryType(GroceryType.VEGETABLES)
-			.quantity(1)
+			.quantity("1개")
 			.description("필수 식재료")
 			.expirationDate(LocalDate.now().plusDays(7))
 			.build();
@@ -194,6 +203,38 @@ class RecipeControllerTest {
 			.grocery(grocery2)
 			.groceryName(grocery2.getName())
 			.build();
+
+		recipe1.addRecipeGrocery(recipeGrocery1);
+		recipe1.addRecipeGrocery(recipeGrocery2);
+
+		String imageFileName1 = "image1.jpg";
+		String imagePath1 = "https://test-image-urls.com/image1.jpg";
+
+		recipeImage1 = RecipeImage
+			.builder()
+			.recipe(recipe1)
+			.fileName(imageFileName1)
+			.path(imagePath1)
+			.build();
+
+		String imageFileName2 = "image2.jpg";
+		String imagePath2 = "https://test-image-urls.com/image2.jpg";
+
+		recipeImage2 = RecipeImage
+			.builder()
+			.recipe(recipe1)
+			.fileName(imageFileName2)
+			.path(imagePath2)
+			.build();
+
+		recipe1.addRecipeImage(recipeImage1);
+		recipe1.addRecipeImage(recipeImage2);
+
+		recipe2.addRecipeImage(recipeImage1);
+		recipe2.addRecipeImage(recipeImage2);
+
+		recipe3.addRecipeImage(recipeImage1);
+		recipe3.addRecipeImage(recipeImage2);
 	}
 
 	@DisplayName("레시피 생성 테스트")
@@ -204,23 +245,37 @@ class RecipeControllerTest {
 		Long member1Id = 1L;
 		Long grocery1Id = 1L;
 
-		RecipeGroceryReq recipeGroceryReq = new RecipeGroceryReq(grocery1Id, grocery1.getName());
+		RecipeGroceryReq recipeGroceryReq = new RecipeGroceryReq(grocery1Id, grocery1.getName(), grocery1.getQuantity());
 		List<RecipeGroceryReq> recipeGroceriesReq = List.of(recipeGroceryReq);
 		RecipeCreateReq recipeCreateReq = new RecipeCreateReq(recipe1.getTitle(), recipeGroceriesReq, recipe1.getContent());
 
-		RecipeGroceryRes recipeGroceryRes = new RecipeGroceryRes(1L, recipe1Id, recipe1.getTitle(), grocery1Id, grocery1.getName());
-		RecipeRes recipeRes = new RecipeRes(recipe1Id, member1Id, member1.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe1Id, recipe1.getTitle(), recipe1.getContent(), List.of(recipeGroceryRes));
+		MockMultipartFile file1 = new MockMultipartFile("imageFiles", "test1.jpg", "image/jpeg", "Spring Framework".getBytes());
+		MockMultipartFile file2 = new MockMultipartFile("imageFiles", "test2.jpg", "image/jpeg", "Spring Framework".getBytes());
+		MockMultipartFile request = new MockMultipartFile("recipeCreateReq", "recipeCreateReq",
+			"application/json",
+			objectMapper.writeValueAsString(recipeCreateReq).getBytes());
 
-		when(recipeService.create(any(RecipeCreateReq.class), any(String.class))).thenReturn(recipeRes);
+
+		ImageRes imageRes1 = new ImageRes(recipeImage1.getFileName(), recipeImage1.getPath());
+		ImageRes imageRes2 = new ImageRes(recipeImage2.getFileName(), recipeImage2.getPath());
+
+		RecipeGroceryRes recipeGroceryRes = new RecipeGroceryRes(1L, recipe1Id, recipe1.getTitle(), grocery1Id, grocery1.getName(), grocery1.getQuantity());
+		RecipeRes recipeRes = new RecipeRes(recipe1Id, member1Id, member1.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe1Id, recipe1.getTitle(), recipe1.getContent(), List.of(recipeGroceryRes), List.of(imageRes1, imageRes2));
+
+		when(recipeService.create(any(RecipeCreateReq.class), any(ImageUploadReq.class), any(String.class))).thenReturn(recipeRes);
 
 		//when
 		//then
-		mockMvc.perform(RestDocumentationRequestBuilders.post("/api/recipes")
+		mockMvc.perform(RestDocumentationRequestBuilders.multipart("/api/recipes")
+			.file(file1)
+			.file(file2)
+			.file(request)
 				.contentType(MediaType.APPLICATION_JSON)
 				.header("Authorization", "Bearer {ACCESS_TOKEN}")
 				.with(user(principalDetails))
 				.with(csrf().asHeader())
-				.content(objectMapper.writeValueAsString(recipeCreateReq)))
+				.contentType(MediaType.MULTIPART_FORM_DATA)
+				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(content().json(objectMapper.writeValueAsString(recipeRes)))
 			.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.recipeId").value(recipeRes.recipeId()))
@@ -234,6 +289,9 @@ class RecipeControllerTest {
 			.andExpect(jsonPath("$.content").value(recipeRes.content()))
 			.andExpect(jsonPath("$.materials[0].groceryId").value(recipeRes.materials().get(0).groceryId()))
 			.andExpect(jsonPath("$.materials[0].groceryName").value(recipeRes.materials().get(0).groceryName()))
+			.andExpect(jsonPath("$.materials[0].groceryQuantity").value(recipeRes.materials().get(0).groceryQuantity()))
+			.andExpect(jsonPath("$.images[0].fileName").value(recipeRes.images().get(0).fileName()))
+			.andExpect(jsonPath("$.images[0].path").value(recipeRes.images().get(0).path()))
 			.andDo(print())
 			.andDo(document("recipe/recipe-create",
 				preprocessRequest(prettyPrint()),
@@ -241,10 +299,15 @@ class RecipeControllerTest {
 				requestHeaders(
 					headerWithName("Authorization").description("Access Token")
 				),
-				requestFields(
+				requestParts(
+					partWithName("imageFiles").description("레시피 이미지들"),
+					partWithName("recipeCreateReq").description("레시피 등록 내용")
+				),
+				requestPartFields("recipeCreateReq",
 					fieldWithPath("title").description("레시피 제목"),
 					fieldWithPath("materials[].groceryId").description("레시피 식재료 ID"),
 					fieldWithPath("materials[].groceryName").description("레시피 식재료 이름"),
+					fieldWithPath("materials[].groceryQuantity").description("레시피 식재료 수량"),
 					fieldWithPath("content").description("레시피 내용")
 				),
 				responseFields(
@@ -261,7 +324,10 @@ class RecipeControllerTest {
 					fieldWithPath("materials[].recipeId").type(NUMBER).description("회원이 등록한 레시피 ID"),
 					fieldWithPath("materials[].recipeTitle").type(STRING).description("회원이 등록한 레시피 제목"),
 					fieldWithPath("materials[].groceryId").type(NUMBER).description("회원이 등록한 식재료 ID"),
-					fieldWithPath("materials[].groceryName").type(STRING).description("회원이 등록한 식재료 이름")
+					fieldWithPath("materials[].groceryName").type(STRING).description("회원이 등록한 식재료 이름"),
+					fieldWithPath("materials[].groceryQuantity").type(STRING).description("회원이 등록한 식재료 수량"),
+					fieldWithPath("images[].fileName").type(STRING).description("레시피 이미지 파일 이름"),
+					fieldWithPath("images[].path").type(STRING).description("레시피 이미지 파일 경로")
 				)
 			));
 	}
@@ -278,8 +344,11 @@ class RecipeControllerTest {
 		Long grocery1Id = 1L;
 		Long recipeGrocery1Id = 1L;
 
-		RecipeGroceryRes recipeGroceryRes = new RecipeGroceryRes(recipeGrocery1Id, recipe1Id, recipe1.getTitle(), grocery1Id, grocery1.getName());
-		RecipeRes recipeRes = new RecipeRes(scrapedRecipeId, writerId, member2.getNickName(), ownerId, member1.getNickName(), RecipeType.SCRAPED.name(), originalRecipeId, recipe1.getTitle(), recipe1.getContent(), List.of(recipeGroceryRes));
+		ImageRes imageRes1 = new ImageRes(recipeImage1.getFileName(), recipeImage1.getPath());
+		ImageRes imageRes2 = new ImageRes(recipeImage2.getFileName(), recipeImage2.getPath());
+
+		RecipeGroceryRes recipeGroceryRes = new RecipeGroceryRes(recipeGrocery1Id, recipe1Id, recipe1.getTitle(), grocery1Id, grocery1.getName(), grocery1.getQuantity());
+		RecipeRes recipeRes = new RecipeRes(scrapedRecipeId, writerId, member2.getNickName(), ownerId, member1.getNickName(), RecipeType.SCRAPED.name(), originalRecipeId, recipe1.getTitle(), recipe1.getContent(), List.of(recipeGroceryRes), List.of(imageRes1, imageRes2));
 
 		when(recipeService.scrap(anyLong(), any(String.class))).thenReturn(recipeRes);
 
@@ -303,6 +372,9 @@ class RecipeControllerTest {
 			.andExpect(jsonPath("$.content").value(recipeRes.content()))
 			.andExpect(jsonPath("$.materials[0].groceryId").value(recipeRes.materials().get(0).groceryId()))
 			.andExpect(jsonPath("$.materials[0].groceryName").value(recipeRes.materials().get(0).groceryName()))
+			.andExpect(jsonPath("$.materials[0].groceryQuantity").value(recipeRes.materials().get(0).groceryQuantity()))
+			.andExpect(jsonPath("$.images[0].fileName").value(recipeRes.images().get(0).fileName()))
+			.andExpect(jsonPath("$.images[0].path").value(recipeRes.images().get(0).path()))
 			.andDo(print())
 			.andDo(document("recipe/recipe-scrap",
 				preprocessRequest(prettyPrint()),
@@ -327,7 +399,10 @@ class RecipeControllerTest {
 					fieldWithPath("materials[].recipeId").type(NUMBER).description("회원이 등록한 레시피 ID"),
 					fieldWithPath("materials[].recipeTitle").type(STRING).description("회원이 등록한 레시피 제목"),
 					fieldWithPath("materials[].groceryId").type(NUMBER).description("회원이 등록한 식재료 ID"),
-					fieldWithPath("materials[].groceryName").type(STRING).description("회원이 등록한 식재료 이름")
+					fieldWithPath("materials[].groceryName").type(STRING).description("회원이 등록한 식재료 이름"),
+					fieldWithPath("materials[].groceryQuantity").type(STRING).description("회원이 등록한 식재료 수량"),
+					fieldWithPath("images[].fileName").type(STRING).description("레시피 이미지 파일 이름"),
+					fieldWithPath("images[].path").type(STRING).description("레시피 이미지 파일 경로")
 				)
 			));
 	}
@@ -381,8 +456,11 @@ class RecipeControllerTest {
 		Long grocery1Id = 1L;
 		Long recipeGroceryId = 1L;
 
-		RecipeGroceryRes recipeGroceryRes = new RecipeGroceryRes(recipeGroceryId, recipe1Id, recipe1.getTitle(), grocery1Id, grocery1.getName());
-		RecipeRes recipeRes = new RecipeRes(recipe1Id, member1Id, member1.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe1Id, recipe1.getTitle(), recipe1.getContent(), List.of(recipeGroceryRes));
+		ImageRes imageRes1 = new ImageRes(recipeImage1.getFileName(), recipeImage1.getPath());
+		ImageRes imageRes2 = new ImageRes(recipeImage2.getFileName(), recipeImage2.getPath());
+
+		RecipeGroceryRes recipeGroceryRes = new RecipeGroceryRes(recipeGroceryId, recipe1Id, recipe1.getTitle(), grocery1Id, grocery1.getName(), grocery1.getQuantity());
+		RecipeRes recipeRes = new RecipeRes(recipe1Id, member1Id, member1.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe1Id, recipe1.getTitle(), recipe1.getContent(), List.of(recipeGroceryRes), List.of(imageRes1, imageRes2));
 
 		when(recipeService.findById(anyLong())).thenReturn(recipeRes);
 
@@ -409,6 +487,9 @@ class RecipeControllerTest {
 			.andExpect(jsonPath("$.materials[0].recipeTitle").value(recipeRes.materials().get(0).recipeTitle()))
 			.andExpect(jsonPath("$.materials[0].groceryId").value(recipeRes.materials().get(0).groceryId()))
 			.andExpect(jsonPath("$.materials[0].groceryName").value(recipeRes.materials().get(0).groceryName()))
+			.andExpect(jsonPath("$.materials[0].groceryQuantity").value(recipeRes.materials().get(0).groceryQuantity()))
+			.andExpect(jsonPath("$.images[0].fileName").value(recipeRes.images().get(0).fileName()))
+			.andExpect(jsonPath("$.images[0].path").value(recipeRes.images().get(0).path()))
 			.andDo(print())
 			.andDo(document("recipe/recipe-find-by-id",
 				preprocessRequest(prettyPrint()),
@@ -431,7 +512,10 @@ class RecipeControllerTest {
 					fieldWithPath("materials[].recipeId").type(NUMBER).description("회원이 등록한 레시피 ID"),
 					fieldWithPath("materials[].recipeTitle").type(STRING).description("회원이 등록한 레시피 제목"),
 					fieldWithPath("materials[].groceryId").type(NUMBER).description("회원이 등록한 식재료 ID"),
-					fieldWithPath("materials[].groceryName").type(STRING).description("회원이 등록한 식재료 이름")
+					fieldWithPath("materials[].groceryName").type(STRING).description("회원이 등록한 식재료 이름"),
+					fieldWithPath("materials[].groceryQuantity").type(STRING).description("회원이 등록한 식재료 수량"),
+					fieldWithPath("images[].fileName").type(STRING).description("레시피 이미지 파일 이름"),
+					fieldWithPath("images[].path").type(STRING).description("레시피 이미지 파일 경로")
 				)
 			));
 	}
@@ -449,11 +533,14 @@ class RecipeControllerTest {
 		Long grocery1Id = 1L;
 		Long grocery2Id = 2L;
 
-		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipe1Id, recipe1.getTitle(), grocery1Id, grocery1.getName());
-		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipe3Id, recipe3.getTitle(), grocery2Id, grocery2.getName());
+		ImageRes imageRes1 = new ImageRes(recipeImage1.getFileName(), recipeImage1.getPath());
+		ImageRes imageRes2 = new ImageRes(recipeImage2.getFileName(), recipeImage2.getPath());
 
-		RecipeRes recipeRes1 = new RecipeRes(recipe1Id, member1Id, member1.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe1Id, recipe1.getTitle(), recipe1.getContent(), List.of(recipeGroceryRes1));
-		RecipeRes recipeRes2 = new RecipeRes(recipe3Id, member1Id, member1.getNickName(), member2Id, member2.getNickName(), RecipeType.SCRAPED.name(), recipe3Id, recipe3.getTitle(), recipe3.getContent(), List.of(recipeGroceryRes2));
+		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipe1Id, recipe1.getTitle(), grocery1Id, grocery1.getName(), grocery1.getQuantity());
+		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipe3Id, recipe3.getTitle(), grocery2Id, grocery2.getName(), grocery2.getQuantity());
+
+		RecipeRes recipeRes1 = new RecipeRes(recipe1Id, member1Id, member1.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe1Id, recipe1.getTitle(), recipe1.getContent(), List.of(recipeGroceryRes1), List.of(imageRes1, imageRes2));
+		RecipeRes recipeRes2 = new RecipeRes(recipe3Id, member1Id, member1.getNickName(), member2Id, member2.getNickName(), RecipeType.SCRAPED.name(), recipe3Id, recipe3.getTitle(), recipe3.getContent(), List.of(recipeGroceryRes2), List.of(imageRes1, imageRes2));
 
 		RecipesRes recipesRes = new RecipesRes(List.of(recipeRes1, recipeRes2));
 
@@ -483,6 +570,9 @@ class RecipeControllerTest {
 			.andExpect(jsonPath("$.recipes[0].materials[0].recipeTitle").value(recipeRes1.materials().get(0).recipeTitle()))
 			.andExpect(jsonPath("$.recipes[0].materials[0].groceryId").value(recipeRes1.materials().get(0).groceryId()))
 			.andExpect(jsonPath("$.recipes[0].materials[0].groceryName").value(recipeRes1.materials().get(0).groceryName()))
+			.andExpect(jsonPath("$.recipes[0].materials[0].groceryQuantity").value(recipeRes1.materials().get(0).groceryQuantity()))
+			.andExpect(jsonPath("$.recipes[0].images[0].fileName").value(recipeRes1.images().get(0).fileName()))
+			.andExpect(jsonPath("$.recipes[0].images[0].path").value(recipeRes1.images().get(0).path()))
 			.andDo(print())
 			.andDo(document("recipe/recipe-find-all-by-writer-id",
 				preprocessRequest(prettyPrint()),
@@ -505,7 +595,10 @@ class RecipeControllerTest {
 					fieldWithPath("recipes[].materials[].recipeId").type(NUMBER).description("회원이 등록한 레시피 ID"),
 					fieldWithPath("recipes[].materials[].recipeTitle").type(STRING).description("회원이 등록한 레시피 제목"),
 					fieldWithPath("recipes[].materials[].groceryId").type(NUMBER).description("회원이 등록한 식재료 ID"),
-					fieldWithPath("recipes[].materials[].groceryName").type(STRING).description("회원이 등록한 식재료 이름")
+					fieldWithPath("recipes[].materials[].groceryName").type(STRING).description("회원이 등록한 식재료 이름"),
+					fieldWithPath("recipes[].materials[].groceryQuantity").type(STRING).description("회원이 등록한 식재료 수량"),
+					fieldWithPath("recipes[].images[].fileName").type(STRING).description("레시피 이미지 파일 이름"),
+					fieldWithPath("recipes[].images[].path").type(STRING).description("레시피 이미지 파일 경로")
 				)
 			));
 	}
@@ -523,11 +616,14 @@ class RecipeControllerTest {
 		Long grocery1Id = 1L;
 		Long grocery2Id = 2L;
 
-		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipe1Id, recipe1.getTitle(), grocery1Id, grocery1.getName());
-		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipe2Id, recipe2.getTitle(), grocery2Id, grocery2.getName());
+		ImageRes imageRes1 = new ImageRes(recipeImage1.getFileName(), recipeImage1.getPath());
+		ImageRes imageRes2 = new ImageRes(recipeImage2.getFileName(), recipeImage2.getPath());
 
-		RecipeRes recipeRes1 = new RecipeRes(recipe1Id, member1Id, member1.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe1Id, recipe1.getTitle(), recipe1.getContent(), List.of(recipeGroceryRes1));
-		RecipeRes recipeRes2 = new RecipeRes(recipe2Id, member2Id, member2.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe2Id, recipe2.getTitle(), recipe2.getContent(), List.of(recipeGroceryRes2));
+		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipe1Id, recipe1.getTitle(), grocery1Id, grocery1.getName(), grocery1.getQuantity());
+		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipe2Id, recipe2.getTitle(), grocery2Id, grocery2.getName(), grocery1.getQuantity());
+
+		RecipeRes recipeRes1 = new RecipeRes(recipe1Id, member1Id, member1.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe1Id, recipe1.getTitle(), recipe1.getContent(), List.of(recipeGroceryRes1), List.of(imageRes1, imageRes2));
+		RecipeRes recipeRes2 = new RecipeRes(recipe2Id, member2Id, member2.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe2Id, recipe2.getTitle(), recipe2.getContent(), List.of(recipeGroceryRes2), List.of(imageRes1, imageRes2));
 
 		RecipesRes recipesRes = new RecipesRes(List.of(recipeRes1, recipeRes2));
 
@@ -557,6 +653,9 @@ class RecipeControllerTest {
 			.andExpect(jsonPath("$.recipes[0].materials[0].recipeTitle").value(recipeRes1.materials().get(0).recipeTitle()))
 			.andExpect(jsonPath("$.recipes[0].materials[0].groceryId").value(recipeRes1.materials().get(0).groceryId()))
 			.andExpect(jsonPath("$.recipes[0].materials[0].groceryName").value(recipeRes1.materials().get(0).groceryName()))
+			.andExpect(jsonPath("$.recipes[0].materials[0].groceryQuantity").value(recipeRes1.materials().get(0).groceryQuantity()))
+			.andExpect(jsonPath("$.recipes[0].images[0].fileName").value(recipeRes1.images().get(0).fileName()))
+			.andExpect(jsonPath("$.recipes[0].images[0].path").value(recipeRes1.images().get(0).path()))
 			.andDo(print())
 			.andDo(document("recipe/recipe-find-all-by-owner-id",
 				preprocessRequest(prettyPrint()),
@@ -579,82 +678,11 @@ class RecipeControllerTest {
 					fieldWithPath("recipes[].materials[].recipeId").type(NUMBER).description("회원이 등록한 레시피 ID"),
 					fieldWithPath("recipes[].materials[].recipeTitle").type(STRING).description("회원이 등록한 레시피 제목"),
 					fieldWithPath("recipes[].materials[].groceryId").type(NUMBER).description("회원이 등록한 식재료 ID"),
-					fieldWithPath("recipes[].materials[].groceryName").type(STRING).description("회원이 등록한 식재료 이름")
-				)
-			));
-	}
+					fieldWithPath("recipes[].materials[].groceryName").type(STRING).description("회원이 등록한 식재료 이름"),
+					fieldWithPath("recipes[].materials[].groceryQuantity").type(STRING).description("회원이 등록한 식재료 수량"),
+					fieldWithPath("recipes[].images[].fileName").type(STRING).description("레시피 이미지 파일 이름"),
+					fieldWithPath("recipes[].images[].path").type(STRING).description("레시피 이미지 파일 경로")
 
-	@DisplayName("사용자가 작성하고 스크랩한(소유한) 모든 레시피 조회 테스트")
-	@Test
-	void findAllByMemberId() throws Exception {
-		//given
-		Long member1Id = 1L;
-		Long member2Id = 2L;
-		Long recipe1Id = 1L;
-		Long recipe2Id = 2L;
-		Long recipeGrocery1Id = 1L;
-		Long recipeGrocery2Id = 1L;
-		Long grocery1Id = 1L;
-		Long grocery2Id = 2L;
-
-		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipe1Id, recipe1.getTitle(), grocery1Id, grocery1.getName());
-		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipe2Id, recipe3.getTitle(), grocery2Id, grocery2.getName());
-
-
-		RecipeRes recipeRes1 = new RecipeRes(recipe1Id, member1Id, member1.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe1Id, recipe1.getTitle(), recipe1.getContent(), List.of(recipeGroceryRes1));
-		RecipeRes recipeRes2 = new RecipeRes(recipe2Id, member2Id, member2.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe2Id, recipe2.getTitle(), recipe2.getContent(), List.of(recipeGroceryRes2));
-
-		RecipesRes recipesRes = new RecipesRes(List.of(recipeRes1, recipeRes2));
-
-		when(recipeService.findAllByMemberId(member1.getUsername())).thenReturn(recipesRes);
-
-		//when
-		//then
-		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/recipes/members")
-				.contentType(MediaType.APPLICATION_JSON)
-				.header("Authorization", "Bearer {ACCESS_TOKEN}")
-				.with(user(principalDetails))
-				.with(csrf().asHeader()))
-			.andExpect(status().isOk())
-			.andExpect(content().json(objectMapper.writeValueAsString(recipesRes)))
-			.andExpect(jsonPath("$.recipes", hasSize(2)))
-			.andExpect(jsonPath("$.recipes[0].recipeId").value(recipeRes1.recipeId()))
-			.andExpect(jsonPath("$.recipes[0].writerId").value(recipeRes1.writerId()))
-			.andExpect(jsonPath("$.recipes[0].writerNickName").value(recipeRes1.writerNickName()))
-			.andExpect(jsonPath("$.recipes[0].ownerId").value(recipeRes1.ownerId()))
-			.andExpect(jsonPath("$.recipes[0].ownerNickName").value(recipeRes1.ownerNickName()))
-			.andExpect(jsonPath("$.recipes[0].recipeType").value(recipeRes1.recipeType()))
-			.andExpect(jsonPath("$.recipes[0].originalRecipeId").value(recipeRes1.originalRecipeId()))
-			.andExpect(jsonPath("$.recipes[0].title").value(recipeRes1.title()))
-			.andExpect(jsonPath("$.recipes[0].content").value(recipeRes1.content()))
-			.andExpect(jsonPath("$.recipes[0].materials[0].recipeGroceryId").value(recipeRes1.materials().get(0).recipeGroceryId()))
-			.andExpect(jsonPath("$.recipes[0].materials[0].recipeId").value(recipeRes1.materials().get(0).recipeId()))
-			.andExpect(jsonPath("$.recipes[0].materials[0].recipeTitle").value(recipeRes1.materials().get(0).recipeTitle()))
-			.andExpect(jsonPath("$.recipes[0].materials[0].groceryId").value(recipeRes1.materials().get(0).groceryId()))
-			.andExpect(jsonPath("$.recipes[0].materials[0].groceryName").value(recipeRes1.materials().get(0).groceryName()))
-			.andDo(print())
-			.andDo(document("recipe/recipe-find-all-by-owner-id",
-				preprocessRequest(prettyPrint()),
-				preprocessResponse(prettyPrint()),
-				requestHeaders(
-					headerWithName("Authorization").description("Access Token")
-				),
-				responseFields(
-					fieldWithPath("recipes").type(ARRAY).description("레시피 배열"),
-					fieldWithPath("recipes[].recipeId").type(NUMBER).description("레시피 ID"),
-					fieldWithPath("recipes[].writerId").type(NUMBER).description("레시피 작성자 ID"),
-					fieldWithPath("recipes[].writerNickName").type(STRING).description("레시피 작성자 닉네임"),
-					fieldWithPath("recipes[].ownerId").type(NUMBER).description("레시피 소유자 ID"),
-					fieldWithPath("recipes[].ownerNickName").type(STRING).description("레시피 소유자 닉네임"),
-					fieldWithPath("recipes[].recipeType").type(STRING).description("레시피 타입"),
-					fieldWithPath("recipes[].originalRecipeId").type(NUMBER).description("스크랩 된 레시피인 경우 본래 레시피 ID"),
-					fieldWithPath("recipes[].title").type(STRING).description("레시피 제목"),
-					fieldWithPath("recipes[].content").type(STRING).description("레시피 내용"),
-					fieldWithPath("recipes[].materials[].recipeGroceryId").type(NUMBER).description("레시피 식재료 ID"),
-					fieldWithPath("recipes[].materials[].recipeId").type(NUMBER).description("회원이 등록한 레시피 ID"),
-					fieldWithPath("recipes[].materials[].recipeTitle").type(STRING).description("회원이 등록한 레시피 제목"),
-					fieldWithPath("recipes[].materials[].groceryId").type(NUMBER).description("회원이 등록한 식재료 ID"),
-					fieldWithPath("recipes[].materials[].groceryName").type(STRING).description("회원이 등록한 식재료 이름")
 				)
 			));
 	}
@@ -669,8 +697,11 @@ class RecipeControllerTest {
 
 		RecipeUpdateReq recipeUpdateReq = new RecipeUpdateReq("제목수정", "내용수정");
 
-		RecipeGroceryRes recipeGroceryRes = new RecipeGroceryRes(1L, recipe1Id, recipe1.getTitle(), grocery1Id, grocery1.getName());
-		RecipeRes recipeRes = new RecipeRes(recipe1Id, member1Id, member1.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe1Id, recipeUpdateReq.title(), recipeUpdateReq.content(), List.of(recipeGroceryRes));
+		ImageRes imageRes1 = new ImageRes(recipeImage1.getFileName(), recipeImage1.getPath());
+		ImageRes imageRes2 = new ImageRes(recipeImage2.getFileName(), recipeImage2.getPath());
+
+		RecipeGroceryRes recipeGroceryRes = new RecipeGroceryRes(1L, recipe1Id, recipe1.getTitle(), grocery1Id, grocery1.getName(), grocery1.getQuantity());
+		RecipeRes recipeRes = new RecipeRes(recipe1Id, member1Id, member1.getNickName(), member1Id, member1.getNickName(), RecipeType.WRITTEN.name(), recipe1Id, recipeUpdateReq.title(), recipeUpdateReq.content(), List.of(recipeGroceryRes), List.of(imageRes1, imageRes2));
 
 		when(recipeService.update(anyLong(), any(RecipeUpdateReq.class), any(String.class))).thenReturn(recipeRes);
 
@@ -693,6 +724,14 @@ class RecipeControllerTest {
 			.andExpect(jsonPath("$.originalRecipeId").value(recipeRes.originalRecipeId()))
 			.andExpect(jsonPath("$.title").value(recipeRes.title()))
 			.andExpect(jsonPath("$.content").value(recipeRes.content()))
+			.andExpect(jsonPath("$.materials[0].recipeGroceryId").value(recipeRes.materials().get(0).recipeGroceryId()))
+			.andExpect(jsonPath("$.materials[0].recipeId").value(recipeRes.materials().get(0).recipeId()))
+			.andExpect(jsonPath("$.materials[0].recipeTitle").value(recipeRes.materials().get(0).recipeTitle()))
+			.andExpect(jsonPath("$.materials[0].groceryId").value(recipeRes.materials().get(0).groceryId()))
+			.andExpect(jsonPath("$.materials[0].groceryName").value(recipeRes.materials().get(0).groceryName()))
+			.andExpect(jsonPath("$.materials[0].groceryQuantity").value(recipeRes.materials().get(0).groceryQuantity()))
+			.andExpect(jsonPath("$.images[0].fileName").value(recipeRes.images().get(0).fileName()))
+			.andExpect(jsonPath("$.images[0].path").value(recipeRes.images().get(0).path()))
 			.andDo(print())
 			.andDo(document("recipe/recipe-update",
 				preprocessRequest(prettyPrint()),
@@ -719,7 +758,10 @@ class RecipeControllerTest {
 					fieldWithPath("materials[].recipeId").type(NUMBER).description("회원이 등록한 레시피 ID"),
 					fieldWithPath("materials[].recipeTitle").type(STRING).description("회원이 등록한 레시피 제목"),
 					fieldWithPath("materials[].groceryId").type(NUMBER).description("회원이 등록한 식재료 ID"),
-					fieldWithPath("materials[].groceryName").type(STRING).description("회원이 등록한 식재료 이름")
+					fieldWithPath("materials[].groceryName").type(STRING).description("회원이 등록한 식재료 이름"),
+					fieldWithPath("materials[].groceryQuantity").type(STRING).description("회원이 등록한 식재료 수량"),
+					fieldWithPath("images[].fileName").type(STRING).description("레시피 이미지 파일 이름"),
+					fieldWithPath("images[].path").type(STRING).description("레시피 이미지 파일 경로")
 				)
 			));
 	}

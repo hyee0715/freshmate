@@ -47,6 +47,9 @@ public class Recipe {
 	@OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<RecipeGrocery> recipeGroceries = new ArrayList<>();
 
+	@OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<RecipeImage> recipeImages = new ArrayList<>();
+
 	@Enumerated(EnumType.STRING)
 	private RecipeType recipeType;
 
@@ -83,5 +86,18 @@ public class Recipe {
 
 	public void removeRecipeGrocery(RecipeGrocery recipeGrocery) {
 		this.getRecipeGroceries().remove(recipeGrocery);
+	}
+
+	public void addRecipeImages(List<RecipeImage> recipeImages) {
+		recipeImages.forEach(this::addRecipeImage);
+	}
+
+	public void addRecipeImage(RecipeImage recipeImage) {
+		recipeImage.addRecipe(this);
+		this.getRecipeImages().add(recipeImage);
+	}
+
+	public void removeRecipeImage(RecipeImage recipeImage) {
+		this.getRecipeImages().remove(recipeImage);
 	}
 }

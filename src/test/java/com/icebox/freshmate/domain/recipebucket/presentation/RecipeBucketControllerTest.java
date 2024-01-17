@@ -135,7 +135,7 @@ class RecipeBucketControllerTest {
 			.storage(storage)
 			.name("양배추")
 			.groceryType(GroceryType.VEGETABLES)
-			.quantity(1)
+			.quantity("1개")
 			.description("필수 식재료")
 			.expirationDate(LocalDate.now().plusDays(7))
 			.build();
@@ -144,7 +144,7 @@ class RecipeBucketControllerTest {
 			.storage(storage)
 			.name("배추")
 			.groceryType(GroceryType.VEGETABLES)
-			.quantity(1)
+			.quantity("1개")
 			.description("필수 식재료")
 			.expirationDate(LocalDate.now().plusDays(7))
 			.build();
@@ -161,12 +161,14 @@ class RecipeBucketControllerTest {
 			.recipe(recipe)
 			.grocery(grocery1)
 			.groceryName(grocery1.getName())
+			.groceryQuantity(grocery1.getQuantity())
 			.build();
 
 		recipeGrocery2 = RecipeGrocery.builder()
 			.recipe(recipe)
 			.grocery(grocery2)
 			.groceryName(grocery2.getName())
+			.groceryQuantity(grocery2.getQuantity())
 			.build();
 
 		recipe.addRecipeGrocery(recipeGrocery1);
@@ -196,8 +198,8 @@ class RecipeBucketControllerTest {
 
 		RecipeBucketReq recipeBucketReq = new RecipeBucketReq(recipeId);
 
-		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipeId, recipe.getTitle(), grocery1Id, grocery1.getName());
-		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipeId, recipe.getTitle(), grocery2Id, grocery2.getName());
+		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipeId, recipe.getTitle(), grocery1Id, grocery1.getName(), grocery1.getQuantity());
+		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipeId, recipe.getTitle(), grocery2Id, grocery2.getName(), grocery2.getQuantity());
 
 		RecipeBucketRes recipeBucketRes = new RecipeBucketRes(recipeBucketId, recipeId, writerId, member.getNickName(), recipe.getRecipeType().name(), originalRecipeId, recipe.getTitle(), recipe.getContent(), List.of(recipeGroceryRes1, recipeGroceryRes2), memberId, member.getNickName(), createdAt);
 
@@ -226,6 +228,7 @@ class RecipeBucketControllerTest {
 			.andExpect(jsonPath("$.materials[0].recipeTitle").value(recipeBucketRes.materials().get(0).recipeTitle()))
 			.andExpect(jsonPath("$.materials[0].groceryId").value(recipeBucketRes.materials().get(0).groceryId()))
 			.andExpect(jsonPath("$.materials[0].groceryName").value(recipeBucketRes.materials().get(0).groceryName()))
+			.andExpect(jsonPath("$.materials[0].groceryQuantity").value(recipeBucketRes.materials().get(0).groceryQuantity()))
 			.andExpect(jsonPath("$.memberId").value(recipeBucketRes.memberId()))
 			.andExpect(jsonPath("$.memberNickName").value(recipeBucketRes.memberNickName()))
 			.andExpect(jsonPath("$.createdAt").value(formatLocalDateTime(recipeBucketRes.createdAt())))
@@ -253,6 +256,7 @@ class RecipeBucketControllerTest {
 					fieldWithPath("materials[].recipeTitle").type(STRING).description("레시피 제목"),
 					fieldWithPath("materials[].groceryId").type(NUMBER).description("식재료 ID"),
 					fieldWithPath("materials[].groceryName").type(STRING).description("식재료 이름"),
+					fieldWithPath("materials[].groceryQuantity").type(STRING).description("식재료 수량"),
 					fieldWithPath("memberId").type(NUMBER).description("회원 ID"),
 					fieldWithPath("memberNickName").type(STRING).description("회원 닉네임"),
 					fieldWithPath("createdAt").type(STRING).description("즐겨 찾는 레시피 등록 시점")
@@ -276,8 +280,8 @@ class RecipeBucketControllerTest {
 
 		LocalDateTime createdAt = LocalDateTime.now();
 
-		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipeId, recipe.getTitle(), grocery1Id, grocery1.getName());
-		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipeId, recipe.getTitle(), grocery2Id, grocery2.getName());
+		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipeId, recipe.getTitle(), grocery1Id, grocery1.getName(), grocery1.getQuantity());
+		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipeId, recipe.getTitle(), grocery2Id, grocery2.getName(), grocery2.getQuantity());
 
 		RecipeBucketRes recipeBucketRes = new RecipeBucketRes(recipeBucketId, recipeId, writerId, member.getNickName(), recipe.getRecipeType().name(), originalRecipeId, recipe.getTitle(), recipe.getContent(), List.of(recipeGroceryRes1, recipeGroceryRes2), memberId, member.getNickName(), createdAt);
 
@@ -304,6 +308,7 @@ class RecipeBucketControllerTest {
 			.andExpect(jsonPath("$.materials[0].recipeTitle").value(recipeBucketRes.materials().get(0).recipeTitle()))
 			.andExpect(jsonPath("$.materials[0].groceryId").value(recipeBucketRes.materials().get(0).groceryId()))
 			.andExpect(jsonPath("$.materials[0].groceryName").value(recipeBucketRes.materials().get(0).groceryName()))
+			.andExpect(jsonPath("$.materials[0].groceryQuantity").value(recipeBucketRes.materials().get(0).groceryQuantity()))
 			.andExpect(jsonPath("$.memberId").value(recipeBucketRes.memberId()))
 			.andExpect(jsonPath("$.memberNickName").value(recipeBucketRes.memberNickName()))
 			.andExpect(jsonPath("$.createdAt").value(formatLocalDateTime(recipeBucketRes.createdAt())))
@@ -326,6 +331,7 @@ class RecipeBucketControllerTest {
 					fieldWithPath("materials[].recipeTitle").type(STRING).description("레시피 제목"),
 					fieldWithPath("materials[].groceryId").type(NUMBER).description("식재료 ID"),
 					fieldWithPath("materials[].groceryName").type(STRING).description("식재료 이름"),
+					fieldWithPath("materials[].groceryQuantity").type(STRING).description("식재료 수량"),
 					fieldWithPath("memberId").type(NUMBER).description("회원 ID"),
 					fieldWithPath("memberNickName").type(STRING).description("회원 닉네임"),
 					fieldWithPath("createdAt").type(STRING).description("즐겨 찾는 레시피 등록 시점")
@@ -377,10 +383,10 @@ class RecipeBucketControllerTest {
 		recipe2.addRecipeGrocery(recipeGrocery3);
 		recipe2.addRecipeGrocery(recipeGrocery4);
 
-		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipe1Id, recipe.getTitle(), grocery1Id, grocery1.getName());
-		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipe1Id, recipe.getTitle(), grocery2Id, grocery2.getName());
-		RecipeGroceryRes recipeGroceryRes3 = new RecipeGroceryRes(recipeGrocery3Id, recipe2Id, recipe2.getTitle(), grocery1Id, grocery1.getName());
-		RecipeGroceryRes recipeGroceryRes4 = new RecipeGroceryRes(recipeGrocery4Id, recipe2Id, recipe2.getTitle(), grocery2Id, grocery2.getName());
+		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipe1Id, recipe.getTitle(), grocery1Id, grocery1.getName(), grocery1.getQuantity());
+		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipe1Id, recipe.getTitle(), grocery2Id, grocery2.getName(), grocery2.getQuantity());
+		RecipeGroceryRes recipeGroceryRes3 = new RecipeGroceryRes(recipeGrocery3Id, recipe2Id, recipe2.getTitle(), grocery1Id, grocery1.getName(), grocery1.getQuantity());
+		RecipeGroceryRes recipeGroceryRes4 = new RecipeGroceryRes(recipeGrocery4Id, recipe2Id, recipe2.getTitle(), grocery2Id, grocery2.getName(), grocery2.getQuantity());
 
 		RecipeBucketRes recipeBucketRes1 = new RecipeBucketRes(recipeBucket1Id, recipe1Id, writerId, recipe.getWriter().getNickName(), recipe.getRecipeType().name(), originalRecipe1Id, recipe.getTitle(), recipe.getContent(), List.of(recipeGroceryRes1, recipeGroceryRes2), memberId, member.getNickName(), createdAt);
 		RecipeBucketRes recipeBucketRes2 = new RecipeBucketRes(recipeBucket2Id, recipe2Id, writerId, recipe2.getWriter().getNickName(), recipe2.getRecipeType().name(), originalRecipe2Id, recipe2.getTitle(), recipe2.getContent(), List.of(recipeGroceryRes3, recipeGroceryRes4), memberId, member.getNickName(), createdAt);
@@ -411,6 +417,7 @@ class RecipeBucketControllerTest {
 			.andExpect(jsonPath("$.recipeBuckets[0].materials[0].recipeTitle").value(recipeBucketRes1.materials().get(0).recipeTitle()))
 			.andExpect(jsonPath("$.recipeBuckets[0].materials[0].groceryId").value(recipeBucketRes1.materials().get(0).groceryId()))
 			.andExpect(jsonPath("$.recipeBuckets[0].materials[0].groceryName").value(recipeBucketRes1.materials().get(0).groceryName()))
+			.andExpect(jsonPath("$.recipeBuckets[0].materials[0].groceryQuantity").value(recipeBucketRes1.materials().get(0).groceryQuantity()))
 			.andExpect(jsonPath("$.recipeBuckets[0].memberId").value(recipeBucketRes1.memberId()))
 			.andExpect(jsonPath("$.recipeBuckets[0].memberNickName").value(recipeBucketRes1.memberNickName()))
 			.andExpect(jsonPath("$.recipeBuckets[0].createdAt").value(formatLocalDateTime(recipeBucketRes1.createdAt())))
@@ -435,6 +442,7 @@ class RecipeBucketControllerTest {
 					fieldWithPath("recipeBuckets[].materials[].recipeTitle").type(STRING).description("레시피 제목"),
 					fieldWithPath("recipeBuckets[].materials[].groceryId").type(NUMBER).description("식재료 ID"),
 					fieldWithPath("recipeBuckets[].materials[].groceryName").type(STRING).description("식재료 이름"),
+					fieldWithPath("recipeBuckets[].materials[].groceryQuantity").type(STRING).description("식재료 수량"),
 					fieldWithPath("recipeBuckets[].memberId").type(NUMBER).description("회원 ID"),
 					fieldWithPath("recipeBuckets[].memberNickName").type(STRING).description("회원 닉네임"),
 					fieldWithPath("recipeBuckets[].createdAt").type(STRING).description("즐겨 찾는 레시피 등록 시점")

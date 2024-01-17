@@ -13,7 +13,8 @@ public record RecipeGroceryRes(
 	String recipeTitle,
 
 	Long groceryId,
-	String groceryName
+	String groceryName,
+	String groceryQuantity
 ) {
 
 	public static List<RecipeGroceryRes> from(List<RecipeGrocery> recipeGroceries) {
@@ -25,7 +26,6 @@ public record RecipeGroceryRes(
 
 	public static RecipeGroceryRes from(RecipeGrocery recipeGrocery) {
 		Long groceryId = getGroceryId(recipeGrocery);
-
 		String groceryName = getGroceryName(recipeGrocery);
 
 		return new RecipeGroceryRes(
@@ -33,7 +33,8 @@ public record RecipeGroceryRes(
 			recipeGrocery.getRecipe().getId(),
 			recipeGrocery.getRecipe().getTitle(),
 			groceryId,
-			groceryName
+			groceryName,
+			recipeGrocery.getGroceryQuantity()
 		);
 	}
 

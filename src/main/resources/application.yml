@@ -3,3 +3,4 @@ spring:
     import:
       - classpath:application-db.yml
       - classpath:application-jwt.yml
+      - classpath:application-file.yml

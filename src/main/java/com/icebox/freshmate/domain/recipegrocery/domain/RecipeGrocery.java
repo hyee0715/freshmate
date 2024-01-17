@@ -3,6 +3,7 @@ package com.icebox.freshmate.domain.recipegrocery.domain;
 import com.icebox.freshmate.domain.grocery.domain.Grocery;
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -35,13 +36,18 @@ public class RecipeGrocery {
 	@JoinColumn(name = "grocery_id")
 	private Grocery grocery;
 
+	@Column(length = 100)
 	private String groceryName;
 
+	@Column(length = 100)
+	private String groceryQuantity;
+
 	@Builder
-	public RecipeGrocery(Recipe recipe, Grocery grocery, String groceryName) {
+	public RecipeGrocery(Recipe recipe, Grocery grocery, String groceryName, String groceryQuantity) {
 		this.recipe = recipe;
 		this.grocery = grocery;
 		this.groceryName = groceryName;
+		this.groceryQuantity = groceryQuantity;
 	}
 
 	public void addRecipe(Recipe recipe) {
