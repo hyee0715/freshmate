@@ -2,6 +2,7 @@ package com.icebox.freshmate.domain.recipegrocery.domain;
 
 import com.icebox.freshmate.domain.grocery.domain.Grocery;
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
+import com.icebox.freshmate.global.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Table(name = "recipe_groceries")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
-public class RecipeGrocery {
+public class RecipeGrocery extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
