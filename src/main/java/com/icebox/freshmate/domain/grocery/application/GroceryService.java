@@ -55,12 +55,20 @@ public class GroceryService {
 		return GroceryRes.of(grocery, images);
 	}
 
-//	@Transactional(readOnly = true)
-//	public GroceryRes findById(Long id) {
-//		Grocery grocery = getGroceryById(id);
-//
-//		return GroceryRes.from(grocery);
-//	}
+	@Transactional(readOnly = true)
+	public GroceryRes findById(Long id) {
+		Grocery grocery = getGroceryById(id);
+
+		List<ImageRes> imagesRes = getGroceryImagesRes(grocery);
+
+		return GroceryRes.of(grocery, imagesRes);
+	}
+
+	private List<ImageRes> getGroceryImagesRes(Grocery grocery) {
+		List<GroceryImage> groceryImages = grocery.getGroceryImages();
+
+		return getImagesRes(groceryImages);
+	}
 
 	@Transactional(readOnly = true)
 	public GroceriesRes findAllByStorageId(Long storageId, String username) {
@@ -167,5 +175,12 @@ public class GroceryService {
 		return Optional.ofNullable(imagesRes)
 			.map(ImagesRes::images)
 			.orElse(null);
+	}
+
+	private List<ImageRes> getImagesRes(List<GroceryImage> groceryImages) {
+
+		return groceryImages.stream()
+			.map(groceryImage -> ImageRes.of(groceryImage.getFileName(), groceryImage.getPath()))
+			.toList();
 	}
 }

@@ -43,12 +43,12 @@ public class GroceryController {
 			.body(groceryRes);
 	}
 
-//	@GetMapping("/{id}")
-//	public ResponseEntity<GroceryRes> findById(@PathVariable Long id) {
-//		GroceryRes groceryRes = groceryService.findById(id);
-//
-//		return ResponseEntity.ok(groceryRes);
-//	}
+	@GetMapping("/{id}")
+	public ResponseEntity<GroceryRes> findById(@PathVariable Long id) {
+		GroceryRes groceryRes = groceryService.findById(id);
+
+		return ResponseEntity.ok(groceryRes);
+	}
 
 	@GetMapping("/storages/{storageId}")
 	public ResponseEntity<GroceriesRes> findAllByStorageId(@PathVariable Long storageId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
