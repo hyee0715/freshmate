@@ -48,6 +48,9 @@ public class Grocery extends BaseEntity {
 	@OneToMany(mappedBy = "grocery", cascade = CascadeType.ALL)
 	private List<RecipeGrocery> recipeGroceries = new ArrayList<>();
 
+	@OneToMany(mappedBy = "grocery", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<GroceryImage> groceryImages = new ArrayList<>();
+
 	@Column(length = 100)
 	private String name;
 
@@ -103,5 +106,18 @@ public class Grocery extends BaseEntity {
 
 	public void removeRecipeGrocery(RecipeGrocery recipeGrocery) {
 		this.getRecipeGroceries().remove(recipeGrocery);
+	}
+
+	public void addGroceryImages(List<GroceryImage> groceryImages) {
+		groceryImages.forEach(this::addGroceryImage);
+	}
+
+	public void addGroceryImage(GroceryImage groceryImage) {
+		groceryImage.addGrocery(this);
+		this.getGroceryImages().add(groceryImage);
+	}
+
+	public void removeGroceryImage(GroceryImage groceryImage) {
+		this.getGroceryImages().remove(groceryImage);
 	}
 }
