@@ -16,13 +16,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 
 import com.icebox.freshmate.domain.grocery.application.dto.request.GroceryReq;
 import com.icebox.freshmate.domain.grocery.application.dto.response.GroceriesRes;
 import com.icebox.freshmate.domain.grocery.application.dto.response.GroceryRes;
 import com.icebox.freshmate.domain.grocery.domain.Grocery;
+import com.icebox.freshmate.domain.grocery.domain.GroceryImage;
+import com.icebox.freshmate.domain.grocery.domain.GroceryImageRepository;
 import com.icebox.freshmate.domain.grocery.domain.GroceryRepository;
 import com.icebox.freshmate.domain.grocery.domain.GroceryType;
+import com.icebox.freshmate.domain.image.application.ImageService;
+import com.icebox.freshmate.domain.image.application.dto.request.ImageUploadReq;
+import com.icebox.freshmate.domain.image.application.dto.response.ImageRes;
+import com.icebox.freshmate.domain.image.application.dto.response.ImagesRes;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
 import com.icebox.freshmate.domain.member.domain.Role;
@@ -46,10 +53,17 @@ class GroceryServiceTest {
 	@Mock
 	private MemberRepository memberRepository;
 
+	@Mock
+	private GroceryImageRepository groceryImageRepository;
+
+	@Mock
+	private ImageService imageService;
+
 	private Member member;
 	private Refrigerator refrigerator;
 	private Storage storage;
 	private Grocery grocery;
+	private GroceryImage groceryImage;
 
 	@BeforeEach
 	void setUp() {
@@ -80,6 +94,18 @@ class GroceryServiceTest {
 			.description("필수 식재료")
 			.expirationDate(LocalDate.now().plusDays(7))
 			.build();
+
+		String imageFileName = "image.jpg";
+		String imagePath = "http://fake-image-url.com/image.jpg";
+
+		groceryImage = GroceryImage
+			.builder()
+			.grocery(grocery)
+			.fileName(imageFileName)
+			.path(imagePath)
+			.build();
+
+		grocery.addGroceryImage(groceryImage);
 	}
 
 	@DisplayName("식료품 생성 테스트")
@@ -88,12 +114,20 @@ class GroceryServiceTest {
 		//given
 		GroceryReq groceryReq = new GroceryReq(grocery.getName(), grocery.getGroceryType().name(), grocery.getQuantity(), grocery.getDescription(), grocery.getExpirationDate(), grocery.getStorage().getId());
 
+		MockMultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", "Spring Framework".getBytes());
+		ImageUploadReq imageUploadReq = new ImageUploadReq(List.of(file));
+
+		ImageRes imageRes = new ImageRes(groceryImage.getFileName(), groceryImage.getPath());
+		ImagesRes imagesRes = new ImagesRes(List.of(imageRes));
+
 		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member));
 		when(storageRepository.findByIdAndMemberId(any(), any())).thenReturn(Optional.of(storage));
 		when(groceryRepository.save(any(Grocery.class))).thenReturn(grocery);
+		when(groceryImageRepository.save(any(GroceryImage.class))).thenReturn(groceryImage);
+		when(imageService.store(any(ImageUploadReq.class))).thenReturn(imagesRes);
 
 		//when
-		GroceryRes groceryRes = groceryService.create(groceryReq, member.getUsername());
+		GroceryRes groceryRes = groceryService.create(groceryReq, imageUploadReq, member.getUsername());
 
 		//then
 		assertThat(groceryRes.groceryName()).isEqualTo(grocery.getName());
@@ -102,6 +136,8 @@ class GroceryServiceTest {
 		assertThat(groceryRes.description()).isEqualTo(grocery.getDescription());
 		assertThat(groceryRes.expirationDate()).isEqualTo(grocery.getExpirationDate());
 		assertThat(groceryRes.storageName()).isEqualTo(grocery.getStorage().getName());
+		assertThat(groceryRes.images().get(0).fileName()).isEqualTo(groceryImage.getFileName());
+		assertThat(groceryRes.images().get(0).path()).isEqualTo(groceryImage.getPath());
 	}
 
 	@DisplayName("식료품 단건 조회 테스트")
