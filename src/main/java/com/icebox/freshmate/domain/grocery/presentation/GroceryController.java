@@ -22,6 +22,7 @@ import com.icebox.freshmate.domain.grocery.application.GroceryService;
 import com.icebox.freshmate.domain.grocery.application.dto.request.GroceryReq;
 import com.icebox.freshmate.domain.grocery.application.dto.response.GroceriesRes;
 import com.icebox.freshmate.domain.grocery.application.dto.response.GroceryRes;
+import com.icebox.freshmate.domain.image.application.dto.request.ImageDeleteReq;
 import com.icebox.freshmate.domain.image.application.dto.request.ImageUploadReq;
 
 import lombok.RequiredArgsConstructor;
@@ -79,5 +80,12 @@ public class GroceryController {
 
 		return ResponseEntity.noContent()
 			.build();
+	}
+
+	@DeleteMapping("/grocery-images/{groceryId}")
+	public ResponseEntity<GroceryRes> removeGroceryImage(@PathVariable Long groceryId, @RequestBody ImageDeleteReq imageDeleteReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		GroceryRes groceryRes = groceryService.removeGroceryImage(groceryId, imageDeleteReq, principalDetails.getUsername());
+
+		return ResponseEntity.ok(groceryRes);
 	}
 }

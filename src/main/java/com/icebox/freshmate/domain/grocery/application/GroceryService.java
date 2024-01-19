@@ -1,7 +1,9 @@
 package com.icebox.freshmate.domain.grocery.application;
 
 import static com.icebox.freshmate.global.error.ErrorCode.EMPTY_IMAGE;
+import static com.icebox.freshmate.global.error.ErrorCode.EXCESSIVE_DELETE_IMAGE_COUNT;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_GROCERY;
+import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_IMAGE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_STORAGE;
 
@@ -21,6 +23,7 @@ import com.icebox.freshmate.domain.grocery.domain.GroceryImage;
 import com.icebox.freshmate.domain.grocery.domain.GroceryImageRepository;
 import com.icebox.freshmate.domain.grocery.domain.GroceryRepository;
 import com.icebox.freshmate.domain.image.application.ImageService;
+import com.icebox.freshmate.domain.image.application.dto.request.ImageDeleteReq;
 import com.icebox.freshmate.domain.image.application.dto.request.ImageUploadReq;
 import com.icebox.freshmate.domain.image.application.dto.response.ImageRes;
 import com.icebox.freshmate.domain.image.application.dto.response.ImagesRes;
@@ -120,6 +123,22 @@ public class GroceryService {
 		groceryRepository.delete(grocery);
 	}
 
+	public GroceryRes removeGroceryImage(Long groceryId, ImageDeleteReq imageDeleteReq, String username) {
+		Member member = getMemberByUsername(username);
+		Grocery grocery = getGroceryByIdAndMemberId(groceryId, member.getId());
+		validateDeleteImageCount(imageDeleteReq.filePaths());
+
+		String imagePath = imageDeleteReq.filePaths().get(0);
+
+		GroceryImage groceryImage = getGroceryImageByGroceryIdAndPath(grocery.getId(), imagePath);
+
+		deleteGroceryImage(groceryImage, imageDeleteReq);
+
+		List<ImageRes> imagesRes = getGroceryImagesRes(grocery);
+
+		return GroceryRes.of(grocery, imagesRes);
+	}
+
 	private Grocery getGroceryByIdAndMemberId(Long groceryId, Long memberId) {
 		return groceryRepository.findByIdAndMemberId(groceryId, memberId)
 			.orElseThrow(() -> {
@@ -208,5 +227,29 @@ public class GroceryService {
 
 			throw new BusinessException(EMPTY_IMAGE);
 		}
+	}
+
+	private void validateDeleteImageCount(List<String> imagePaths) {
+		if (imagePaths.size() != 1) {
+			log.warn("DELETE:WRITE:EXCESSIVE_DELETE_IMAGE_COUNT : requested image path count = {}", imagePaths.size());
+
+			throw new BusinessException(EXCESSIVE_DELETE_IMAGE_COUNT);
+		}
+	}
+
+	private void deleteGroceryImage(GroceryImage groceryImage, ImageDeleteReq imageDeleteReq) {
+		groceryImage.getGrocery().removeGroceryImage(groceryImage);
+		groceryImageRepository.delete(groceryImage);
+		imageService.delete(imageDeleteReq);
+	}
+
+	private GroceryImage getGroceryImageByGroceryIdAndPath(Long groceryId, String imagePath) {
+
+		return groceryImageRepository.findByGroceryIdAndPath(groceryId, imagePath)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_GROCERY_IMAGE_BY_GROCERY_ID_AND_PATH : groceryId = {}, imagePath = {}", groceryId, imagePath);
+
+				return new EntityNotFoundException(NOT_FOUND_IMAGE);
+			});
 	}
 }
