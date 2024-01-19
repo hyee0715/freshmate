@@ -215,7 +215,7 @@ public class RecipeService {
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_RECIPE_IMAGE_BY_RECIPE_ID_AND_PATH : recipeId = {}, imagePath = {}", recipeId, imagePath);
 
-				return new EntityNotFoundException(NOT_FOUND_MEMBER);
+				return new EntityNotFoundException(NOT_FOUND_IMAGE);
 			});
 	}
 

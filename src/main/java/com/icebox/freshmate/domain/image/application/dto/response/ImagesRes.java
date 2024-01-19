@@ -7,7 +7,7 @@ public record ImagesRes(
 ) {
 
 	public static ImagesRes from(List<ImageRes> images) {
+
 		return new ImagesRes(images);
 	}
-
 }

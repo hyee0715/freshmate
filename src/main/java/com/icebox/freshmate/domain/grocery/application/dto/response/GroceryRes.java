@@ -4,9 +4,11 @@ import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.icebox.freshmate.domain.grocery.domain.Grocery;
+import com.icebox.freshmate.domain.image.application.dto.response.ImageRes;
 
 public record GroceryRes(
 	Long groceryId,
@@ -23,10 +25,11 @@ public record GroceryRes(
 	String groceryExpirationType,
 
 	@JsonFormat(shape = STRING, pattern = "YYYY-MM-dd HH:mm", timezone = "Asia/Seoul")
-	LocalDateTime createdAt
+	LocalDateTime createdAt,
+	List<ImageRes> images
 ) {
 
-	public static GroceryRes from(Grocery grocery) {
+	public static GroceryRes of(Grocery grocery, List<ImageRes> imagesRes) {
 
 		return new GroceryRes(
 			grocery.getId(),
@@ -38,7 +41,8 @@ public record GroceryRes(
 			grocery.getStorage().getId(),
 			grocery.getStorage().getName(),
 			grocery.getGroceryExpirationType().name(),
-			grocery.getCreatedAt()
+			grocery.getCreatedAt(),
+			imagesRes
 		);
 	}
 }
