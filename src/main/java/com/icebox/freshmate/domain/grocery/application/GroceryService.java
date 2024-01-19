@@ -1,14 +1,17 @@
 package com.icebox.freshmate.domain.grocery.application;
 
+import static com.icebox.freshmate.global.error.ErrorCode.EMPTY_IMAGE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_GROCERY;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_STORAGE;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.icebox.freshmate.domain.grocery.application.dto.request.GroceryReq;
 import com.icebox.freshmate.domain.grocery.application.dto.response.GroceriesRes;
@@ -26,6 +29,7 @@ import com.icebox.freshmate.domain.member.domain.MemberRepository;
 import com.icebox.freshmate.domain.recipegrocery.domain.RecipeGrocery;
 import com.icebox.freshmate.domain.storage.domain.Storage;
 import com.icebox.freshmate.domain.storage.domain.StorageRepository;
+import com.icebox.freshmate.global.error.exception.BusinessException;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -90,6 +94,18 @@ public class GroceryService {
 		List<ImageRes> imagesRes = getGroceryImagesRes(grocery);
 
 		return GroceryRes.of(grocery, imagesRes);
+	}
+
+	public GroceryRes addGroceryImage(Long groceryId, ImageUploadReq imageUploadReq, String username) {
+		Member member = getMemberByUsername(username);
+		Grocery grocery = getGroceryByIdAndMemberId(groceryId, member.getId());
+
+		validateImageListIsEmpty(imageUploadReq.files());
+		saveImages(grocery, imageUploadReq);
+
+		List<ImageRes> images = getImagesRes(grocery.getGroceryImages());
+
+		return GroceryRes.of(grocery, images);
 	}
 
 	public void delete(Long id, String username) {
@@ -184,5 +200,13 @@ public class GroceryService {
 		return groceryImages.stream()
 			.map(groceryImage -> ImageRes.of(groceryImage.getFileName(), groceryImage.getPath()))
 			.toList();
+	}
+
+	private void validateImageListIsEmpty(List<MultipartFile> images) {
+		if (images.size() == 1 && Objects.equals(images.get(0).getOriginalFilename(), "")) {
+			log.warn("PATCH:WRITE:EMPTY_IMAGE");
+
+			throw new BusinessException(EMPTY_IMAGE);
+		}
 	}
 }

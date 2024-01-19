@@ -64,6 +64,15 @@ public class GroceryController {
 		return ResponseEntity.ok(groceryRes);
 	}
 
+	@PatchMapping("/grocery-images/{groceryId}")
+	public ResponseEntity<GroceryRes> addGroceryImage(@PathVariable Long groceryId, MultipartFile imageFile, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		ImageUploadReq imageUploadReq = new ImageUploadReq(List.of(imageFile));
+
+		GroceryRes groceryRes = groceryService.addGroceryImage(groceryId, imageUploadReq, principalDetails.getUsername());
+
+		return ResponseEntity.ok(groceryRes);
+	}
+
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		groceryService.delete(id, principalDetails.getUsername());
