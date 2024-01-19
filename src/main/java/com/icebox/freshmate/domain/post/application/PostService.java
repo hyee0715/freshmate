@@ -64,15 +64,22 @@ public class PostService {
 		return PostRes.of(post, recipeGroceriesRes, images);
 	}
 
-//	@Transactional(readOnly = true)
-//	public PostRes findById(Long id) {
-//		Post post = getPostById(id);
-//		Recipe recipe = post.getRecipe();
-//
-//		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
-//
-//		return PostRes.of(post, recipeGroceriesRes);
-//	}
+	@Transactional(readOnly = true)
+	public PostRes findById(Long id) {
+		Post post = getPostById(id);
+		Recipe recipe = post.getRecipe();
+
+		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
+		List<ImageRes> imagesRes = getPostImagesRes(post);
+
+		return PostRes.of(post, recipeGroceriesRes, imagesRes);
+	}
+
+	private List<ImageRes> getPostImagesRes(Post post) {
+		List<PostImage> postImages = post.getPostImages();
+
+		return getImagesRes(postImages);
+	}
 
 	@Transactional(readOnly = true)
 	public PostsRes findAllByMemberId(Long memberId) {
@@ -169,6 +176,13 @@ public class PostService {
 		return Optional.ofNullable(imagesRes)
 			.map(ImagesRes::images)
 			.orElse(null);
+	}
+
+	private List<ImageRes> getImagesRes(List<PostImage> postImages) {
+
+		return postImages.stream()
+			.map(postImage -> ImageRes.of(postImage.getFileName(), postImage.getPath()))
+			.toList();
 	}
 
 	private Post savePost(PostReq postReq, Member member, Recipe recipe) {
