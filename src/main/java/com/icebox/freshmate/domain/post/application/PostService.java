@@ -1,5 +1,6 @@
 package com.icebox.freshmate.domain.post.application;
 
+import static com.icebox.freshmate.global.error.ErrorCode.EMPTY_IMAGE;
 import static com.icebox.freshmate.global.error.ErrorCode.INVALID_ATTEMPT_TO_POST_RECIPE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_POST;
@@ -10,6 +11,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.icebox.freshmate.domain.image.application.ImageService;
 import com.icebox.freshmate.domain.image.application.dto.request.ImageUploadReq;
@@ -62,6 +64,20 @@ public class PostService {
 		List<ImageRes> images = getImagesRes(imagesRes);
 
 		return PostRes.of(post, recipeGroceriesRes, images);
+	}
+
+	public PostRes addPostImage(Long postId, ImageUploadReq imageUploadReq, String username) {
+		Member member = getMemberByUsername(username);
+		Post post = getPostByIdAndMemberId(postId, member.getId());
+		Recipe recipe = post.getRecipe();
+
+		validateImageListIsEmpty(imageUploadReq.files());
+		saveImages(post, imageUploadReq);
+
+		List<ImageRes> imagesRes = getImagesRes(post.getPostImages());
+		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceriesRes(recipe);
+
+		return PostRes.of(post, recipeGroceriesRes, imagesRes);
 	}
 
 	@Transactional(readOnly = true)
@@ -219,5 +235,13 @@ public class PostService {
 		List<PostImage> postImages = post.getPostImages();
 
 		return getImagesRes(postImages);
+	}
+
+	private void validateImageListIsEmpty(List<MultipartFile> images) {
+		if (images.size() == 1 && Objects.equals(images.get(0).getOriginalFilename(), "")) {
+			log.warn("PATCH:WRITE:EMPTY_IMAGE");
+
+			throw new BusinessException(EMPTY_IMAGE);
+		}
 	}
 }

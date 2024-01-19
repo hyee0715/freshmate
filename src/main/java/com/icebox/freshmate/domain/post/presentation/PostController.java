@@ -44,6 +44,15 @@ public class PostController {
 			.body(postRes);
 	}
 
+	@PostMapping("/post-images/{postId}")
+	public ResponseEntity<PostRes> addPostImage(@PathVariable Long postId, MultipartFile imageFile, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		ImageUploadReq imageUploadReq = new ImageUploadReq(List.of(imageFile));
+
+		PostRes postRes = postService.addPostImage(postId, imageUploadReq, principalDetails.getUsername());
+
+		return ResponseEntity.ok(postRes);
+	}
+
 	@GetMapping("/{id}")
 	public ResponseEntity<PostRes> findById(@PathVariable Long id) {
 		PostRes postRes = postService.findById(id);
