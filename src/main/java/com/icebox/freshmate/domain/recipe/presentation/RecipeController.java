@@ -54,6 +54,15 @@ public class RecipeController {
 		return ResponseEntity.ok(recipeRes);
 	}
 
+	@PostMapping("/recipe-images/{recipeId}")
+	public ResponseEntity<RecipeRes> addRecipeImage(@PathVariable Long recipeId, MultipartFile imageFile, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		ImageUploadReq imageUploadReq = new ImageUploadReq(List.of(imageFile));
+
+		RecipeRes recipeRes = recipeService.addRecipeImage(recipeId, imageUploadReq, principalDetails.getUsername());
+
+		return ResponseEntity.ok(recipeRes);
+	}
+
 	@GetMapping("/{id}")
 	public ResponseEntity<RecipeRes> findById(@PathVariable Long id) {
 		RecipeRes recipeRes = recipeService.findById(id);
@@ -92,15 +101,6 @@ public class RecipeController {
 	@PatchMapping("/recipe-groceries/{recipeId}")
 	public ResponseEntity<RecipeRes> addRecipeGrocery(@PathVariable Long recipeId, @Validated @RequestBody RecipeGroceryReq recipeGroceryReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		RecipeRes recipeRes = recipeService.addRecipeGrocery(recipeId, recipeGroceryReq, principalDetails.getUsername());
-
-		return ResponseEntity.ok(recipeRes);
-	}
-
-	@PatchMapping("/recipe-images/{recipeId}")
-	public ResponseEntity<RecipeRes> addRecipeImage(@PathVariable Long recipeId, MultipartFile imageFile, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		ImageUploadReq imageUploadReq = new ImageUploadReq(List.of(imageFile));
-
-		RecipeRes recipeRes = recipeService.addRecipeImage(recipeId, imageUploadReq, principalDetails.getUsername());
 
 		return ResponseEntity.ok(recipeRes);
 	}
