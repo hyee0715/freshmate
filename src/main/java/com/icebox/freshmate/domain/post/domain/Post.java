@@ -1,9 +1,13 @@
 package com.icebox.freshmate.domain.post.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
 import com.icebox.freshmate.global.BaseEntity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -38,6 +43,9 @@ public class Post extends BaseEntity {
 	@JoinColumn(name = "recipe_id")
 	private Recipe recipe;
 
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<PostImage> postImages = new ArrayList<>();
+
 	@Column(length = 200)
 	private String title;
 
@@ -56,5 +64,18 @@ public class Post extends BaseEntity {
 		this.title = post.getTitle();
 		this.content = post.getContent();
 		this.recipe = post.getRecipe();
+	}
+
+	public void addPostImages(List<PostImage> postImages) {
+		postImages.forEach(this::addPostImage);
+	}
+
+	public void addPostImage(PostImage postImage) {
+		postImage.addPost(this);
+		this.getPostImages().add(postImage);
+	}
+
+	public void removePostImage(PostImage postImage) {
+		this.getPostImages().remove(postImage);
 	}
 }

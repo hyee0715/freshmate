@@ -11,12 +11,18 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.icebox.freshmate.domain.image.application.ImageService;
+import com.icebox.freshmate.domain.image.application.dto.request.ImageUploadReq;
+import com.icebox.freshmate.domain.image.application.dto.response.ImageRes;
+import com.icebox.freshmate.domain.image.application.dto.response.ImagesRes;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
 import com.icebox.freshmate.domain.post.application.dto.request.PostReq;
 import com.icebox.freshmate.domain.post.application.dto.response.PostRes;
 import com.icebox.freshmate.domain.post.application.dto.response.PostsRes;
 import com.icebox.freshmate.domain.post.domain.Post;
+import com.icebox.freshmate.domain.post.domain.PostImage;
+import com.icebox.freshmate.domain.post.domain.PostImageRepository;
 import com.icebox.freshmate.domain.post.domain.PostRepository;
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
 import com.icebox.freshmate.domain.recipe.domain.RecipeRepository;
@@ -39,30 +45,34 @@ public class PostService {
 	private final PostRepository postRepository;
 	private final RecipeRepository recipeRepository;
 	private final RecipeGroceryRepository recipeGroceryRepository;
+	private final PostImageRepository postImageRepository;
+	private final ImageService imageService;
 
-	public PostRes create(PostReq postReq, String username) {
+	public PostRes create(PostReq postReq, ImageUploadReq imageUploadReq, String username) {
 		Member member = getMemberByUsername(username);
 		Recipe recipe = getNullableRecipe(postReq.recipeId());
 
 		validateScrapedRecipe(recipe, member);
 
-		Post post = PostReq.toPost(postReq, member, recipe);
-		Post savedPost = postRepository.save(post);
+		Post post = savePost(postReq, member, recipe);
 
 		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
 
-		return PostRes.of(savedPost, recipeGroceriesRes);
+		ImagesRes imagesRes = saveImages(post, imageUploadReq);
+		List<ImageRes> images = getImagesRes(imagesRes);
+
+		return PostRes.of(post, recipeGroceriesRes, images);
 	}
 
-	@Transactional(readOnly = true)
-	public PostRes findById(Long id) {
-		Post post = getPostById(id);
-		Recipe recipe = post.getRecipe();
-
-		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
-
-		return PostRes.of(post, recipeGroceriesRes);
-	}
+//	@Transactional(readOnly = true)
+//	public PostRes findById(Long id) {
+//		Post post = getPostById(id);
+//		Recipe recipe = post.getRecipe();
+//
+//		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
+//
+//		return PostRes.of(post, recipeGroceriesRes);
+//	}
 
 	@Transactional(readOnly = true)
 	public PostsRes findAllByMemberId(Long memberId) {
@@ -72,20 +82,20 @@ public class PostService {
 		return PostsRes.from(posts);
 	}
 
-	public PostRes update(Long postId, PostReq postReq, String username) {
-		Member member = getMemberByUsername(username);
-		Post post = getPostByIdAndMemberId(postId, member.getId());
-		Recipe recipe = getNullableRecipe(postReq.recipeId());
-
-		validateScrapedRecipe(recipe, member);
-
-		Post updatePost = PostReq.toPost(postReq, member, recipe);
-		post.update(updatePost);
-
-		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
-
-		return PostRes.of(post, recipeGroceriesRes);
-	}
+//	public PostRes update(Long postId, PostReq postReq, String username) {
+//		Member member = getMemberByUsername(username);
+//		Post post = getPostByIdAndMemberId(postId, member.getId());
+//		Recipe recipe = getNullableRecipe(postReq.recipeId());
+//
+//		validateScrapedRecipe(recipe, member);
+//
+//		Post updatePost = PostReq.toPost(postReq, member, recipe);
+//		post.update(updatePost);
+//
+//		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
+//
+//		return PostRes.of(post, recipeGroceriesRes);
+//	}
 
 	public void delete(Long postId, String username) {
 		Member member = getMemberByUsername(username);
@@ -152,5 +162,47 @@ public class PostService {
 		return Optional.ofNullable(recipeId)
 			.flatMap(recipeRepository::findById)
 			.orElse(null);
+	}
+
+	private List<ImageRes> getImagesRes(ImagesRes imagesRes) {
+
+		return Optional.ofNullable(imagesRes)
+			.map(ImagesRes::images)
+			.orElse(null);
+	}
+
+	private Post savePost(PostReq postReq, Member member, Recipe recipe) {
+		Post post = PostReq.toPost(postReq, member, recipe);
+		return postRepository.save(post);
+	}
+
+	private ImagesRes saveImages(Post post, ImageUploadReq imageUploadReq) {
+
+		return Optional.ofNullable(imageUploadReq.files())
+			.map(files -> imageService.store(imageUploadReq))
+			.map(imagesRes -> {
+				List<PostImage> postImages = saveImages(post, imagesRes);
+				post.addPostImages(postImages);
+
+				return imagesRes;
+			})
+			.orElse(null);
+	}
+
+	private List<PostImage> saveImages(Post post, ImagesRes imagesRes) {
+
+		return imagesRes.images().stream()
+			.map(imageRes -> buildPostImage(imageRes, post))
+			.peek(postImageRepository::save)
+			.toList();
+	}
+
+	private PostImage buildPostImage(ImageRes imageRes, Post post) {
+
+		return PostImage.builder()
+			.fileName(imageRes.fileName())
+			.path(imageRes.path())
+			.post(post)
+			.build();
 	}
 }
