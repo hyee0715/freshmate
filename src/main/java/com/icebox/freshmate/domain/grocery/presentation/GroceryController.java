@@ -57,12 +57,12 @@ public class GroceryController {
 		return ResponseEntity.ok(groceriesRes);
 	}
 
-//	@PatchMapping("/{id}")
-//	public ResponseEntity<GroceryRes> update(@PathVariable Long id, @Validated @RequestBody GroceryReq groceryReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-//		GroceryRes groceryRes = groceryService.update(id, groceryReq, principalDetails.getUsername());
-//
-//		return ResponseEntity.ok(groceryRes);
-//	}
+	@PatchMapping("/{id}")
+	public ResponseEntity<GroceryRes> update(@PathVariable Long id, @Validated @RequestBody GroceryReq groceryReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		GroceryRes groceryRes = groceryService.update(id, groceryReq, principalDetails.getUsername());
+
+		return ResponseEntity.ok(groceryRes);
+	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {

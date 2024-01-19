@@ -79,16 +79,18 @@ public class GroceryService {
 		return GroceriesRes.from(groceries);
 	}
 
-//	public GroceryRes update(Long id, GroceryReq groceryReq, String username) {
-//		Member member = getMemberByUsername(username);
-//		Storage storage = getStorageByIdAndMemberId(groceryReq.storageId(), member.getId());
-//		Grocery grocery = getGroceryByIdAndMemberId(id, member.getId());
-//
-//		Grocery updateGrocery = GroceryReq.toGrocery(groceryReq, storage);
-//		grocery.update(updateGrocery);
-//
-//		return GroceryRes.from(grocery);
-//	}
+	public GroceryRes update(Long id, GroceryReq groceryReq, String username) {
+		Member member = getMemberByUsername(username);
+		Storage storage = getStorageByIdAndMemberId(groceryReq.storageId(), member.getId());
+		Grocery grocery = getGroceryByIdAndMemberId(id, member.getId());
+
+		Grocery updateGrocery = GroceryReq.toGrocery(groceryReq, storage);
+		grocery.update(updateGrocery);
+
+		List<ImageRes> imagesRes = getGroceryImagesRes(grocery);
+
+		return GroceryRes.of(grocery, imagesRes);
+	}
 
 	public void delete(Long id, String username) {
 		Member member = getMemberByUsername(username);
