@@ -56,7 +56,7 @@ public class PostService {
 
 		Post post = savePost(postReq, member, recipe);
 
-		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
+		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceriesRes(recipe);
 
 		ImagesRes imagesRes = saveImages(post, imageUploadReq);
 		List<ImageRes> images = getImagesRes(imagesRes);
@@ -69,16 +69,10 @@ public class PostService {
 		Post post = getPostById(id);
 		Recipe recipe = post.getRecipe();
 
-		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
+		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceriesRes(recipe);
 		List<ImageRes> imagesRes = getPostImagesRes(post);
 
 		return PostRes.of(post, recipeGroceriesRes, imagesRes);
-	}
-
-	private List<ImageRes> getPostImagesRes(Post post) {
-		List<PostImage> postImages = post.getPostImages();
-
-		return getImagesRes(postImages);
 	}
 
 	@Transactional(readOnly = true)
@@ -89,20 +83,21 @@ public class PostService {
 		return PostsRes.from(posts);
 	}
 
-//	public PostRes update(Long postId, PostReq postReq, String username) {
-//		Member member = getMemberByUsername(username);
-//		Post post = getPostByIdAndMemberId(postId, member.getId());
-//		Recipe recipe = getNullableRecipe(postReq.recipeId());
-//
-//		validateScrapedRecipe(recipe, member);
-//
-//		Post updatePost = PostReq.toPost(postReq, member, recipe);
-//		post.update(updatePost);
-//
-//		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceryResList(recipe);
-//
-//		return PostRes.of(post, recipeGroceriesRes);
-//	}
+	public PostRes update(Long postId, PostReq postReq, String username) {
+		Member member = getMemberByUsername(username);
+		Post post = getPostByIdAndMemberId(postId, member.getId());
+		Recipe recipe = getNullableRecipe(postReq.recipeId());
+
+		validateScrapedRecipe(recipe, member);
+
+		Post updatePost = PostReq.toPost(postReq, member, recipe);
+		post.update(updatePost);
+
+		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceriesRes(recipe);
+		List<ImageRes> imagesRes = getPostImagesRes(post);
+
+		return PostRes.of(post, recipeGroceriesRes, imagesRes);
+	}
 
 	public void delete(Long postId, String username) {
 		Member member = getMemberByUsername(username);
@@ -156,7 +151,7 @@ public class PostService {
 			});
 	}
 
-	private List<RecipeGroceryRes> getRecipeGroceryResList(Recipe recipe) {
+	private List<RecipeGroceryRes> getRecipeGroceriesRes(Recipe recipe) {
 
 		return Optional.ofNullable(recipe)
 			.map(existingRecipe -> recipeGroceryRepository.findAllByRecipeId(existingRecipe.getId()))
@@ -218,5 +213,11 @@ public class PostService {
 			.path(imageRes.path())
 			.post(post)
 			.build();
+	}
+
+	private List<ImageRes> getPostImagesRes(Post post) {
+		List<PostImage> postImages = post.getPostImages();
+
+		return getImagesRes(postImages);
 	}
 }
