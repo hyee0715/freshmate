@@ -1,7 +1,9 @@
 package com.icebox.freshmate.domain.post.application;
 
 import static com.icebox.freshmate.global.error.ErrorCode.EMPTY_IMAGE;
+import static com.icebox.freshmate.global.error.ErrorCode.EXCESSIVE_DELETE_IMAGE_COUNT;
 import static com.icebox.freshmate.global.error.ErrorCode.INVALID_ATTEMPT_TO_POST_RECIPE;
+import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_IMAGE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_POST;
 
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.icebox.freshmate.domain.image.application.ImageService;
+import com.icebox.freshmate.domain.image.application.dto.request.ImageDeleteReq;
 import com.icebox.freshmate.domain.image.application.dto.request.ImageUploadReq;
 import com.icebox.freshmate.domain.image.application.dto.response.ImageRes;
 import com.icebox.freshmate.domain.image.application.dto.response.ImagesRes;
@@ -120,6 +123,47 @@ public class PostService {
 		Post post = getPostByIdAndMemberId(postId, member.getId());
 
 		postRepository.delete(post);
+	}
+
+	public PostRes removePostImage(Long postId, ImageDeleteReq imageDeleteReq, String username) {
+		Member member = getMemberByUsername(username);
+		Post post = getPostByIdAndMemberId(postId, member.getId());
+		validateDeleteImageCount(imageDeleteReq.filePaths());
+
+		String imagePath = imageDeleteReq.filePaths().get(0);
+		PostImage postImage = getPostImageByPostIdAndPath(post.getId(), imagePath);
+
+		deletePostImage(postImage, imageDeleteReq);
+
+		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceriesRes(post.getRecipe());
+		List<ImageRes> imagesRes = getPostImagesRes(post);
+
+		return PostRes.of(post, recipeGroceriesRes, imagesRes);
+	}
+
+	private void deletePostImage(PostImage postImage, ImageDeleteReq imageDeleteReq) {
+		postImage.getPost().removePostImage(postImage);
+		postImageRepository.delete(postImage);
+		imageService.delete(imageDeleteReq);
+	}
+
+	private PostImage getPostImageByPostIdAndPath(Long postId, String imagePath) {
+
+		return postImageRepository.findByPostIdAndPath(postId, imagePath)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_POST_IMAGE_BY_POST_ID_AND_PATH : postId = {}, imagePath = {}", postId, imagePath);
+
+				return new EntityNotFoundException(NOT_FOUND_IMAGE);
+			});
+	}
+
+
+	private void validateDeleteImageCount(List<String> imagePaths) {
+		if (imagePaths.size() != 1) {
+			log.warn("DELETE:WRITE:EXCESSIVE_DELETE_IMAGE_COUNT : requested image path count = {}", imagePaths.size());
+
+			throw new BusinessException(EXCESSIVE_DELETE_IMAGE_COUNT);
+		}
 	}
 
 	private Member getMemberById(Long memberId) {

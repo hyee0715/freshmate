@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.icebox.freshmate.domain.auth.application.PrincipalDetails;
+import com.icebox.freshmate.domain.image.application.dto.request.ImageDeleteReq;
 import com.icebox.freshmate.domain.image.application.dto.request.ImageUploadReq;
 import com.icebox.freshmate.domain.post.application.PostService;
 import com.icebox.freshmate.domain.post.application.dto.request.PostReq;
@@ -80,5 +81,12 @@ public class PostController {
 
 		return ResponseEntity.noContent()
 			.build();
+	}
+
+	@DeleteMapping("/post-images/{postId}")
+	public ResponseEntity<PostRes> removePostImage(@PathVariable Long postId, @RequestBody ImageDeleteReq imageDeleteReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		PostRes postRes = postService.removePostImage(postId, imageDeleteReq, principalDetails.getUsername());
+
+		return ResponseEntity.ok(postRes);
 	}
 }
