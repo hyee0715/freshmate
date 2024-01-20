@@ -81,6 +81,21 @@ public class RecipeService {
 		return RecipeRes.of(savedRecipe, recipeGroceriesRes, recipeImageRes);
 	}
 
+	public RecipeRes addRecipeImage(Long recipeId, ImageUploadReq imageUploadReq, String username) {
+		Member member = getMemberByUsername(username);
+
+		Recipe recipe = getRecipeByIdAndOwnerId(recipeId, member.getId());
+		validateScrapedRecipe(recipe);
+
+		validateImageListIsEmpty(imageUploadReq.files());
+		saveImages(recipe, imageUploadReq);
+
+		List<ImageRes> images = getImagesRes(recipe.getRecipeImages());
+		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceriesRes(recipe);
+
+		return RecipeRes.of(recipe, recipeGroceriesRes, images);
+	}
+
 	@Transactional(readOnly = true)
 	public RecipeRes findById(Long id) {
 		Recipe recipe = getRecipeById(id);
@@ -146,21 +161,6 @@ public class RecipeService {
 		List<ImageRes> imagesRes = getRecipeImagesRes(recipe);
 
 		return RecipeRes.of(recipe, recipeGroceriesRes, imagesRes);
-	}
-
-	public RecipeRes addRecipeImage(Long recipeId, ImageUploadReq imageUploadReq, String username) {
-		Member member = getMemberByUsername(username);
-
-		Recipe recipe = getRecipeByIdAndOwnerId(recipeId, member.getId());
-		validateScrapedRecipe(recipe);
-
-		validateImageListIsEmpty(imageUploadReq.files());
-		saveImages(recipe, imageUploadReq);
-
-		List<ImageRes> images = getImagesRes(recipe.getRecipeImages());
-		List<RecipeGroceryRes> recipeGroceriesRes = getRecipeGroceriesRes(recipe);
-
-		return RecipeRes.of(recipe, recipeGroceriesRes, images);
 	}
 
 	public void delete(Long id, String username) {

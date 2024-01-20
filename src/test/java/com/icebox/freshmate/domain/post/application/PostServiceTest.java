@@ -17,9 +17,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 
 import com.icebox.freshmate.domain.grocery.domain.Grocery;
 import com.icebox.freshmate.domain.grocery.domain.GroceryType;
+import com.icebox.freshmate.domain.image.application.ImageService;
+import com.icebox.freshmate.domain.image.application.dto.request.ImageUploadReq;
+import com.icebox.freshmate.domain.image.application.dto.response.ImageRes;
+import com.icebox.freshmate.domain.image.application.dto.response.ImagesRes;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
 import com.icebox.freshmate.domain.member.domain.Role;
@@ -27,6 +32,8 @@ import com.icebox.freshmate.domain.post.application.dto.request.PostReq;
 import com.icebox.freshmate.domain.post.application.dto.response.PostRes;
 import com.icebox.freshmate.domain.post.application.dto.response.PostsRes;
 import com.icebox.freshmate.domain.post.domain.Post;
+import com.icebox.freshmate.domain.post.domain.PostImage;
+import com.icebox.freshmate.domain.post.domain.PostImageRepository;
 import com.icebox.freshmate.domain.post.domain.PostRepository;
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
 import com.icebox.freshmate.domain.recipe.domain.RecipeRepository;
@@ -55,6 +62,12 @@ class PostServiceTest {
 	@Mock
 	private RecipeGroceryRepository recipeGroceryRepository;
 
+	@Mock
+	private PostImageRepository postImageRepository;
+
+	@Mock
+	private ImageService imageService;
+
 	private Member member;
 	private Post post;
 	private Recipe recipe;
@@ -64,6 +77,7 @@ class PostServiceTest {
 	private Grocery grocery2;
 	private RecipeGrocery recipeGrocery1;
 	private RecipeGrocery recipeGrocery2;
+	private PostImage postImage;
 
 	@BeforeEach
 	void setUp() {
@@ -133,6 +147,18 @@ class PostServiceTest {
 			.member(member)
 			.recipe(recipe)
 			.build();
+
+		String imageFileName = "image.jpg";
+		String imagePath = "http://fake-image-url.com/image.jpg";
+
+		postImage = PostImage
+			.builder()
+			.post(post)
+			.fileName(imageFileName)
+			.path(imagePath)
+			.build();
+
+		post.addPostImage(postImage);
 	}
 
 	@DisplayName("게시글 생성 테스트")
@@ -143,13 +169,21 @@ class PostServiceTest {
 
 		PostReq postReq = new PostReq(post.getTitle(), post.getContent(), recipeId);
 
+		MockMultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", "Spring Framework".getBytes());
+		ImageUploadReq imageUploadReq = new ImageUploadReq(List.of(file));
+
+		ImageRes imageRes = new ImageRes(postImage.getFileName(), postImage.getPath());
+		ImagesRes imagesRes = new ImagesRes(List.of(imageRes));
+
 		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member));
 		when(postRepository.save(any(Post.class))).thenReturn(post);
 		when(recipeRepository.findById(anyLong())).thenReturn(Optional.of(recipe));
 		when(recipeGroceryRepository.findAllByRecipeId(any())).thenReturn(List.of(recipeGrocery1, recipeGrocery2));
+		when(postImageRepository.save(any(PostImage.class))).thenReturn(postImage);
+		when(imageService.store(any(ImageUploadReq.class))).thenReturn(imagesRes);
 
 		//when
-		PostRes postRes = postService.create(postReq, member.getUsername());
+		PostRes postRes = postService.create(postReq, imageUploadReq, member.getUsername());
 
 		//then
 		assertThat(postRes.postTitle()).isEqualTo(post.getTitle());
@@ -160,6 +194,8 @@ class PostServiceTest {
 		assertThat(postRes.recipeMaterials()).hasSize(2);
 		assertThat(postRes.recipeMaterials().get(0).recipeTitle()).isEqualTo(recipe.getTitle());
 		assertThat(postRes.recipeMaterials().get(0).groceryName()).isEqualTo(grocery1.getName());
+		assertThat(postRes.images().get(0).fileName()).isEqualTo(postImage.getFileName());
+		assertThat(postRes.images().get(0).path()).isEqualTo(postImage.getPath());
 	}
 
 	@DisplayName("게시글 단건 조회 테스트")

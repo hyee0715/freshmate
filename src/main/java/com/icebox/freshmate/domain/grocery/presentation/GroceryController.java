@@ -44,6 +44,15 @@ public class GroceryController {
 			.body(groceryRes);
 	}
 
+	@PostMapping("/grocery-images/{groceryId}")
+	public ResponseEntity<GroceryRes> addGroceryImage(@PathVariable Long groceryId, MultipartFile imageFile, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		ImageUploadReq imageUploadReq = new ImageUploadReq(List.of(imageFile));
+
+		GroceryRes groceryRes = groceryService.addGroceryImage(groceryId, imageUploadReq, principalDetails.getUsername());
+
+		return ResponseEntity.ok(groceryRes);
+	}
+
 	@GetMapping("/{id}")
 	public ResponseEntity<GroceryRes> findById(@PathVariable Long id) {
 		GroceryRes groceryRes = groceryService.findById(id);
@@ -61,15 +70,6 @@ public class GroceryController {
 	@PatchMapping("/{id}")
 	public ResponseEntity<GroceryRes> update(@PathVariable Long id, @Validated @RequestBody GroceryReq groceryReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		GroceryRes groceryRes = groceryService.update(id, groceryReq, principalDetails.getUsername());
-
-		return ResponseEntity.ok(groceryRes);
-	}
-
-	@PatchMapping("/grocery-images/{groceryId}")
-	public ResponseEntity<GroceryRes> addGroceryImage(@PathVariable Long groceryId, MultipartFile imageFile, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		ImageUploadReq imageUploadReq = new ImageUploadReq(List.of(imageFile));
-
-		GroceryRes groceryRes = groceryService.addGroceryImage(groceryId, imageUploadReq, principalDetails.getUsername());
 
 		return ResponseEntity.ok(groceryRes);
 	}

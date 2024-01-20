@@ -18,10 +18,13 @@ import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -41,6 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
@@ -52,6 +56,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icebox.freshmate.domain.auth.application.PrincipalDetails;
 import com.icebox.freshmate.domain.grocery.domain.Grocery;
 import com.icebox.freshmate.domain.grocery.domain.GroceryType;
+import com.icebox.freshmate.domain.image.application.dto.request.ImageUploadReq;
+import com.icebox.freshmate.domain.image.application.dto.response.ImageRes;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.Role;
 import com.icebox.freshmate.domain.post.application.PostService;
@@ -59,6 +65,7 @@ import com.icebox.freshmate.domain.post.application.dto.request.PostReq;
 import com.icebox.freshmate.domain.post.application.dto.response.PostRes;
 import com.icebox.freshmate.domain.post.application.dto.response.PostsRes;
 import com.icebox.freshmate.domain.post.domain.Post;
+import com.icebox.freshmate.domain.post.domain.PostImage;
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
 import com.icebox.freshmate.domain.recipe.domain.RecipeType;
 import com.icebox.freshmate.domain.recipegrocery.application.dto.response.RecipeGroceryRes;
@@ -96,6 +103,8 @@ class PostControllerTest {
 	private Grocery grocery2;
 	private RecipeGrocery recipeGrocery1;
 	private RecipeGrocery recipeGrocery2;
+	private PostImage postImage1;
+	private PostImage postImage2;
 
 	@BeforeEach
 	void setUp(RestDocumentationContextProvider restDocumentationContextProvider) {
@@ -175,6 +184,29 @@ class PostControllerTest {
 			.member(member)
 			.recipe(recipe)
 			.build();
+
+		String imageFileName1 = "image1.jpg";
+		String imagePath1 = "https://test-image-urls.com/image1.jpg";
+
+		postImage1 = PostImage
+			.builder()
+			.post(post)
+			.fileName(imageFileName1)
+			.path(imagePath1)
+			.build();
+
+		String imageFileName2 = "image2.jpg";
+		String imagePath2 = "https://test-image-urls.com/image2.jpg";
+
+		postImage2 = PostImage
+			.builder()
+			.post(post)
+			.fileName(imageFileName2)
+			.path(imagePath2)
+			.build();
+
+		post.addPostImage(postImage1);
+		post.addPostImage(postImage2);
 	}
 
 	@DisplayName("게시글 생성 테스트")
@@ -190,39 +222,55 @@ class PostControllerTest {
 		Long grocery1Id = 1L;
 		Long grocery2Id = 2L;
 
+		PostReq postReq = new PostReq(post.getTitle(), post.getContent(), recipeId);
+
+		MockMultipartFile file1 = new MockMultipartFile("imageFiles", "test1.jpg", "image/jpeg", "Spring Framework".getBytes());
+		MockMultipartFile file2 = new MockMultipartFile("imageFiles", "test2.jpg", "image/jpeg", "Spring Framework".getBytes());
+		MockMultipartFile request = new MockMultipartFile("postReq", "postReq",
+			"application/json",
+			objectMapper.writeValueAsString(postReq).getBytes());
+
+		ImageRes imageRes1 = new ImageRes(postImage1.getFileName(), postImage1.getPath());
+		ImageRes imageRes2 = new ImageRes(postImage2.getFileName(), postImage2.getPath());
+
 		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipeId, recipe.getTitle(), grocery1Id, grocery1.getName(), grocery1.getQuantity());
 		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipeId, recipe.getTitle(), grocery2Id, grocery2.getName(), grocery2.getQuantity());
 
-		PostReq postReq = new PostReq(post.getTitle(), post.getContent(), recipeId);
-		PostRes postRes = new PostRes(postId, memberId, post.getTitle(), post.getContent(), recipeId, recipeWriterId, recipe.getWriter().getNickName(), recipe.getTitle(), recipe.getContent(), List.of(recipeGroceryRes1, recipeGroceryRes2));
+		PostRes postRes = new PostRes(postId, memberId, post.getTitle(), post.getContent(), recipeId, recipeWriterId, recipe.getWriter().getNickName(), recipe.getTitle(), recipe.getContent(), List.of(recipeGroceryRes1, recipeGroceryRes2), List.of(imageRes1, imageRes2));
 
-		when(postService.create(any(PostReq.class), anyString())).thenReturn(postRes);
+		when(postService.create(any(PostReq.class), any(ImageUploadReq.class), anyString())).thenReturn(postRes);
 
 		//when
 		//then
-		mockMvc.perform(RestDocumentationRequestBuilders.post("/api/posts")
+		mockMvc.perform(RestDocumentationRequestBuilders.multipart("/api/posts")
+				.file(file1)
+				.file(file2)
+				.file(request)
 				.contentType(MediaType.APPLICATION_JSON)
 				.header("Authorization", "Bearer {ACCESS_TOKEN}")
 				.with(user(principalDetails))
 				.with(csrf().asHeader())
-				.content(objectMapper.writeValueAsString(postReq)))
+				.contentType(MediaType.MULTIPART_FORM_DATA)
+				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(content().json(objectMapper.writeValueAsString(postRes)))
 			.andExpect(status().isCreated())
-			.andExpect(jsonPath("$.postId").value(postId))
-			.andExpect(jsonPath("$.memberId").value(memberId))
-			.andExpect(jsonPath("$.postTitle").value(post.getTitle()))
-			.andExpect(jsonPath("$.postContent").value(post.getContent()))
-			.andExpect(jsonPath("$.recipeId").value(recipeId))
-			.andExpect(jsonPath("$.recipeWriterId").value(recipeWriterId))
-			.andExpect(jsonPath("$.recipeWriterNickName").value(post.getRecipe().getWriter().getNickName()))
-			.andExpect(jsonPath("$.recipeTitle").value(post.getRecipe().getTitle()))
-			.andExpect(jsonPath("$.recipeContent").value(post.getRecipe().getContent()))
-			.andExpect(jsonPath("$.recipeMaterials[0].recipeGroceryId").value(recipeGrocery1Id))
-			.andExpect(jsonPath("$.recipeMaterials[0].recipeId").value(recipeId))
-			.andExpect(jsonPath("$.recipeMaterials[0].recipeTitle").value(post.getRecipe().getRecipeGroceries().get(0).getRecipe().getTitle()))
-			.andExpect(jsonPath("$.recipeMaterials[0].groceryId").value(grocery1Id))
-			.andExpect(jsonPath("$.recipeMaterials[0].groceryName").value(post.getRecipe().getRecipeGroceries().get(0).getGroceryName()))
-			.andExpect(jsonPath("$.recipeMaterials[0].groceryQuantity").value(post.getRecipe().getRecipeGroceries().get(0).getGroceryQuantity()))
+			.andExpect(jsonPath("$.postId").value(postRes.postId()))
+			.andExpect(jsonPath("$.memberId").value(postRes.memberId()))
+			.andExpect(jsonPath("$.postTitle").value(postRes.postTitle()))
+			.andExpect(jsonPath("$.postContent").value(postRes.postContent()))
+			.andExpect(jsonPath("$.recipeId").value(postRes.postId()))
+			.andExpect(jsonPath("$.recipeWriterId").value(postRes.recipeWriterId()))
+			.andExpect(jsonPath("$.recipeWriterNickName").value(postRes.recipeWriterNickName()))
+			.andExpect(jsonPath("$.recipeTitle").value(postRes.recipeTitle()))
+			.andExpect(jsonPath("$.recipeContent").value(postRes.recipeContent()))
+			.andExpect(jsonPath("$.recipeMaterials[0].recipeGroceryId").value(postRes.recipeMaterials().get(0).recipeGroceryId()))
+			.andExpect(jsonPath("$.recipeMaterials[0].recipeId").value(postRes.recipeMaterials().get(0).recipeId()))
+			.andExpect(jsonPath("$.recipeMaterials[0].recipeTitle").value(postRes.recipeMaterials().get(0).recipeTitle()))
+			.andExpect(jsonPath("$.recipeMaterials[0].groceryId").value(postRes.recipeMaterials().get(0).groceryId()))
+			.andExpect(jsonPath("$.recipeMaterials[0].groceryName").value(postRes.recipeMaterials().get(0).groceryName()))
+			.andExpect(jsonPath("$.recipeMaterials[0].groceryQuantity").value(postRes.recipeMaterials().get(0).groceryQuantity()))
+			.andExpect(jsonPath("$.images[0].fileName").value(post.getPostImages().get(0).getFileName()))
+			.andExpect(jsonPath("$.images[0].path").value(post.getPostImages().get(0).getPath()))
 			.andDo(print())
 			.andDo(document("post/post-create",
 				preprocessRequest(prettyPrint()),
@@ -230,7 +278,11 @@ class PostControllerTest {
 				requestHeaders(
 					headerWithName("Authorization").description("Access Token")
 				),
-				requestFields(
+				requestParts(
+					partWithName("imageFiles").description("게시글 이미지들"),
+					partWithName("postReq").description("게시글 등록 내용")
+				),
+				requestPartFields("postReq",
 					fieldWithPath("title").description("게시글 제목"),
 					fieldWithPath("content").description("게시글 내용"),
 					fieldWithPath("recipeId").description("게시글에 공유하려는 레시피 ID")
@@ -251,7 +303,9 @@ class PostControllerTest {
 					fieldWithPath("recipeMaterials[].recipeTitle").type(STRING).description("게시글에 공유된 레시피 제목"),
 					fieldWithPath("recipeMaterials[].groceryId").type(NUMBER).description("게시글에 공유된 레시피의 식재료 ID"),
 					fieldWithPath("recipeMaterials[].groceryName").type(STRING).description("게시글에 공유된 레시피의 식재료 이름"),
-					fieldWithPath("recipeMaterials[].groceryQuantity").type(STRING).description("게시글에 공유된 레시피의 식재료 수량")
+					fieldWithPath("recipeMaterials[].groceryQuantity").type(STRING).description("게시글에 공유된 레시피의 식재료 수량"),
+					fieldWithPath("images[].fileName").type(STRING).description("게시글 이미지 파일 이름"),
+					fieldWithPath("images[].path").type(STRING).description("게시글 이미지 파일 경로")
 				)
 			));
 	}
@@ -269,10 +323,13 @@ class PostControllerTest {
 		Long grocery1Id = 1L;
 		Long grocery2Id = 2L;
 
+		ImageRes imageRes1 = new ImageRes(postImage1.getFileName(), postImage1.getPath());
+		ImageRes imageRes2 = new ImageRes(postImage2.getFileName(), postImage2.getPath());
+
 		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipeId, recipe.getTitle(), grocery1Id, grocery1.getName(), grocery1.getQuantity());
 		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipeId, recipe.getTitle(), grocery2Id, grocery2.getName(), grocery2.getQuantity());
 
-		PostRes postRes = new PostRes(postId, memberId, post.getTitle(), post.getContent(), recipeId, recipeWriterId, recipe.getWriter().getNickName(), recipe.getTitle(), recipe.getContent(), List.of(recipeGroceryRes1, recipeGroceryRes2));
+		PostRes postRes = new PostRes(postId, memberId, post.getTitle(), post.getContent(), recipeId, recipeWriterId, recipe.getWriter().getNickName(), recipe.getTitle(), recipe.getContent(), List.of(recipeGroceryRes1, recipeGroceryRes2), List.of(imageRes1, imageRes2));
 
 		when(postService.findById(anyLong())).thenReturn(postRes);
 
@@ -284,21 +341,23 @@ class PostControllerTest {
 				.with(csrf().asHeader()))
 			.andExpect(content().json(objectMapper.writeValueAsString(postRes)))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.postId").value(postId))
-			.andExpect(jsonPath("$.memberId").value(memberId))
-			.andExpect(jsonPath("$.postTitle").value(post.getTitle()))
-			.andExpect(jsonPath("$.postContent").value(post.getContent()))
-			.andExpect(jsonPath("$.recipeId").value(recipeId))
-			.andExpect(jsonPath("$.recipeWriterId").value(recipeWriterId))
-			.andExpect(jsonPath("$.recipeWriterNickName").value(post.getRecipe().getWriter().getNickName()))
-			.andExpect(jsonPath("$.recipeTitle").value(post.getRecipe().getTitle()))
-			.andExpect(jsonPath("$.recipeContent").value(post.getRecipe().getContent()))
-			.andExpect(jsonPath("$.recipeMaterials[0].recipeGroceryId").value(recipeGrocery1Id))
-			.andExpect(jsonPath("$.recipeMaterials[0].recipeId").value(recipeId))
-			.andExpect(jsonPath("$.recipeMaterials[0].recipeTitle").value(post.getRecipe().getRecipeGroceries().get(0).getRecipe().getTitle()))
-			.andExpect(jsonPath("$.recipeMaterials[0].groceryId").value(grocery1Id))
-			.andExpect(jsonPath("$.recipeMaterials[0].groceryName").value(post.getRecipe().getRecipeGroceries().get(0).getGroceryName()))
-			.andExpect(jsonPath("$.recipeMaterials[0].groceryQuantity").value(post.getRecipe().getRecipeGroceries().get(0).getGroceryQuantity()))
+			.andExpect(jsonPath("$.postId").value(postRes.postId()))
+			.andExpect(jsonPath("$.memberId").value(postRes.memberId()))
+			.andExpect(jsonPath("$.postTitle").value(postRes.postTitle()))
+			.andExpect(jsonPath("$.postContent").value(postRes.postContent()))
+			.andExpect(jsonPath("$.recipeId").value(postRes.postId()))
+			.andExpect(jsonPath("$.recipeWriterId").value(postRes.recipeWriterId()))
+			.andExpect(jsonPath("$.recipeWriterNickName").value(postRes.recipeWriterNickName()))
+			.andExpect(jsonPath("$.recipeTitle").value(postRes.recipeTitle()))
+			.andExpect(jsonPath("$.recipeContent").value(postRes.recipeContent()))
+			.andExpect(jsonPath("$.recipeMaterials[0].recipeGroceryId").value(postRes.recipeMaterials().get(0).recipeGroceryId()))
+			.andExpect(jsonPath("$.recipeMaterials[0].recipeId").value(postRes.recipeMaterials().get(0).recipeId()))
+			.andExpect(jsonPath("$.recipeMaterials[0].recipeTitle").value(postRes.recipeMaterials().get(0).recipeTitle()))
+			.andExpect(jsonPath("$.recipeMaterials[0].groceryId").value(postRes.recipeMaterials().get(0).groceryId()))
+			.andExpect(jsonPath("$.recipeMaterials[0].groceryName").value(postRes.recipeMaterials().get(0).groceryName()))
+			.andExpect(jsonPath("$.recipeMaterials[0].groceryQuantity").value(postRes.recipeMaterials().get(0).groceryQuantity()))
+			.andExpect(jsonPath("$.images[0].fileName").value(post.getPostImages().get(0).getFileName()))
+			.andExpect(jsonPath("$.images[0].path").value(post.getPostImages().get(0).getPath()))
 			.andDo(print())
 			.andDo(document("post/post-find-by-id",
 				preprocessRequest(prettyPrint()),
@@ -320,7 +379,9 @@ class PostControllerTest {
 					fieldWithPath("recipeMaterials[].recipeTitle").type(STRING).description("게시글에 공유된 레시피 제목"),
 					fieldWithPath("recipeMaterials[].groceryId").type(NUMBER).description("게시글에 공유된 레시피의 식재료 ID"),
 					fieldWithPath("recipeMaterials[].groceryName").type(STRING).description("게시글에 공유된 레시피의 식재료 이름"),
-					fieldWithPath("recipeMaterials[].groceryQuantity").type(STRING).description("게시글에 공유된 레시피의 식재료 수량")
+					fieldWithPath("recipeMaterials[].groceryQuantity").type(STRING).description("게시글에 공유된 레시피의 식재료 수량"),
+					fieldWithPath("images[].fileName").type(STRING).description("게시글 이미지 파일 이름"),
+					fieldWithPath("images[].path").type(STRING).description("게시글 이미지 파일 경로")
 				)
 			));
 	}
@@ -344,11 +405,14 @@ class PostControllerTest {
 			.recipe(recipe)
 			.build();
 
+		ImageRes imageRes1 = new ImageRes(postImage1.getFileName(), postImage1.getPath());
+		ImageRes imageRes2 = new ImageRes(postImage2.getFileName(), postImage2.getPath());
+
 		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipeId, recipe.getTitle(), grocery1Id, grocery1.getName(), grocery1.getQuantity());
 		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipeId, recipe.getTitle(), grocery2Id, grocery2.getName(), grocery2.getQuantity());
 
-		PostRes postRes1 = new PostRes(1L, memberId, post.getTitle(), post.getContent(), recipeId, recipeWriterId, post.getRecipe().getWriter().getNickName(), post.getRecipe().getTitle(), post.getRecipe().getContent(), List.of(recipeGroceryRes1, recipeGroceryRes2));
-		PostRes postRes2 = new PostRes(2L, memberId, post2.getTitle(), post2.getContent(), recipeId, recipeWriterId, post2.getRecipe().getWriter().getNickName(), post2.getRecipe().getTitle(), post2.getRecipe().getContent(), List.of(recipeGroceryRes1, recipeGroceryRes2));
+		PostRes postRes1 = new PostRes(1L, memberId, post.getTitle(), post.getContent(), recipeId, recipeWriterId, post.getRecipe().getWriter().getNickName(), post.getRecipe().getTitle(), post.getRecipe().getContent(), List.of(recipeGroceryRes1, recipeGroceryRes2), List.of(imageRes1, imageRes2));
+		PostRes postRes2 = new PostRes(2L, memberId, post2.getTitle(), post2.getContent(), recipeId, recipeWriterId, post2.getRecipe().getWriter().getNickName(), post2.getRecipe().getTitle(), post2.getRecipe().getContent(), List.of(recipeGroceryRes1, recipeGroceryRes2), List.of(imageRes1, imageRes2));
 
 		PostsRes postsRes = new PostsRes(List.of(postRes1, postRes2));
 
@@ -378,6 +442,8 @@ class PostControllerTest {
 			.andExpect(jsonPath("$.posts[0].recipeMaterials[0].groceryId").value(grocery1Id))
 			.andExpect(jsonPath("$.posts[0].recipeMaterials[0].groceryName").value(postRes1.recipeMaterials().get(0).groceryName()))
 			.andExpect(jsonPath("$.posts[0].recipeMaterials[0].groceryQuantity").value(postRes1.recipeMaterials().get(0).groceryQuantity()))
+			.andExpect(jsonPath("$.posts[0].images[0].fileName").value(postRes1.images().get(0).fileName()))
+			.andExpect(jsonPath("$.posts[0].images[0].path").value(postRes1.images().get(0).path()))
 			.andDo(print())
 			.andDo(document("post/post-find-all-by-member-id",
 				preprocessRequest(prettyPrint()),
@@ -402,7 +468,9 @@ class PostControllerTest {
 					fieldWithPath("posts[].recipeMaterials[].recipeTitle").type(STRING).description("게시글에 공유된 레시피 제목"),
 					fieldWithPath("posts[].recipeMaterials[].groceryId").type(NUMBER).description("게시글에 공유된 레시피의 식재료 ID"),
 					fieldWithPath("posts[].recipeMaterials[].groceryName").type(STRING).description("게시글에 공유된 레시피의 식재료 이름"),
-					fieldWithPath("posts[].recipeMaterials[].groceryQuantity").type(STRING).description("게시글에 공유된 레시피의 식재료 수량")
+					fieldWithPath("posts[].recipeMaterials[].groceryQuantity").type(STRING).description("게시글에 공유된 레시피의 식재료 수량"),
+					fieldWithPath("posts[].images[].fileName").type(STRING).description("게시글 이미지 파일 이름"),
+					fieldWithPath("posts[].images[].path").type(STRING).description("게시글 이미지 파일 경로")
 				)
 			));
 	}
@@ -420,11 +488,14 @@ class PostControllerTest {
 		Long grocery1Id = 1L;
 		Long grocery2Id = 2L;
 
+		ImageRes imageRes1 = new ImageRes(postImage1.getFileName(), postImage1.getPath());
+		ImageRes imageRes2 = new ImageRes(postImage2.getFileName(), postImage2.getPath());
+
 		RecipeGroceryRes recipeGroceryRes1 = new RecipeGroceryRes(recipeGrocery1Id, recipeId, recipe.getTitle(), grocery1Id, grocery1.getName(), grocery1.getQuantity());
 		RecipeGroceryRes recipeGroceryRes2 = new RecipeGroceryRes(recipeGrocery2Id, recipeId, recipe.getTitle(), grocery2Id, grocery2.getName(), grocery2.getQuantity());
 
 		PostReq postReq = new PostReq("제목 수정", "내용 수정", recipeId);
-		PostRes postRes = new PostRes(postId, memberId, postReq.title(), postReq.content(), recipeId, recipeWriterId, recipe.getWriter().getNickName(), recipe.getTitle(), recipe.getContent(), List.of(recipeGroceryRes1, recipeGroceryRes2));
+		PostRes postRes = new PostRes(postId, memberId, postReq.title(), postReq.content(), recipeId, recipeWriterId, recipe.getWriter().getNickName(), recipe.getTitle(), recipe.getContent(), List.of(recipeGroceryRes1, recipeGroceryRes2), List.of(imageRes1, imageRes2));
 
 		when(postService.update(anyLong(), any(PostReq.class), anyString())).thenReturn(postRes);
 
@@ -453,6 +524,8 @@ class PostControllerTest {
 			.andExpect(jsonPath("$.recipeMaterials[0].groceryId").value(grocery1Id))
 			.andExpect(jsonPath("$.recipeMaterials[0].groceryName").value(post.getRecipe().getRecipeGroceries().get(0).getGroceryName()))
 			.andExpect(jsonPath("$.recipeMaterials[0].groceryQuantity").value(post.getRecipe().getRecipeGroceries().get(0).getGroceryQuantity()))
+			.andExpect(jsonPath("$.images[0].fileName").value(post.getPostImages().get(0).getFileName()))
+			.andExpect(jsonPath("$.images[0].path").value(post.getPostImages().get(0).getPath()))
 			.andDo(print())
 			.andDo(document("post/post-update",
 				preprocessRequest(prettyPrint()),
@@ -482,7 +555,9 @@ class PostControllerTest {
 					fieldWithPath("recipeMaterials[].recipeTitle").type(STRING).description("게시글에 공유된 레시피 제목"),
 					fieldWithPath("recipeMaterials[].groceryId").type(NUMBER).description("게시글에 공유된 레시피의 식재료 ID"),
 					fieldWithPath("recipeMaterials[].groceryName").type(STRING).description("게시글에 공유된 레시피의 식재료 이름"),
-					fieldWithPath("recipeMaterials[].groceryQuantity").type(STRING).description("게시글에 공유된 레시피의 식재료 수량")
+					fieldWithPath("recipeMaterials[].groceryQuantity").type(STRING).description("게시글에 공유된 레시피의 식재료 수량"),
+					fieldWithPath("images[].fileName").type(STRING).description("게시글 이미지 파일 이름"),
+					fieldWithPath("images[].path").type(STRING).description("게시글 이미지 파일 경로")
 				)
 			));
 	}

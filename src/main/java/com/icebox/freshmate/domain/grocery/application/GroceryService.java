@@ -62,6 +62,18 @@ public class GroceryService {
 		return GroceryRes.of(grocery, images);
 	}
 
+	public GroceryRes addGroceryImage(Long groceryId, ImageUploadReq imageUploadReq, String username) {
+		Member member = getMemberByUsername(username);
+		Grocery grocery = getGroceryByIdAndMemberId(groceryId, member.getId());
+
+		validateImageListIsEmpty(imageUploadReq.files());
+		saveImages(grocery, imageUploadReq);
+
+		List<ImageRes> images = getImagesRes(grocery.getGroceryImages());
+
+		return GroceryRes.of(grocery, images);
+	}
+
 	@Transactional(readOnly = true)
 	public GroceryRes findById(Long id) {
 		Grocery grocery = getGroceryById(id);
@@ -97,18 +109,6 @@ public class GroceryService {
 		List<ImageRes> imagesRes = getGroceryImagesRes(grocery);
 
 		return GroceryRes.of(grocery, imagesRes);
-	}
-
-	public GroceryRes addGroceryImage(Long groceryId, ImageUploadReq imageUploadReq, String username) {
-		Member member = getMemberByUsername(username);
-		Grocery grocery = getGroceryByIdAndMemberId(groceryId, member.getId());
-
-		validateImageListIsEmpty(imageUploadReq.files());
-		saveImages(grocery, imageUploadReq);
-
-		List<ImageRes> images = getImagesRes(grocery.getGroceryImages());
-
-		return GroceryRes.of(grocery, images);
 	}
 
 	public void delete(Long id, String username) {

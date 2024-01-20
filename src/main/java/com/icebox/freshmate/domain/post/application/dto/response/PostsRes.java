@@ -5,10 +5,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.icebox.freshmate.domain.image.application.dto.response.ImageRes;
 import com.icebox.freshmate.domain.post.domain.Post;
+import com.icebox.freshmate.domain.post.domain.PostImage;
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
 import com.icebox.freshmate.domain.recipegrocery.application.dto.response.RecipeGroceryRes;
-import com.icebox.freshmate.domain.recipegrocery.domain.RecipeGrocery;
 
 public record PostsRes(
 	List<PostRes> posts
@@ -18,7 +19,9 @@ public record PostsRes(
 		List<PostRes> postsRes = posts.stream()
 			.map(post -> {
 				List<RecipeGroceryRes> recipeGroceryRes = getRecipeGroceryResList(post.getRecipe());
-				return PostRes.of(post, recipeGroceryRes);
+				List<ImageRes> postImagesRes = getPostImagesRes(post);
+
+				return PostRes.of(post, recipeGroceryRes, postImagesRes);
 			})
 			.toList();
 
@@ -32,5 +35,13 @@ public record PostsRes(
 			.stream()
 			.map(RecipeGroceryRes::from)
 			.collect(Collectors.toList());
+	}
+
+	private static List<ImageRes> getPostImagesRes(Post post) {
+		List<PostImage> postImages = post.getPostImages();
+
+		return postImages.stream()
+			.map(postImage -> ImageRes.of(postImage.getFileName(), postImage.getPath()))
+			.toList();
 	}
 }
