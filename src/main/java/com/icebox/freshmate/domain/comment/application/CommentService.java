@@ -1,14 +1,17 @@
 package com.icebox.freshmate.domain.comment.application;
 
+import static com.icebox.freshmate.global.error.ErrorCode.EMPTY_IMAGE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_COMMENT;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_POST;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.icebox.freshmate.domain.comment.application.dto.request.CommentCreateReq;
 import com.icebox.freshmate.domain.comment.application.dto.request.CommentUpdateReq;
@@ -26,6 +29,7 @@ import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
 import com.icebox.freshmate.domain.post.domain.Post;
 import com.icebox.freshmate.domain.post.domain.PostRepository;
+import com.icebox.freshmate.global.error.exception.BusinessException;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -53,6 +57,26 @@ public class CommentService {
 		List<ImageRes> images = getImagesRes(imagesRes);
 
 		return CommentRes.of(comment, images);
+	}
+
+	public CommentRes addCommentImage(Long commentId, ImageUploadReq imageUploadReq, String username) {
+		Member member = getMemberByUsername(username);
+		Comment comment = getCommentByIdAndMemberId(commentId, member.getId());
+
+		validateImageListIsEmpty(imageUploadReq.files());
+		saveImages(comment, imageUploadReq);
+
+		List<ImageRes> images = getImagesRes(comment.getCommentImages());
+
+		return CommentRes.of(comment, images);
+	}
+
+	private void validateImageListIsEmpty(List<MultipartFile> images) {
+		if (images.size() == 1 && Objects.equals(images.get(0).getOriginalFilename(), "")) {
+			log.warn("PATCH:WRITE:EMPTY_IMAGE");
+
+			throw new BusinessException(EMPTY_IMAGE);
+		}
 	}
 
 	@Transactional(readOnly = true)

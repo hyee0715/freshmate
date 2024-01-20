@@ -45,6 +45,15 @@ public class CommentController {
 			.body(commentRes);
 	}
 
+	@PostMapping("/comment-images/{commentId}")
+	public ResponseEntity<CommentRes> addCommentImage(@PathVariable Long commentId, MultipartFile imageFile, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		ImageUploadReq imageUploadReq = new ImageUploadReq(List.of(imageFile));
+
+		CommentRes commentRes = commentService.addCommentImage(commentId, imageUploadReq, principalDetails.getUsername());
+
+		return ResponseEntity.ok(commentRes);
+	}
+
 	@GetMapping
 	public ResponseEntity<CommentsRes> findAllByPostId(@RequestParam("post-id") Long postId) {
 		CommentsRes commentsRes = commentService.findAllByPostId(postId);
