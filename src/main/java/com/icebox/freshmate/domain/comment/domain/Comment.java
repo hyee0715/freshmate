@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.post.domain.Post;
+import com.icebox.freshmate.global.BaseEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -28,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @Table(name = "comments")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
-public class Comment {
+public class Comment extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
