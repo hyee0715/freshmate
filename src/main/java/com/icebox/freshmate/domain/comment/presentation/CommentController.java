@@ -24,6 +24,7 @@ import com.icebox.freshmate.domain.comment.application.dto.request.CommentCreate
 import com.icebox.freshmate.domain.comment.application.dto.request.CommentUpdateReq;
 import com.icebox.freshmate.domain.comment.application.dto.response.CommentRes;
 import com.icebox.freshmate.domain.comment.application.dto.response.CommentsRes;
+import com.icebox.freshmate.domain.image.application.dto.request.ImageDeleteReq;
 import com.icebox.freshmate.domain.image.application.dto.request.ImageUploadReq;
 
 import lombok.RequiredArgsConstructor;
@@ -74,5 +75,12 @@ public class CommentController {
 
 		return ResponseEntity.noContent()
 			.build();
+	}
+
+	@DeleteMapping("/comment-images/{commentId}")
+	public ResponseEntity<CommentRes> removeCommentImage(@PathVariable Long commentId, @RequestBody ImageDeleteReq imageDeleteReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		CommentRes commentRes = commentService.removeCommentImage(commentId, imageDeleteReq, principalDetails.getUsername());
+
+		return ResponseEntity.ok(commentRes);
 	}
 }

@@ -129,9 +129,7 @@ public class GroceryService {
 		validateDeleteImageCount(imageDeleteReq.filePaths());
 
 		String imagePath = imageDeleteReq.filePaths().get(0);
-
 		GroceryImage groceryImage = getGroceryImageByGroceryIdAndPath(grocery.getId(), imagePath);
-
 		deleteGroceryImage(groceryImage, imageDeleteReq);
 
 		List<ImageRes> imagesRes = getGroceryImagesRes(grocery);

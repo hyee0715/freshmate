@@ -1,7 +1,9 @@
 package com.icebox.freshmate.domain.comment.application;
 
 import static com.icebox.freshmate.global.error.ErrorCode.EMPTY_IMAGE;
+import static com.icebox.freshmate.global.error.ErrorCode.EXCESSIVE_DELETE_IMAGE_COUNT;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_COMMENT;
+import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_IMAGE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_POST;
 
@@ -22,6 +24,7 @@ import com.icebox.freshmate.domain.comment.domain.CommentImage;
 import com.icebox.freshmate.domain.comment.domain.CommentImageRepository;
 import com.icebox.freshmate.domain.comment.domain.CommentRepository;
 import com.icebox.freshmate.domain.image.application.ImageService;
+import com.icebox.freshmate.domain.image.application.dto.request.ImageDeleteReq;
 import com.icebox.freshmate.domain.image.application.dto.request.ImageUploadReq;
 import com.icebox.freshmate.domain.image.application.dto.response.ImageRes;
 import com.icebox.freshmate.domain.image.application.dto.response.ImagesRes;
@@ -71,14 +74,6 @@ public class CommentService {
 		return CommentRes.of(comment, images);
 	}
 
-	private void validateImageListIsEmpty(List<MultipartFile> images) {
-		if (images.size() == 1 && Objects.equals(images.get(0).getOriginalFilename(), "")) {
-			log.warn("PATCH:WRITE:EMPTY_IMAGE");
-
-			throw new BusinessException(EMPTY_IMAGE);
-		}
-	}
-
 	@Transactional(readOnly = true)
 	public CommentsRes findAllByPostId(Long postId) {
 		List<Comment> comments = commentRepository.findAllByPostId(postId);
@@ -104,6 +99,44 @@ public class CommentService {
 		Comment comment = getCommentByIdAndMemberId(commentId, member.getId());
 
 		commentRepository.delete(comment);
+	}
+
+	public CommentRes removeCommentImage(Long commentId, ImageDeleteReq imageDeleteReq, String username) {
+		Member member = getMemberByUsername(username);
+		Comment comment = getCommentByIdAndMemberId(commentId, member.getId());
+		validateDeleteImageCount(imageDeleteReq.filePaths());
+
+		String imagePath = imageDeleteReq.filePaths().get(0);
+		CommentImage commentImage = getCommentImageByCommentIdAndPath(comment.getId(), imagePath);
+		deleteCommentImage(commentImage, imageDeleteReq);
+
+		List<ImageRes> imagesRes = getCommentImagesRes(comment);
+
+		return CommentRes.of(comment, imagesRes);
+	}
+
+	private void deleteCommentImage(CommentImage commentImage, ImageDeleteReq imageDeleteReq) {
+		commentImage.getComment().removeCommentImage(commentImage);
+		commentImageRepository.delete(commentImage);
+		imageService.delete(imageDeleteReq);
+	}
+
+	private CommentImage getCommentImageByCommentIdAndPath(Long commentId, String imagePath) {
+
+		return commentImageRepository.findByCommentIdAndPath(commentId, imagePath)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_COMMENT_IMAGE_BY_COMMENT_ID_AND_PATH : commentId = {}, imagePath = {}", commentId, imagePath);
+
+				return new EntityNotFoundException(NOT_FOUND_IMAGE);
+			});
+	}
+
+	private void validateDeleteImageCount(List<String> imagePaths) {
+		if (imagePaths.size() != 1) {
+			log.warn("DELETE:WRITE:EXCESSIVE_DELETE_IMAGE_COUNT : requested image path count = {}", imagePaths.size());
+
+			throw new BusinessException(EXCESSIVE_DELETE_IMAGE_COUNT);
+		}
 	}
 
 	private Comment getCommentByIdAndMemberId(Long commentId, Long memberId) {
@@ -184,5 +217,13 @@ public class CommentService {
 		return commentImages.stream()
 			.map(commentImage -> ImageRes.of(commentImage.getFileName(), commentImage.getPath()))
 			.toList();
+	}
+
+	private void validateImageListIsEmpty(List<MultipartFile> images) {
+		if (images.size() == 1 && Objects.equals(images.get(0).getOriginalFilename(), "")) {
+			log.warn("PATCH:WRITE:EMPTY_IMAGE");
+
+			throw new BusinessException(EMPTY_IMAGE);
+		}
 	}
 }
