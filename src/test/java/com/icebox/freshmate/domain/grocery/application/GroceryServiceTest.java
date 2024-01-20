@@ -96,7 +96,7 @@ class GroceryServiceTest {
 			.build();
 
 		String imageFileName = "image.jpg";
-		String imagePath = "http://fake-image-url.com/image.jpg";
+		String imagePath = "https://fake-image-url.com/image.jpg";
 
 		groceryImage = GroceryImage
 			.builder()

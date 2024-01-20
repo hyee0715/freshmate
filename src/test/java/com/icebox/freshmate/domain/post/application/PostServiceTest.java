@@ -149,7 +149,7 @@ class PostServiceTest {
 			.build();
 
 		String imageFileName = "image.jpg";
-		String imagePath = "http://fake-image-url.com/image.jpg";
+		String imagePath = "https://fake-image-url.com/image.jpg";
 
 		postImage = PostImage
 			.builder()

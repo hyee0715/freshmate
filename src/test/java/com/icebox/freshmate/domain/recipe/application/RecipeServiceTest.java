@@ -172,7 +172,7 @@ class RecipeServiceTest {
 		recipe1.addRecipeGrocery(recipeGrocery2);
 
 		String imageFileName = "image.jpg";
-		String imagePath = "http://fake-image-url.com/image.jpg";
+		String imagePath = "https://fake-image-url.com/image.jpg";
 
 		recipeImage1 = RecipeImage
 			.builder()
