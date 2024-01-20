@@ -52,12 +52,12 @@ public class CommentController {
 		return ResponseEntity.ok(commentsRes);
 	}
 
-//	@PatchMapping("/{id}")
-//	public ResponseEntity<CommentRes> update(@PathVariable Long id, @Validated @RequestBody CommentUpdateReq commentUpdateReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-//		CommentRes commentRes = commentService.update(id, commentUpdateReq, principalDetails.getUsername());
-//
-//		return ResponseEntity.ok(commentRes);
-//	}
+	@PatchMapping("/{id}")
+	public ResponseEntity<CommentRes> update(@PathVariable Long id, @Validated @RequestBody CommentUpdateReq commentUpdateReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		CommentRes commentRes = commentService.update(id, commentUpdateReq, principalDetails.getUsername());
+
+		return ResponseEntity.ok(commentRes);
+	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {

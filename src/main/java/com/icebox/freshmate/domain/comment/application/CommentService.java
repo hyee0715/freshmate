@@ -62,16 +62,18 @@ public class CommentService {
 		return CommentsRes.from(comments);
 	}
 
-//	public CommentRes update(Long commentId, CommentUpdateReq commentUpdateReq, String username) {
-//		Member member = getMemberByUsername(username);
-//		Comment comment = getCommentByIdAndMemberId(commentId, member.getId());
-//		Post post = getPostById(comment.getId());
-//
-//		Comment updateComment = CommentUpdateReq.toComment(commentUpdateReq, post, member);
-//		comment.update(updateComment);
-//
-//		return CommentRes.from(comment);
-//	}
+	public CommentRes update(Long commentId, CommentUpdateReq commentUpdateReq, String username) {
+		Member member = getMemberByUsername(username);
+		Comment comment = getCommentByIdAndMemberId(commentId, member.getId());
+		Post post = getPostById(comment.getPost().getId());
+
+		Comment updateComment = CommentUpdateReq.toComment(commentUpdateReq, post, member);
+		comment.update(updateComment);
+
+		List<ImageRes> imagesRes = getCommentImagesRes(comment);
+
+		return CommentRes.of(comment, imagesRes);
+	}
 
 	public void delete(Long commentId, String username) {
 		Member member = getMemberByUsername(username);
@@ -145,5 +147,18 @@ public class CommentService {
 			.path(imageRes.path())
 			.comment(comment)
 			.build();
+	}
+
+	private List<ImageRes> getCommentImagesRes(Comment comment) {
+		List<CommentImage> commentImages = comment.getCommentImages();
+
+		return getImagesRes(commentImages);
+	}
+
+	private List<ImageRes> getImagesRes(List<CommentImage> commentImages) {
+
+		return commentImages.stream()
+			.map(commentImage -> ImageRes.of(commentImage.getFileName(), commentImage.getPath()))
+			.toList();
 	}
 }
