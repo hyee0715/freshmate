@@ -16,13 +16,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 
 import com.icebox.freshmate.domain.comment.application.dto.request.CommentCreateReq;
 import com.icebox.freshmate.domain.comment.application.dto.request.CommentUpdateReq;
 import com.icebox.freshmate.domain.comment.application.dto.response.CommentRes;
 import com.icebox.freshmate.domain.comment.application.dto.response.CommentsRes;
 import com.icebox.freshmate.domain.comment.domain.Comment;
+import com.icebox.freshmate.domain.comment.domain.CommentImage;
+import com.icebox.freshmate.domain.comment.domain.CommentImageRepository;
 import com.icebox.freshmate.domain.comment.domain.CommentRepository;
+import com.icebox.freshmate.domain.image.application.ImageService;
+import com.icebox.freshmate.domain.image.application.dto.request.ImageUploadReq;
+import com.icebox.freshmate.domain.image.application.dto.response.ImageRes;
+import com.icebox.freshmate.domain.image.application.dto.response.ImagesRes;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
 import com.icebox.freshmate.domain.member.domain.Role;
@@ -44,9 +51,16 @@ class CommentServiceTest {
 	@Mock
 	private CommentRepository commentRepository;
 
+	@Mock
+	private CommentImageRepository commentImageRepository;
+
+	@Mock
+	private ImageService imageService;
+
 	private Member member;
 	private Post post;
 	private Comment comment;
+	private CommentImage commentImage;
 
 	@BeforeEach
 	void setUp() {
@@ -69,6 +83,18 @@ class CommentServiceTest {
 			.post(post)
 			.content("댓글 내용")
 			.build();
+
+		String imageFileName = "image.jpg";
+		String imagePath = "https://fake-image-url.com/image.jpg";
+
+		commentImage = CommentImage
+			.builder()
+			.comment(comment)
+			.fileName(imageFileName)
+			.path(imagePath)
+			.build();
+
+		comment.addCommentImage(commentImage);
 	}
 
 	@DisplayName("댓글 생성 테스트")
@@ -79,16 +105,26 @@ class CommentServiceTest {
 
 		CommentCreateReq commentCreateReq = new CommentCreateReq(postId, comment.getContent());
 
+		MockMultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", "Spring Framework".getBytes());
+		ImageUploadReq imageUploadReq = new ImageUploadReq(List.of(file));
+
+		ImageRes imageRes = new ImageRes(commentImage.getFileName(), commentImage.getPath());
+		ImagesRes imagesRes = new ImagesRes(List.of(imageRes));
+
 		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member));
 		when(postRepository.findById(anyLong())).thenReturn(Optional.of(post));
 		when(commentRepository.save(any(Comment.class))).thenReturn(comment);
+		when(commentImageRepository.save(any(CommentImage.class))).thenReturn(commentImage);
+		when(imageService.store(any(ImageUploadReq.class))).thenReturn(imagesRes);
 
 		//when
-		CommentRes commentRes = commentService.create(commentCreateReq, member.getUsername());
+		CommentRes commentRes = commentService.create(commentCreateReq, imageUploadReq, member.getUsername());
 
 		//then
 		assertThat(commentRes.memberNickName()).isEqualTo(member.getNickName());
 		assertThat(commentRes.content()).isEqualTo(comment.getContent());
+		assertThat(commentRes.images().get(0).fileName()).isEqualTo(commentImage.getFileName());
+		assertThat(commentRes.images().get(0).path()).isEqualTo(commentImage.getPath());
 	}
 
 	@DisplayName("게시글 별 모든 댓글 조회 테스트")

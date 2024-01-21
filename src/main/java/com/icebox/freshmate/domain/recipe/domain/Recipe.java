@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.recipegrocery.domain.RecipeGrocery;
+import com.icebox.freshmate.global.BaseEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -30,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Table(name = "recipes")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
-public class Recipe {
+public class Recipe extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
