@@ -68,7 +68,10 @@ public enum ErrorCode {
 	NOT_FOUND_IMAGE("I001", "이미지가 존재하지 않습니다."),
 	EMPTY_IMAGE("I002", "이미지가 비어있습니다."),
 	INVALID_IMAGE_FORMAT("I003", "지원하지 않는 이미지 파일 형식입니다."),
-	EXCESSIVE_DELETE_IMAGE_COUNT("I004", "이미지는 1개씩 삭제 가능합니다.");
+	EXCESSIVE_DELETE_IMAGE_COUNT("I004", "이미지는 1개씩 삭제 가능합니다."),
+
+	//알림
+	INVALID_NOTIFICATION_TYPE("N001", "유효하지 않은 알림 타입입니다.");
 
 	private final String code;
 	private final String message;

@@ -30,6 +30,9 @@ import com.icebox.freshmate.domain.image.application.dto.response.ImageRes;
 import com.icebox.freshmate.domain.image.application.dto.response.ImagesRes;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
+import com.icebox.freshmate.domain.notification.application.NotificationEventPublisher;
+import com.icebox.freshmate.domain.notification.application.dto.request.NotificationReq;
+import com.icebox.freshmate.domain.notification.domain.NotificationType;
 import com.icebox.freshmate.domain.post.domain.Post;
 import com.icebox.freshmate.domain.post.domain.PostRepository;
 import com.icebox.freshmate.global.error.exception.BusinessException;
@@ -49,6 +52,7 @@ public class CommentService {
 	private final CommentRepository commentRepository;
 	private final CommentImageRepository commentImageRepository;
 	private final ImageService imageService;
+	private final NotificationEventPublisher notificationEventPublisher;
 
 	public CommentRes create(CommentCreateReq commentCreateReq, ImageUploadReq imageUploadReq, String username) {
 		Member member = getMemberByUsername(username);
@@ -58,6 +62,8 @@ public class CommentService {
 
 		ImagesRes imagesRes = saveImages(comment, imageUploadReq);
 		List<ImageRes> images = getImagesRes(imagesRes);
+
+		noticeNewCommentToPostWriter(comment);
 
 		return CommentRes.of(comment, images);
 	}
@@ -224,6 +230,21 @@ public class CommentService {
 			log.warn("PATCH:WRITE:EMPTY_IMAGE");
 
 			throw new BusinessException(EMPTY_IMAGE);
+		}
+	}
+
+	private NotificationReq getCommentNotificationReq(Member member, Comment comment) {
+
+		return new NotificationReq(member.getId(), NotificationType.COMMENT.name(), comment.getContent(), "");
+	}
+
+	private void noticeNewCommentToPostWriter(Comment comment) {
+		Member postWriter = comment.getPost().getMember();
+		Member commentWriter = comment.getMember();
+
+		if (!Objects.equals(postWriter.getId(), commentWriter.getId())) {
+			NotificationReq commentNotificationReq = getCommentNotificationReq(postWriter, comment);
+			notificationEventPublisher.publishEvent(commentNotificationReq);
 		}
 	}
 }
