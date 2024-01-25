@@ -235,7 +235,7 @@ public class CommentService {
 
 	private NotificationReq getCommentNotificationReq(Member member, Comment comment) {
 
-		return new NotificationReq(member.getId(), NotificationType.COMMENT.name(), "회원님의 게시글에 댓글이 달렸습니다.", comment.getContent(), "");
+		return new NotificationReq(member.getId(), NotificationType.COMMENT.name(), comment.getContent(), "");
 	}
 
 	private void noticeNewCommentToPostWriter(Comment comment) {

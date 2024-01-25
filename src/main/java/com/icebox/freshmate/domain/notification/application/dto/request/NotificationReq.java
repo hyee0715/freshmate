@@ -9,7 +9,6 @@ import com.icebox.freshmate.domain.notification.domain.RelatedUrl;
 public record NotificationReq(
 	Long receiverId,
 	String notificationType,
-	String notice,
 	String notificationContent,
 	String relatedUrl
 ) {
