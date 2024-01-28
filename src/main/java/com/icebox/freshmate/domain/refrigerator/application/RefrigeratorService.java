@@ -14,6 +14,7 @@ import com.icebox.freshmate.domain.refrigerator.domain.Refrigerator;
 import com.icebox.freshmate.domain.refrigerator.domain.RefrigeratorRepository;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
+import com.icebox.freshmate.domain.refrigerator.domain.RefrigeratorSortType;
 import com.icebox.freshmate.global.error.ErrorCode;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
 
@@ -49,16 +50,17 @@ public class RefrigeratorService {
 	public RefrigeratorsRes findAll(String sortBy, Pageable pageable, String username) {
 		Member member = getMemberByUsername(username);
 
+		RefrigeratorSortType refrigeratorSortType = RefrigeratorSortType.findRefrigeratorSortType(sortBy);
 		Slice<Refrigerator> refrigerators = null;
 
-		switch (sortBy) {
-			case "nameAsc" ->
+		switch (refrigeratorSortType) {
+			case NAME_ASC ->
 				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByNameAsc(member.getId(), pageable);
-			case "nameDesc" ->
+			case NAME_DESC ->
 				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByNameDesc(member.getId(), pageable);
-			case "updatedAtAsc" ->
+			case UPDATED_AT_ASC ->
 				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByUpdatedAtAsc(member.getId(), pageable);
-			case "updatedAtDesc" ->
+			case UPDATED_AT_DESC ->
 				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByUpdatedAtDesc(member.getId(), pageable);
 		}
 
