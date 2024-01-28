@@ -24,7 +24,6 @@ public record PostRes(
 ) {
 
 	public static PostRes of(Post post, List<RecipeGroceryRes> recipeGroceriesRes, List<ImageRes> imagesRes) {
-
 		Long recipeId = getRecipeId(post.getRecipe());
 		Long recipeWriterId = getRecipeWriterId(post.getRecipe());
 		String recipeWriterNickname = getRecipeWriterNickName(post.getRecipe());

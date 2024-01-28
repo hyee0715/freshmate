@@ -62,6 +62,7 @@ public class GrocerySchedulingService {
 	}
 
 	private Map<GroceryExpirationType, Consumer<LocalDate>> initializeExpirationTypeStrategies() {
+
 		return Map.of(
 			GroceryExpirationType.NOT_EXPIRED, this::handleNotExpired,
 			GroceryExpirationType.EXPIRED, this::handleExpired
@@ -118,6 +119,7 @@ public class GrocerySchedulingService {
 	}
 
 	private Map<Predicate<Integer>, BiConsumer<Integer, Long>> initializeExpirationStrategies() {
+
 		return Map.of(
 			days -> days < 0, this::notifyNotExpiredGroceries,
 			days -> days == 0, this::notifyTodayExpirationGroceries,

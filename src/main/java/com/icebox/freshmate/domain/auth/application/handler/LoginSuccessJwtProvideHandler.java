@@ -38,9 +38,10 @@ public class LoginSuccessJwtProvideHandler extends SimpleUrlAuthenticationSucces
 
 		jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
 
-		memberRepository.findByUsername(username).ifPresent(
-			member -> member.updateRefreshToken(refreshToken)
-		);
+		memberRepository.findByUsername(username)
+			.ifPresent(
+				member -> member.updateRefreshToken(refreshToken)
+			);
 
 		MemberAuthRes memberAuthRes = new MemberAuthRes(accessToken, refreshToken);
 
@@ -52,8 +53,9 @@ public class LoginSuccessJwtProvideHandler extends SimpleUrlAuthenticationSucces
 		log.info("Refresh Token을 발급합니다. Refresh Token: {}", refreshToken);
 	}
 
-	private String extractUsername(Authentication authentication){
+	private String extractUsername(Authentication authentication) {
 		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
 		return userDetails.getUsername();
 	}
 }

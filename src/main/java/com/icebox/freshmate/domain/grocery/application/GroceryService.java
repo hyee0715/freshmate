@@ -138,33 +138,41 @@ public class GroceryService {
 	}
 
 	private Grocery getGroceryByIdAndMemberId(Long groceryId, Long memberId) {
+
 		return groceryRepository.findByIdAndMemberId(groceryId, memberId)
 			.orElseThrow(() -> {
-				log.warn("GET:READ:NOT_FOUND_STORAGE_BY_ID_AND_MEMBER_ID : groceryId = {}, memberId = {}", groceryId, memberId);
+				log.warn("GET:READ:NOT_FOUND_GROCERY_BY_ID_AND_MEMBER_ID : groceryId = {}, memberId = {}", groceryId, memberId);
+
 				return new EntityNotFoundException(NOT_FOUND_GROCERY);
 			});
 	}
 
 	private Grocery getGroceryById(Long id) {
+
 		return groceryRepository.findById(id)
 			.orElseThrow(() -> {
-				log.warn("GET:READ:NOT_FOUND_STORAGE_BY_ID : {}", id);
+				log.warn("GET:READ:NOT_FOUND_GROCERY_BY_ID : {}", id);
+
 				return new EntityNotFoundException(NOT_FOUND_GROCERY);
 			});
 	}
 
 	private Storage getStorageByIdAndMemberId(Long storageId, Long memberId) {
+
 		return storageRepository.findByIdAndMemberId(storageId, memberId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_STORAGE_BY_ID_AND_MEMBER_ID : storageId = {}, memberId = {}", storageId, memberId);
+
 				return new EntityNotFoundException(NOT_FOUND_STORAGE);
 			});
 	}
 
 	private Member getMemberByUsername(String username) {
+
 		return memberRepository.findByUsername(username)
 			.orElseThrow(() -> {
-				log.warn("GET:READ:NOT_FOUND_STORE_BY_MEMBER_USERNAME : {}", username);
+				log.warn("GET:READ:NOT_FOUND_MEMBER_BY_MEMBER_USERNAME : {}", username);
+
 				return new EntityNotFoundException(NOT_FOUND_MEMBER);
 			});
 	}

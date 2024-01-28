@@ -15,6 +15,7 @@ public record RecipeBucketsRes(
 		List<RecipeBucketRes> recipeBucketsRes = recipeBuckets.stream()
 			.map(recipeBucket -> {
 				List<RecipeGroceryRes> recipeGroceryRes = getRecipeGroceryResList(recipeBucket.getRecipe());
+
 				return RecipeBucketRes.of(recipeBucket, recipeGroceryRes);
 			})
 			.toList();

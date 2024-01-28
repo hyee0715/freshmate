@@ -146,25 +146,31 @@ public class CommentService {
 	}
 
 	private Comment getCommentByIdAndMemberId(Long commentId, Long memberId) {
+
 		return commentRepository.findByIdAndMemberId(commentId, memberId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_COMMENT_BY_ID_AND_MEMBER_ID : commentId = {}, memberId = {}", commentId, memberId);
+
 				return new EntityNotFoundException(NOT_FOUND_COMMENT);
 			});
 	}
 
 	private Post getPostById(Long postId) {
+
 		return postRepository.findById(postId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_POST_BY_ID : {}", postId);
+
 				return new EntityNotFoundException(NOT_FOUND_POST);
 			});
 	}
 
 	private Member getMemberByUsername(String username) {
+
 		return memberRepository.findByUsername(username)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_MEMBER_BY_MEMBER_USERNAME : {}", username);
+
 				return new EntityNotFoundException(NOT_FOUND_MEMBER);
 			});
 	}

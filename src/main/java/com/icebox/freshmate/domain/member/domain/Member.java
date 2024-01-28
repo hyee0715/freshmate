@@ -79,6 +79,7 @@ public class Member extends BaseEntity {
 	}
 
 	public boolean matchPassword(PasswordEncoder passwordEncoder, String checkPassword){
+
 		return passwordEncoder.matches(checkPassword, getPassword());
 	}
 

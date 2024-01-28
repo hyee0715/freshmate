@@ -1,5 +1,7 @@
 package com.icebox.freshmate.domain.auth.application;
 
+import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +17,9 @@ import com.icebox.freshmate.global.error.exception.BusinessException;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Transactional
 @Service
 @RequiredArgsConstructor
@@ -38,8 +42,7 @@ public class AuthService {
 	}
 
 	public MemberAuthRes login(MemberLoginReq memberLoginReq) {
-		Member member = memberRepository.findByUsername(memberLoginReq.username())
-			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER));
+		Member member = getMemberByUsername(memberLoginReq.username());
 
 		checkLoginPassword(member, memberLoginReq.password());
 
@@ -49,10 +52,10 @@ public class AuthService {
 	}
 
 	public void withdraw(String checkPassword, String username) {
-		Member member = memberRepository.findByUsername(username)
-			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER));
+		Member member = getMemberByUsername(username);
 
-		if(!member.matchPassword(passwordEncoder, checkPassword) ) {
+		if (!member.matchPassword(passwordEncoder, checkPassword)) {
+
 			throw new BusinessException(ErrorCode.WRONG_PASSWORD);
 		}
 
@@ -60,14 +63,15 @@ public class AuthService {
 	}
 
 	public void logout(String username) {
-		Member member = memberRepository.findByUsername(username)
-			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER));
+		Member member = getMemberByUsername(username);
 
 		member.destroyRefreshToken();
 	}
 
 	private void checkLoginPassword(Member member, String password) {
 		if (!member.matchPassword(passwordEncoder, password)) {
+			log.warn("LOGIN_FAILURE : memberId = {}", member.getId());
+
 			throw new BusinessException(ErrorCode.LOGIN_FAILURE);
 		}
 	}
@@ -81,8 +85,20 @@ public class AuthService {
 	}
 
 	private void checkDuplicatedUsername(String username) {
-		if(memberRepository.existsByUsername(username)) {
+		if (memberRepository.existsByUsername(username)) {
+			log.warn("ALREADY_EXIST_USERNAME : {}", username);
+
 			throw new BusinessException(ErrorCode.ALREADY_EXIST_USERNAME);
 		}
+	}
+
+	private Member getMemberByUsername(String username) {
+
+		return memberRepository.findByUsername(username)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_MEMBER_BY_MEMBER_USERNAME : {}", username);
+
+				return new EntityNotFoundException(NOT_FOUND_MEMBER);
+			});
 	}
 }

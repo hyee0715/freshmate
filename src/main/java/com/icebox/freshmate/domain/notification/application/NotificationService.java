@@ -74,9 +74,11 @@ public class NotificationService {
 	}
 
 	private Member getMemberById(Long memberId) {
+
 		return memberRepository.findById(memberId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_MEMBER_BY_ID : {}", memberId);
+
 				return new EntityNotFoundException(NOT_FOUND_MEMBER);
 			});
 	}

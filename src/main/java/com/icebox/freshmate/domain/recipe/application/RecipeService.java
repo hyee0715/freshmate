@@ -250,6 +250,7 @@ public class RecipeService {
 	}
 
 	private Recipe getRecipeByIdAndOwnerId(Long recipeId, Long ownerId) {
+
 		return recipeRepository.findByIdAndOwnerId(recipeId, ownerId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_RECIPE_BY_ID_AND_OWNER_ID : recipeId = {}, ownerId = {}", recipeId, ownerId);
@@ -259,6 +260,7 @@ public class RecipeService {
 	}
 
 	private Recipe getRecipeById(Long recipeId) {
+
 		return recipeRepository.findById(recipeId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_RECIPE_BY_ID : {}", recipeId);
@@ -268,6 +270,7 @@ public class RecipeService {
 	}
 
 	private Member getMemberByUsername(String username) {
+
 		return memberRepository.findByUsername(username)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_MEMBER_BY_MEMBER_USERNAME : {}", username);

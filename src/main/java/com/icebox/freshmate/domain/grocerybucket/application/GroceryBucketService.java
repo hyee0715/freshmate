@@ -75,7 +75,8 @@ public class GroceryBucketService {
 
 		return memberRepository.findByUsername(username)
 			.orElseThrow(() -> {
-				log.warn("GET:READ:NOT_FOUND_STORE_BY_MEMBER_USERNAME : {}", username);
+				log.warn("GET:READ:NOT_FOUND_MEMBER_BY_MEMBER_USERNAME : {}", username);
+
 				return new EntityNotFoundException(NOT_FOUND_MEMBER);
 			});
 	}
@@ -85,6 +86,7 @@ public class GroceryBucketService {
 		return groceryBucketRepository.findById(groceryId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_GROCERY_BUCKET_BY_ID : {}", groceryId);
+
 				return new EntityNotFoundException(NOT_FOUND_GROCERY_BUCKET);
 			});
 	}
@@ -94,6 +96,7 @@ public class GroceryBucketService {
 		return groceryBucketRepository.findByIdAndMemberId(groceryId, memberId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_GROCERY_BUCKET_BY_ID_AND_MEMBER_ID : groceryId = {}, memberId = {}", groceryId, memberId);
+
 				return new EntityNotFoundException(NOT_FOUND_GROCERY_BUCKET);
 			});
 	}

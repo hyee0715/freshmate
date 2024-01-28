@@ -85,6 +85,7 @@ public class LocalImageService implements ImageService {
 
 			return fullPath;
 		} catch (IOException e) {
+
 			throw new RuntimeException(e);
 		}
 	}
@@ -109,6 +110,7 @@ public class LocalImageService implements ImageService {
 
 			if (!created) {
 				log.info("디렉토리를 생성하는 데 실패했습니다. directory path : {}",directory.getAbsolutePath());
+
 				throw new ImageIOException(INTERNAL_SERVER_ERROR);
 			}
 		}
@@ -135,6 +137,7 @@ public class LocalImageService implements ImageService {
 
 		if (!isExtensionValid) {
 			log.warn("INVALID_IMAGE_FORMAT : file name = {}", file.getName());
+
 			throw new InvalidFileTypeException(INVALID_IMAGE_FORMAT);
 		}
 	}
@@ -142,12 +145,14 @@ public class LocalImageService implements ImageService {
 	private void validateFileIsEmpty(MultipartFile file) {
 		if (file.isEmpty()) {
 			log.warn("EMPTY_IMAGE : {}", file.getOriginalFilename());
+
 			throw new InvalidValueException(EMPTY_IMAGE);
 		}
 	}
 
 	private String getExtension(String fileName) {
 		int pos = fileName.lastIndexOf(".");
+
 		return fileName.substring(pos + 1);
 	}
 }

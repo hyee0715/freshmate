@@ -40,8 +40,7 @@ public class RefrigeratorService {
 
 	@Transactional(readOnly = true)
 	public RefrigeratorRes findById(Long id) {
-		Refrigerator refrigerator = refrigeratorRepository.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_REFRIGERATOR));
+		Refrigerator refrigerator = getRefrigeratorById(id);
 
 		return RefrigeratorRes.from(refrigerator);
 	}
@@ -58,8 +57,7 @@ public class RefrigeratorService {
 	public RefrigeratorRes update(Long id, RefrigeratorReq refrigeratorReq, String username) {
 		Member member = getMemberByUsername(username);
 
-		Refrigerator refrigerator = refrigeratorRepository.findByIdAndMemberId(id, member.getId())
-			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_REFRIGERATOR));
+		Refrigerator refrigerator = getRefrigeratorByIdAndMemberId(id, member.getId());
 
 		Refrigerator updatedRefrigerator = RefrigeratorReq.toRefrigerator(refrigeratorReq, member);
 
@@ -71,17 +69,38 @@ public class RefrigeratorService {
 	public void delete(Long id, String username) {
 		Member member = getMemberByUsername(username);
 
-		Refrigerator refrigerator = refrigeratorRepository.findByIdAndMemberId(id, member.getId())
-			.orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_FOUND_REFRIGERATOR));
+		Refrigerator refrigerator = getRefrigeratorByIdAndMemberId(id, member.getId());
 
 		refrigeratorRepository.delete(refrigerator);
 	}
 
 	private Member getMemberByUsername(String username) {
+
 		return memberRepository.findByUsername(username)
 			.orElseThrow(() -> {
-				log.warn("GET:READ:NOT_FOUND_STORE_BY_MEMBER_USERNAME : {}", username);
+				log.warn("GET:READ:NOT_FOUND_MEMBER_BY_MEMBER_USERNAME : {}", username);
+
 				return new EntityNotFoundException(NOT_FOUND_MEMBER);
+			});
+	}
+
+	private Refrigerator getRefrigeratorById(Long refrigeratorId) {
+
+		return refrigeratorRepository.findById(refrigeratorId)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_REFRIGERATOR_BY_ID: {}", refrigeratorId);
+
+				return new EntityNotFoundException(ErrorCode.NOT_FOUND_REFRIGERATOR);
+			});
+	}
+
+	private Refrigerator getRefrigeratorByIdAndMemberId(Long refrigeratorId, Long memberId) {
+
+		return refrigeratorRepository.findByIdAndMemberId(refrigeratorId, memberId)
+			.orElseThrow(() -> {
+				log.warn("GET:READ:NOT_FOUND_REFRIGERATOR_BY_ID_AND_MEMBER_ID: refrigeratorId = {}, memberId = {}", refrigeratorId, memberId);
+
+				return new EntityNotFoundException(ErrorCode.NOT_FOUND_REFRIGERATOR);
 			});
 	}
 }
