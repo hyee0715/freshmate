@@ -2,8 +2,12 @@ package com.icebox.freshmate.domain.refrigerator.application;
 
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +18,7 @@ import com.icebox.freshmate.domain.refrigerator.domain.Refrigerator;
 import com.icebox.freshmate.domain.refrigerator.domain.RefrigeratorRepository;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
+import com.icebox.freshmate.domain.refrigerator.domain.RefrigeratorSortType;
 import com.icebox.freshmate.global.error.ErrorCode;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
 
@@ -46,10 +51,24 @@ public class RefrigeratorService {
 	}
 
 	@Transactional(readOnly = true)
-	public RefrigeratorsRes findAll(String username) {
+	public RefrigeratorsRes findAll(String sortBy, Pageable pageable, String lastPageName, String lastPageUpdatedAt, String username) {
 		Member member = getMemberByUsername(username);
 
-		List<Refrigerator> refrigerators = refrigeratorRepository.findAllByMemberId(member.getId());
+		LocalDateTime LastUpdatedAt = getLastPageUpdatedAt(lastPageUpdatedAt);
+
+		RefrigeratorSortType refrigeratorSortType = RefrigeratorSortType.findRefrigeratorSortType(sortBy);
+		Slice<Refrigerator> refrigerators = null;
+
+		switch (refrigeratorSortType) {
+			case NAME_ASC ->
+				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByNameAsc(member.getId(), pageable, lastPageName, LastUpdatedAt);
+			case NAME_DESC ->
+				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByNameDesc(member.getId(), pageable);
+			case UPDATED_AT_ASC ->
+				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByUpdatedAtAsc(member.getId(), pageable);
+			case UPDATED_AT_DESC ->
+				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByUpdatedAtDesc(member.getId(), pageable);
+		}
 
 		return RefrigeratorsRes.from(refrigerators);
 	}
@@ -102,5 +121,12 @@ public class RefrigeratorService {
 
 				return new EntityNotFoundException(ErrorCode.NOT_FOUND_REFRIGERATOR);
 			});
+	}
+
+	private LocalDateTime getLastPageUpdatedAt(String lastPageUpdatedAt) {
+
+		return Optional.ofNullable(lastPageUpdatedAt)
+			.map(date -> LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")))
+			.orElse(null);
 	}
 }

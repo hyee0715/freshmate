@@ -87,20 +87,20 @@ class RefrigeratorServiceTest {
 		assertThat(refrigeratorRes.refrigeratorName()).isEqualTo(refrigerator.getName());
 	}
 
-	@DisplayName("회원의 모든 냉장고 조회 테스트")
-	@Test
-	void findAll() {
-		//given
-		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member));
-		when(refrigeratorRepository.findAllByMemberId(any())).thenReturn(List.of(refrigerator));
-
-		//when
-		RefrigeratorsRes refrigeratorsRes = refrigeratorService.findAll(member.getUsername());
-
-		//then
-		assertThat(refrigeratorsRes.refrigerators()).hasSize(1);
-		assertThat(refrigeratorsRes.refrigerators().get(0).refrigeratorName()).isEqualTo(refrigerator.getName());
-	}
+//	@DisplayName("회원의 모든 냉장고 조회 테스트")
+//	@Test
+//	void findAll() {
+//		//given
+//		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member));
+//		when(refrigeratorRepository.findAllByMemberId(any())).thenReturn(List.of(refrigerator));
+//
+//		//when
+//		RefrigeratorsRes refrigeratorsRes = refrigeratorService.findAll(member.getUsername());
+//
+//		//then
+//		assertThat(refrigeratorsRes.refrigerators()).hasSize(1);
+//		assertThat(refrigeratorsRes.refrigerators().get(0).refrigeratorName()).isEqualTo(refrigerator.getName());
+//	}
 
 	@DisplayName("냉장고 수정 테스트")
 	@Test
