@@ -2,8 +2,8 @@ package com.icebox.freshmate.domain.refrigerator.application;
 
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 
-import java.util.List;
-
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,10 +46,21 @@ public class RefrigeratorService {
 	}
 
 	@Transactional(readOnly = true)
-	public RefrigeratorsRes findAll(String username) {
+	public RefrigeratorsRes findAll(String sortBy, Pageable pageable, String username) {
 		Member member = getMemberByUsername(username);
 
-		List<Refrigerator> refrigerators = refrigeratorRepository.findAllByMemberId(member.getId());
+		Slice<Refrigerator> refrigerators = null;
+
+		switch (sortBy) {
+			case "nameAsc" ->
+				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByNameAsc(member.getId(), pageable);
+			case "nameDesc" ->
+				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByNameDesc(member.getId(), pageable);
+			case "updatedAtAsc" ->
+				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByUpdatedAtAsc(member.getId(), pageable);
+			case "updatedAtDesc" ->
+				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByUpdatedAtDesc(member.getId(), pageable);
+		}
 
 		return RefrigeratorsRes.from(refrigerators);
 	}

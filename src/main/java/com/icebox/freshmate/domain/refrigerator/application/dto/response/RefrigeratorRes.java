@@ -1,5 +1,7 @@
 package com.icebox.freshmate.domain.refrigerator.application.dto.response;
 
+import java.time.LocalDateTime;
+
 import com.icebox.freshmate.domain.refrigerator.domain.Refrigerator;
 
 public record RefrigeratorRes(
@@ -7,7 +9,9 @@ public record RefrigeratorRes(
 	String refrigeratorName,
 	Long memberId,
 	String memberUsername,
-	String memberNickName
+	String memberNickName,
+	LocalDateTime createdAt,
+	LocalDateTime updatedAt
 ) {
 
 	public static RefrigeratorRes from(Refrigerator refrigerator) {
@@ -17,7 +21,9 @@ public record RefrigeratorRes(
 			refrigerator.getName(),
 			refrigerator.getMember().getId(),
 			refrigerator.getMember().getUsername(),
-			refrigerator.getMember().getNickName()
+			refrigerator.getMember().getNickName(),
+			refrigerator.getCreatedAt(),
+			refrigerator.getUpdatedAt()
 		);
 	}
 }
