@@ -49,13 +49,15 @@ public class RefrigeratorController {
 
 	@GetMapping
 	public ResponseEntity<RefrigeratorsRes> findAll(@RequestParam(value = "sort-by", required = false, defaultValue = "updatedAt") String sortBy,
+													@RequestParam(value= "last-page-name", required = false) String lastPageName,
+													@RequestParam(value = "last-page-updated-at", required = false) String lastPageUpdatedAt,
 													@RequestParam(required = false, defaultValue = "0") int page,
 													@RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) int size,
 													@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		page = Math.max(page - 1, 0);
 		PageRequest pageable = PageRequest.of(page, size);
 
-		RefrigeratorsRes refrigeratorsRes = refrigeratorService.findAll(sortBy, pageable, principalDetails.getUsername());
+		RefrigeratorsRes refrigeratorsRes = refrigeratorService.findAll(sortBy, pageable, lastPageName, lastPageUpdatedAt, principalDetails.getUsername());
 
 		return ResponseEntity.ok(refrigeratorsRes);
 	}

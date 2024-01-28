@@ -1,11 +1,13 @@
 package com.icebox.freshmate.domain.refrigerator.domain;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -17,10 +19,12 @@ public class RefrigeratorRepositoryImpl implements RefrigeratorRepositoryCustom 
 	private QRefrigerator refrigerator = QRefrigerator.refrigerator;
 
 	@Override
-	public Slice<Refrigerator> findAllByMemberIdOrderByNameAsc(Long memberId, Pageable pageable) {
+	public Slice<Refrigerator> findAllByMemberIdOrderByNameAsc(Long memberId, Pageable pageable, String name, LocalDateTime updatedAt) {
 		List<Refrigerator> refrigerators = queryFactory.select(refrigerator)
 			.from(refrigerator)
-			.where(refrigerator.member.id.eq(memberId))
+			.where(
+				refrigerator.member.id.eq(memberId),
+				liRefrigeratorNameAndUpdatedAt(name, updatedAt))
 			.orderBy(refrigerator.name.asc(), refrigerator.updatedAt.desc())
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize() + 1)
@@ -77,5 +81,14 @@ public class RefrigeratorRepositoryImpl implements RefrigeratorRepositoryCustom 
 		}
 
 		return new SliceImpl<>(refrigerators, pageable, hasNext);
+	}
+
+	private BooleanExpression liRefrigeratorNameAndUpdatedAt(String name, LocalDateTime updatedAt) {
+		if (name == null || updatedAt == null) {
+			return null;
+		}
+
+		return refrigerator.name.gt(name)
+			.and(refrigerator.updatedAt.gt(updatedAt));
 	}
 }
