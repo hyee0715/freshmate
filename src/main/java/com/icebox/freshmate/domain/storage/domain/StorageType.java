@@ -21,6 +21,7 @@ public enum StorageType {
 			.findAny()
 			.orElseThrow(() -> {
 				log.error("INVALID_STORAGE_TYPE : {}", storageType);
+
 				return new BusinessException(ErrorCode.INVALID_STORAGE_TYPE);
 			});
 	}

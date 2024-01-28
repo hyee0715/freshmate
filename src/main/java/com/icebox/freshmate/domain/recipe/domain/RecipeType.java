@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Getter
 public enum RecipeType {
+
 	SCRAPED("Scraped Recipe"),
 	WRITTEN("Written Recipe");
 

@@ -80,33 +80,41 @@ public class StorageService {
 	}
 
 	private Storage getStorageByIdAndMemberId(Long storageId, Long memberId) {
+
 		return storageRepository.findByIdAndMemberId(storageId, memberId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_STORAGE_BY_ID_AND_MEMBER_ID : storageId = {}, memberId = {}", storageId, memberId);
+
 				return new EntityNotFoundException(NOT_FOUND_STORAGE);
 			});
 	}
 
 	private Storage getStorageById(Long storageId) {
+
 		return storageRepository.findById(storageId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_STORAGE_BY_ID : {}", storageId);
+
 				return new EntityNotFoundException(NOT_FOUND_STORAGE);
 			});
 	}
 
 	private Refrigerator getRefrigerator(Long refrigeratorId, Long memberId) {
+
 		return refrigeratorRepository.findByIdAndMemberId(refrigeratorId, memberId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_REFRIGERATOR_BY_ID_AND_MEMBER_ID : refrigeratorId = {}, memberId = {}", refrigeratorId, memberId);
+
 				return new EntityNotFoundException(NOT_FOUND_REFRIGERATOR);
 			});
 	}
 
 	private Member getMemberByUsername(String username) {
+
 		return memberRepository.findByUsername(username)
 			.orElseThrow(() -> {
-				log.warn("GET:READ:NOT_FOUND_STORE_BY_MEMBER_USERNAME : {}", username);
+				log.warn("GET:READ:NOT_FOUND_MEMBER_BY_MEMBER_USERNAME : {}", username);
+
 				return new EntityNotFoundException(NOT_FOUND_MEMBER);
 			});
 	}

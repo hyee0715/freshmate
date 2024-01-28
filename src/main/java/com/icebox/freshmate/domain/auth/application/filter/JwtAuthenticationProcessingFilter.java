@@ -38,6 +38,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 		if (request.getRequestURI().equals(LOGIN_URL) || request.getRequestURI().equals(REISSUE_TOKEN)) {
 			filterChain.doFilter(request, response);
+
 			return;
 		}
 
@@ -45,15 +46,18 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 			.extractRefreshToken(request)
 			.filter(token -> {
 				try {
+
 					return jwtService.isTokenValid(response, token);
 				} catch (IOException e) {
+
 					throw new RuntimeException(e);
 				}
 			})
 			.orElse(null);
 
-		if(refreshToken != null){
+		if (refreshToken != null) {
 			checkRefreshTokenAndReIssueAccessToken(response, refreshToken);
+
 			return;
 		}
 
@@ -63,8 +67,10 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 	private void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 		jwtService.extractAccessToken(request).filter(token -> {
 			try {
+
 				return jwtService.isTokenValid(response, token);
 			} catch (IOException e) {
+
 				throw new RuntimeException(e);
 			}
 		}).ifPresent(
@@ -75,7 +81,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 			)
 		);
 
-		filterChain.doFilter(request,response);
+		filterChain.doFilter(request, response);
 	}
 
 	private void saveAuthentication(Member member) {
@@ -88,11 +94,12 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 	}
 
 	private void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response, String refreshToken) {
-		memberRepository.findByRefreshToken(refreshToken).ifPresent(
-			member -> {
-				String accessToken = jwtService.createAccessToken(member.getUsername());
-				jwtService.sendAccessToken(response, accessToken);
-			}
-		);
+
+		memberRepository.findByRefreshToken(refreshToken)
+			.ifPresent(member -> {
+					String accessToken = jwtService.createAccessToken(member.getUsername());
+					jwtService.sendAccessToken(response, accessToken);
+				}
+			);
 	}
 }

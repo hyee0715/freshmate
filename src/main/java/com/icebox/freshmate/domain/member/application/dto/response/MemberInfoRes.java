@@ -11,6 +11,7 @@ public record MemberInfoRes(
 ) {
 
 	public static MemberInfoRes from(Member member) {
+
 		return new MemberInfoRes(
 			member.getId(),
 			member.getUsername(),

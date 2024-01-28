@@ -87,6 +87,7 @@ public class RecipeBucketService {
 		return recipeBucketRepository.findByIdAndMemberId(recipeBucketId, memberId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_RECIPE_BUCKET_BY_ID_AND_MEMBER_ID : recipeBucketId = {}, memberId = {}", recipeBucketId, memberId);
+
 				return new EntityNotFoundException(NOT_FOUND_RECIPE_BUCKET);
 			});
 	}
@@ -96,6 +97,7 @@ public class RecipeBucketService {
 		return recipeBucketRepository.findById(recipeBucketId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_RECIPE_BUCKET_BY_ID : {}", recipeBucketId);
+
 				return new EntityNotFoundException(NOT_FOUND_RECIPE_BUCKET);
 			});
 	}
@@ -105,6 +107,7 @@ public class RecipeBucketService {
 		return memberRepository.findByUsername(username)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_MEMBER_BY_MEMBER_USERNAME : {}", username);
+
 				return new EntityNotFoundException(NOT_FOUND_MEMBER);
 			});
 	}
@@ -114,6 +117,7 @@ public class RecipeBucketService {
 		return recipeRepository.findById(recipeId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_RECIPE_BY_ID : {}", recipeId);
+
 				return new EntityNotFoundException(NOT_FOUND_RECIPE);
 			});
 	}
@@ -129,6 +133,7 @@ public class RecipeBucketService {
 	private void validateRecipeOwner(Recipe recipe, Member member) {
 		if (!Objects.equals(recipe.getOwner().getId(), member.getId())) {
 			log.warn("RECIPE_OWNER_MISMATCH_TO_CREATE_RECIPE_BUCKET : recipeId = {}, recipeOwnerId = {}, memberId = {}", recipe.getId(), recipe.getOwner().getId(), member.getId());
+
 			throw new BusinessException(RECIPE_OWNER_MISMATCH_TO_CREATE_RECIPE_BUCKET);
 		}
 	}
@@ -136,6 +141,7 @@ public class RecipeBucketService {
 	private void validateDuplicatedRecipeBucket(Recipe recipe) {
 		if (recipeBucketRepository.existsByRecipeId(recipe.getId())) {
 			log.warn("DUPLICATED_RECIPE_BUCKET : recipeId = {}, recipeOwnerId = {}", recipe.getId(), recipe.getOwner().getId());
+
 			throw new BusinessException(DUPLICATED_RECIPE_BUCKET);
 		}
 	}

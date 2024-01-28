@@ -94,6 +94,7 @@ public class Grocery extends BaseEntity {
 	}
 
 	public int calculateExpirationDateFromCurrentDate(LocalDate currentDate) {
+
 		return (int) ChronoUnit.DAYS.between(this.expirationDate, currentDate);
 	}
 

@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Getter
 public enum GroceryType {
+
 	GRAINS("곡물류"),
 	VEGETABLES("채소류"),
 	FRUITS("과일류"),
@@ -36,6 +37,7 @@ public enum GroceryType {
 			.findAny()
 			.orElseThrow(() -> {
 				log.error("INVALID_GROCERY_TYPE : {}", groceryType);
+
 				return new BusinessException(ErrorCode.INVALID_GROCERY_TYPE);
 			});
 	}

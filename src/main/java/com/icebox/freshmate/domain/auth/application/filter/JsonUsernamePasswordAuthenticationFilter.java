@@ -23,8 +23,8 @@ public class JsonUsernamePasswordAuthenticationFilter extends AbstractAuthentica
 	private static final String DEFAULT_LOGIN_REQUEST_URL = "/api/auth/login";
 	private static final String HTTP_METHOD = "POST";
 	private static final String CONTENT_TYPE = "application/json";
-	private static final String USERNAME_KEY="username";
-	private static final String PASSWORD_KEY="password";
+	private static final String USERNAME_KEY = "username";
+	private static final String PASSWORD_KEY = "password";
 
 	private final ObjectMapper objectMapper;
 
@@ -32,13 +32,13 @@ public class JsonUsernamePasswordAuthenticationFilter extends AbstractAuthentica
 
 	public JsonUsernamePasswordAuthenticationFilter(ObjectMapper objectMapper) {
 		super(DEFAULT_LOGIN_PATH_REQUEST_MATCHER);
-
 		this.objectMapper = objectMapper;
 	}
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
-		if(request.getContentType() == null || !request.getContentType().equals(CONTENT_TYPE)  ) {
+		if (request.getContentType() == null || !request.getContentType().equals(CONTENT_TYPE)) {
+
 			throw new AuthenticationServiceException("Authentication Content-Type not supported: " + request.getContentType());
 		}
 

@@ -29,6 +29,7 @@ public record PostsRes(
 	}
 
 	private static List<RecipeGroceryRes> getRecipeGroceryResList(Recipe recipe) {
+
 		return Optional.ofNullable(recipe)
 			.map(Recipe::getRecipeGroceries)
 			.orElse(Collections.emptyList())

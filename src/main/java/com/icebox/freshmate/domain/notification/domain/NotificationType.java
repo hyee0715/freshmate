@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public enum NotificationType {
+
 	EXPIRATION, COMMENT;
 
 	public static NotificationType findNotificationType(String notificationType) {

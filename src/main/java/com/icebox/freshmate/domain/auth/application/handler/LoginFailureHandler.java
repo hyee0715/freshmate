@@ -48,14 +48,13 @@ public class LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 		writeErrorResponse(response, errorCode, HttpServletResponse.SC_BAD_REQUEST);
 	}
 
-	private void writeErrorResponse(HttpServletResponse response, ErrorCode errorCode, int statusCode) throws
-		IOException {
+	private void writeErrorResponse(HttpServletResponse response, ErrorCode errorCode, int statusCode) throws IOException {
 		String errorResponseJsonFormat = getErrorResponseJsonFormat(errorCode);
+
 		writeToHttpServletResponse(response, statusCode, errorResponseJsonFormat);
 	}
 
-	private void writeToHttpServletResponse(HttpServletResponse response, int statusCode, String errorMessage) throws
-		IOException {
+	private void writeToHttpServletResponse(HttpServletResponse response, int statusCode, String errorMessage) throws IOException {
 		response.setStatus(statusCode);
 		response.setContentType("application/json;charset=UTF-8");
 		response.getWriter().write(errorMessage);
@@ -66,6 +65,7 @@ public class LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 	private String getErrorResponseJsonFormat(ErrorCode errorCode) throws JsonProcessingException {
 		ErrorResponse errorResponse = ErrorResponse.of(errorCode);
 		ObjectMapper objectMapper = new ObjectMapper();
+
 		return objectMapper.writeValueAsString(errorResponse);
 	}
 }

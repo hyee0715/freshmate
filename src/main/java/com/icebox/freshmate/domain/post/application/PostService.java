@@ -157,7 +157,6 @@ public class PostService {
 			});
 	}
 
-
 	private void validateDeleteImageCount(List<String> imagePaths) {
 		if (imagePaths.size() != 1) {
 			log.warn("DELETE:WRITE:EXCESSIVE_DELETE_IMAGE_COUNT : requested image path count = {}", imagePaths.size());
@@ -167,33 +166,41 @@ public class PostService {
 	}
 
 	private Member getMemberById(Long memberId) {
+
 		return memberRepository.findById(memberId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_MEMBER_BY_ID : {}", memberId);
+
 				return new EntityNotFoundException(NOT_FOUND_MEMBER);
 			});
 	}
 
 	private Post getPostByIdAndMemberId(Long postId, Long memberId) {
+
 		return postRepository.findByIdAndMemberId(postId, memberId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_POST_BY_ID_AND_MEMBER_ID : postId = {}, memberId = {}", postId, memberId);
+
 				return new EntityNotFoundException(NOT_FOUND_POST);
 			});
 	}
 
 	private Post getPostById(Long postId) {
+
 		return postRepository.findById(postId)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_POST_BY_ID : {}", postId);
+
 				return new EntityNotFoundException(NOT_FOUND_POST);
 			});
 	}
 
 	private Member getMemberByUsername(String username) {
+
 		return memberRepository.findByUsername(username)
 			.orElseThrow(() -> {
 				log.warn("GET:READ:NOT_FOUND_MEMBER_BY_MEMBER_USERNAME : {}", username);
+
 				return new EntityNotFoundException(NOT_FOUND_MEMBER);
 			});
 	}
@@ -206,6 +213,7 @@ public class PostService {
 
 				if (!Objects.equals(recipeWriterId, memberId) || recipe.getRecipeType() == RecipeType.SCRAPED) {
 					log.warn("INVALID_ATTEMPT_TO_POST_RECIPE : recipeId = {}, recipeWriterId = {}, memberId = {}", recipe.getId(), recipeWriterId, memberId);
+
 					throw new BusinessException(INVALID_ATTEMPT_TO_POST_RECIPE);
 				}
 			});
@@ -242,6 +250,7 @@ public class PostService {
 
 	private Post savePost(PostReq postReq, Member member, Recipe recipe) {
 		Post post = PostReq.toPost(postReq, member, recipe);
+
 		return postRepository.save(post);
 	}
 
