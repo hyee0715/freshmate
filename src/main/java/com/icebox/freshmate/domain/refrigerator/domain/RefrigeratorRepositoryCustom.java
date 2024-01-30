@@ -9,7 +9,7 @@ public interface RefrigeratorRepositoryCustom {
 
 	Slice<Refrigerator> findAllByMemberIdOrderByNameAsc(Long memberId, Pageable pageable, String lastPageName, LocalDateTime lastUpdatedAt);
 
-	Slice<Refrigerator> findAllByMemberIdOrderByNameDesc(Long memberId, Pageable pageable);
+	Slice<Refrigerator> findAllByMemberIdOrderByNameDesc(Long memberId, Pageable pageable, String lastPageName, LocalDateTime lastUpdatedAt);
 
 	Slice<Refrigerator> findAllByMemberIdOrderByUpdatedAtAsc(Long memberId, Pageable pageable);
 

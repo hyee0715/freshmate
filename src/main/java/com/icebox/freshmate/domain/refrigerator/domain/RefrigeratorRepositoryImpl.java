@@ -24,7 +24,8 @@ public class RefrigeratorRepositoryImpl implements RefrigeratorRepositoryCustom 
 			.from(refrigerator)
 			.where(
 				refrigerator.member.id.eq(memberId),
-				gtRefrigeratorNameAndLtUpdatedAt(name, updatedAt))
+				gtRefrigeratorNameAndLtUpdatedAt(name, updatedAt)
+			)
 			.orderBy(refrigerator.name.asc(), refrigerator.updatedAt.desc())
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
@@ -33,12 +34,14 @@ public class RefrigeratorRepositoryImpl implements RefrigeratorRepositoryCustom 
 	}
 
 	@Override
-	public Slice<Refrigerator> findAllByMemberIdOrderByNameDesc(Long memberId, Pageable pageable) {
+	public Slice<Refrigerator> findAllByMemberIdOrderByNameDesc(Long memberId, Pageable pageable, String name, LocalDateTime updatedAt) {
 		List<Refrigerator> refrigerators = queryFactory.select(refrigerator)
 			.from(refrigerator)
-			.where(refrigerator.member.id.eq(memberId))
+			.where(
+				refrigerator.member.id.eq(memberId),
+				ltRefrigeratorNameAndLtUpdatedAt(name, updatedAt)
+			)
 			.orderBy(refrigerator.name.desc(), refrigerator.updatedAt.desc())
-			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
 
@@ -88,6 +91,21 @@ public class RefrigeratorRepositoryImpl implements RefrigeratorRepositoryCustom 
 		}
 
 		BooleanExpression predicate = refrigerator.name.gt(name);
+
+		predicate = predicate.or(
+			refrigerator.name.eq(name)
+				.and(refrigerator.updatedAt.lt(updatedAt))
+		);
+
+		return predicate;
+	}
+
+	private BooleanExpression ltRefrigeratorNameAndLtUpdatedAt(String name, LocalDateTime updatedAt) {
+		if (name == null || updatedAt == null) {
+			return null;
+		}
+
+		BooleanExpression predicate = refrigerator.name.lt(name);
 
 		predicate = predicate.or(
 			refrigerator.name.eq(name)
