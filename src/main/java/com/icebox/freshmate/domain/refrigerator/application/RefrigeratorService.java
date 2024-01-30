@@ -68,7 +68,7 @@ public class RefrigeratorService {
 			case NAME_DESC ->
 				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByNameDesc(member.getId(), pageable, lastPageName, LastUpdatedAt);
 			case UPDATED_AT_ASC ->
-				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByUpdatedAtAsc(member.getId(), pageable);
+				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByUpdatedAtAsc(member.getId(), pageable, LastUpdatedAt);
 			case UPDATED_AT_DESC ->
 				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByUpdatedAtDesc(member.getId(), pageable);
 		}

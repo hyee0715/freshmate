@@ -19,12 +19,12 @@ public class RefrigeratorRepositoryImpl implements RefrigeratorRepositoryCustom 
 	private QRefrigerator refrigerator = QRefrigerator.refrigerator;
 
 	@Override
-	public Slice<Refrigerator> findAllByMemberIdOrderByNameAsc(Long memberId, Pageable pageable, String name, LocalDateTime updatedAt) {
+	public Slice<Refrigerator> findAllByMemberIdOrderByNameAsc(Long memberId, Pageable pageable, String lastPageName, LocalDateTime lastPageUpdatedAt) {
 		List<Refrigerator> refrigerators = queryFactory.select(refrigerator)
 			.from(refrigerator)
 			.where(
 				refrigerator.member.id.eq(memberId),
-				gtRefrigeratorNameAndLtUpdatedAt(name, updatedAt)
+				gtRefrigeratorNameAndLtUpdatedAt(lastPageName, lastPageUpdatedAt)
 			)
 			.orderBy(refrigerator.name.asc(), refrigerator.updatedAt.desc())
 			.limit(pageable.getPageSize() + 1)
@@ -34,12 +34,12 @@ public class RefrigeratorRepositoryImpl implements RefrigeratorRepositoryCustom 
 	}
 
 	@Override
-	public Slice<Refrigerator> findAllByMemberIdOrderByNameDesc(Long memberId, Pageable pageable, String name, LocalDateTime updatedAt) {
+	public Slice<Refrigerator> findAllByMemberIdOrderByNameDesc(Long memberId, Pageable pageable, String lastPageName, LocalDateTime lastPageUpdatedAt) {
 		List<Refrigerator> refrigerators = queryFactory.select(refrigerator)
 			.from(refrigerator)
 			.where(
 				refrigerator.member.id.eq(memberId),
-				ltRefrigeratorNameAndLtUpdatedAt(name, updatedAt)
+				ltRefrigeratorNameAndLtUpdatedAt(lastPageName, lastPageUpdatedAt)
 			)
 			.orderBy(refrigerator.name.desc(), refrigerator.updatedAt.desc())
 			.limit(pageable.getPageSize() + 1)
@@ -49,12 +49,14 @@ public class RefrigeratorRepositoryImpl implements RefrigeratorRepositoryCustom 
 	}
 
 	@Override
-	public Slice<Refrigerator> findAllByMemberIdOrderByUpdatedAtAsc(Long memberId, Pageable pageable) {
+	public Slice<Refrigerator> findAllByMemberIdOrderByUpdatedAtAsc(Long memberId, Pageable pageable, LocalDateTime lastPageUpdatedAt) {
 		List<Refrigerator> refrigerators = queryFactory.select(refrigerator)
 			.from(refrigerator)
-			.where(refrigerator.member.id.eq(memberId))
+			.where(
+				refrigerator.member.id.eq(memberId),
+				gtRefrigeratorUpdatedAt(lastPageUpdatedAt)
+			)
 			.orderBy(refrigerator.updatedAt.asc())
-			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
 
@@ -113,5 +115,13 @@ public class RefrigeratorRepositoryImpl implements RefrigeratorRepositoryCustom 
 		);
 
 		return predicate;
+	}
+
+	private BooleanExpression gtRefrigeratorUpdatedAt(LocalDateTime updatedAt) {
+		if (updatedAt == null) {
+			return null;
+		}
+
+		return refrigerator.updatedAt.gt(updatedAt);
 	}
 }
