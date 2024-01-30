@@ -24,9 +24,8 @@ public class RefrigeratorRepositoryImpl implements RefrigeratorRepositoryCustom 
 			.from(refrigerator)
 			.where(
 				refrigerator.member.id.eq(memberId),
-				liRefrigeratorNameAndUpdatedAt(name, updatedAt))
+				gtRefrigeratorNameAndLtUpdatedAt(name, updatedAt))
 			.orderBy(refrigerator.name.asc(), refrigerator.updatedAt.desc())
-			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
 
@@ -83,12 +82,18 @@ public class RefrigeratorRepositoryImpl implements RefrigeratorRepositoryCustom 
 		return new SliceImpl<>(refrigerators, pageable, hasNext);
 	}
 
-	private BooleanExpression liRefrigeratorNameAndUpdatedAt(String name, LocalDateTime updatedAt) {
+	private BooleanExpression gtRefrigeratorNameAndLtUpdatedAt(String name, LocalDateTime updatedAt) {
 		if (name == null || updatedAt == null) {
 			return null;
 		}
 
-		return refrigerator.name.gt(name)
-			.and(refrigerator.updatedAt.gt(updatedAt));
+		BooleanExpression predicate = refrigerator.name.gt(name);
+
+		predicate = predicate.or(
+			refrigerator.name.eq(name)
+				.and(refrigerator.updatedAt.lt(updatedAt))
+		);
+
+		return predicate;
 	}
 }
