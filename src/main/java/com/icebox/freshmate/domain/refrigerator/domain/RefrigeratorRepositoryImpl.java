@@ -64,12 +64,14 @@ public class RefrigeratorRepositoryImpl implements RefrigeratorRepositoryCustom 
 	}
 
 	@Override
-	public Slice<Refrigerator> findAllByMemberIdOrderByUpdatedAtDesc(Long memberId, Pageable pageable) {
+	public Slice<Refrigerator> findAllByMemberIdOrderByUpdatedAtDesc(Long memberId, Pageable pageable, LocalDateTime lastPageUpdatedAt) {
 		List<Refrigerator> refrigerators = queryFactory.select(refrigerator)
 			.from(refrigerator)
-			.where(refrigerator.member.id.eq(memberId))
+			.where(
+				refrigerator.member.id.eq(memberId),
+				ltRefrigeratorUpdatedAt(lastPageUpdatedAt)
+			)
 			.orderBy(refrigerator.updatedAt.desc())
-			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
 
@@ -123,5 +125,13 @@ public class RefrigeratorRepositoryImpl implements RefrigeratorRepositoryCustom 
 		}
 
 		return refrigerator.updatedAt.gt(updatedAt);
+	}
+
+	private BooleanExpression ltRefrigeratorUpdatedAt(LocalDateTime updatedAt) {
+		if (updatedAt == null) {
+			return null;
+		}
+
+		return refrigerator.updatedAt.lt(updatedAt);
 	}
 }

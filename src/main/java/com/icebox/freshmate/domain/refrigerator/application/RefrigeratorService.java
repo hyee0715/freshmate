@@ -57,20 +57,20 @@ public class RefrigeratorService {
 	public RefrigeratorsRes findAll(String sortBy, Pageable pageable, String lastPageName, String lastPageUpdatedAt, String username) {
 		Member member = getMemberByUsername(username);
 
-		LocalDateTime LastUpdatedAt = getLastPageUpdatedAt(lastPageUpdatedAt);
+		LocalDateTime lastUpdatedAt = getLastPageUpdatedAt(lastPageUpdatedAt);
 
 		RefrigeratorSortType refrigeratorSortType = RefrigeratorSortType.findRefrigeratorSortType(sortBy);
 		Slice<Refrigerator> refrigerators = null;
 
 		switch (refrigeratorSortType) {
 			case NAME_ASC ->
-				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByNameAsc(member.getId(), pageable, lastPageName, LastUpdatedAt);
+				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByNameAsc(member.getId(), pageable, lastPageName, lastUpdatedAt);
 			case NAME_DESC ->
-				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByNameDesc(member.getId(), pageable, lastPageName, LastUpdatedAt);
+				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByNameDesc(member.getId(), pageable, lastPageName, lastUpdatedAt);
 			case UPDATED_AT_ASC ->
-				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByUpdatedAtAsc(member.getId(), pageable, LastUpdatedAt);
+				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByUpdatedAtAsc(member.getId(), pageable, lastUpdatedAt);
 			case UPDATED_AT_DESC ->
-				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByUpdatedAtDesc(member.getId(), pageable);
+				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByUpdatedAtDesc(member.getId(), pageable, lastUpdatedAt);
 		}
 
 		return RefrigeratorsRes.from(refrigerators);

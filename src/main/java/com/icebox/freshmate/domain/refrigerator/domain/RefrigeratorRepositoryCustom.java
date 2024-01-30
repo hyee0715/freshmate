@@ -13,5 +13,5 @@ public interface RefrigeratorRepositoryCustom {
 
 	Slice<Refrigerator> findAllByMemberIdOrderByUpdatedAtAsc(Long memberId, Pageable pageable, LocalDateTime lastPageUpdatedAt);
 
-	Slice<Refrigerator> findAllByMemberIdOrderByUpdatedAtDesc(Long memberId, Pageable pageable);
+	Slice<Refrigerator> findAllByMemberIdOrderByUpdatedAtDesc(Long memberId, Pageable pageable, LocalDateTime lastPageUpdatedAt);
 }
