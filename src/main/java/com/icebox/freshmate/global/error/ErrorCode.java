@@ -31,6 +31,7 @@ public enum ErrorCode {
 	//냉장고
 	NOT_FOUND_REFRIGERATOR("R001", "냉장고가 존재하지 않습니다."),
 	INVALID_REFRIGERATOR_SORT_TYPE("ROO2", "유효하지 않은 냉장고 정렬 타입 입니다."),
+	INVALID_LAST_PAGE_UPDATED_AT_FORMAT("R003", "유효하지 않은 이전 페이지의 수정 날짜 형식입니다."),
 
 	//냉장고 저장소
 	INVALID_STORAGE_TYPE("S001", "유효하지 않은 냉장고 저장소 타입입니다."),

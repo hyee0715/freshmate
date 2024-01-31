@@ -1,10 +1,12 @@
 package com.icebox.freshmate.domain.refrigerator.application;
 
+import static com.icebox.freshmate.global.error.ErrorCode.INVALID_LAST_PAGE_UPDATED_AT_FORMAT;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -18,8 +20,8 @@ import com.icebox.freshmate.domain.refrigerator.domain.Refrigerator;
 import com.icebox.freshmate.domain.refrigerator.domain.RefrigeratorRepository;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
-import com.icebox.freshmate.domain.refrigerator.domain.RefrigeratorSortType;
 import com.icebox.freshmate.global.error.ErrorCode;
+import com.icebox.freshmate.global.error.exception.BusinessException;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -54,21 +56,9 @@ public class RefrigeratorService {
 	public RefrigeratorsRes findAll(String sortBy, Pageable pageable, String lastPageName, String lastPageUpdatedAt, String username) {
 		Member member = getMemberByUsername(username);
 
-		LocalDateTime LastUpdatedAt = getLastPageUpdatedAt(lastPageUpdatedAt);
+		LocalDateTime lastUpdatedAt = getLastPageUpdatedAt(lastPageUpdatedAt);
 
-		RefrigeratorSortType refrigeratorSortType = RefrigeratorSortType.findRefrigeratorSortType(sortBy);
-		Slice<Refrigerator> refrigerators = null;
-
-		switch (refrigeratorSortType) {
-			case NAME_ASC ->
-				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByNameAsc(member.getId(), pageable, lastPageName, LastUpdatedAt);
-			case NAME_DESC ->
-				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByNameDesc(member.getId(), pageable);
-			case UPDATED_AT_ASC ->
-				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByUpdatedAtAsc(member.getId(), pageable);
-			case UPDATED_AT_DESC ->
-				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByUpdatedAtDesc(member.getId(), pageable);
-		}
+		Slice<Refrigerator> refrigerators = refrigeratorRepository.findAllByMemberIdOrderBySortCondition(member.getId(), pageable, lastPageName, lastUpdatedAt, sortBy);
 
 		return RefrigeratorsRes.from(refrigerators);
 	}
@@ -124,9 +114,33 @@ public class RefrigeratorService {
 	}
 
 	private LocalDateTime getLastPageUpdatedAt(String lastPageUpdatedAt) {
-
 		return Optional.ofNullable(lastPageUpdatedAt)
-			.map(date -> LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")))
+			.map(date -> {
+				if (checkLocalDateTimeFormat(date)) {
+					date += "0";
+				}
+				return date;
+			})
+			.map(date -> {
+				validateLastPageUpdatedAtFormat(date);
+				return LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"));
+			})
 			.orElse(null);
+	}
+
+	private boolean checkLocalDateTimeFormat(String date) {
+		String pattern = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{5}";
+
+		return Pattern.matches(pattern, date);
+	}
+
+	private void validateLastPageUpdatedAtFormat(String lastPageUpdatedAt) {
+		String pattern = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}";
+
+		if (!Pattern.matches(pattern, lastPageUpdatedAt)) {
+			log.warn("GET:READ:INVALID_LAST_PAGE_UPDATED_AT_FORMAT : {}", lastPageUpdatedAt);
+
+			throw new BusinessException(INVALID_LAST_PAGE_UPDATED_AT_FORMAT);
+		}
 	}
 }
