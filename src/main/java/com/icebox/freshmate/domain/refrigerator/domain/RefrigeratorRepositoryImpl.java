@@ -2,6 +2,7 @@ package com.icebox.freshmate.domain.refrigerator.domain;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -17,72 +18,12 @@ import lombok.RequiredArgsConstructor;
 public class RefrigeratorRepositoryImpl implements RefrigeratorRepositoryCustom {
 
 	private final JPAQueryFactory queryFactory;
-	private QRefrigerator refrigerator = QRefrigerator.refrigerator;
-
-	private BooleanExpression[] getBooleanExpression(Long memberId, String lastPageName, LocalDateTime lastPageUpdatedAt, String sortBy) {
-		RefrigeratorSortType refrigeratorSortType = RefrigeratorSortType.findRefrigeratorSortType(sortBy);
-
-		switch (refrigeratorSortType) {
-			case NAME_ASC -> {
-				return new BooleanExpression[]{
-					refrigerator.member.id.eq(memberId),
-					gtRefrigeratorNameAndLtUpdatedAt(lastPageName, lastPageUpdatedAt)
-				};
-			}
-
-			case NAME_DESC -> {
-				return new BooleanExpression[]{
-					refrigerator.member.id.eq(memberId),
-					ltRefrigeratorNameAndLtUpdatedAt(lastPageName, lastPageUpdatedAt)
-				};
-			}
-
-			case UPDATED_AT_ASC -> {
-				return new BooleanExpression[]{
-					refrigerator.member.id.eq(memberId),
-					gtRefrigeratorUpdatedAt(lastPageUpdatedAt)
-				};
-			}
-		}
-
-		return new BooleanExpression[] {
-			refrigerator.member.id.eq(memberId),
-			ltRefrigeratorUpdatedAt(lastPageUpdatedAt)
-		};
-	}
-
-	private OrderSpecifier[] getOrderSpecifier(String sortBy) {
-		RefrigeratorSortType refrigeratorSortType = RefrigeratorSortType.findRefrigeratorSortType(sortBy);
-
-		switch (refrigeratorSortType) {
-			case NAME_ASC -> {
-				return new OrderSpecifier[]{
-					refrigerator.name.asc(), refrigerator.updatedAt.desc()
-				};
-			}
-
-			case NAME_DESC -> {
-				return new OrderSpecifier[]{
-					refrigerator.name.desc(), refrigerator.updatedAt.desc()
-				};
-			}
-
-			case UPDATED_AT_ASC -> {
-				return new OrderSpecifier[]{
-					refrigerator.updatedAt.asc()
-				};
-			}
-		}
-
-		return new OrderSpecifier[]{
-			refrigerator.updatedAt.desc()
-		};
-	}
+	private final QRefrigerator refrigerator = QRefrigerator.refrigerator;
 
 	@Override
 	public Slice<Refrigerator> findAllByMemberIdOrderBySortCondition(Long memberId, Pageable pageable, String lastPageName, LocalDateTime lastPageUpdatedAt, String sortBy) {
 		BooleanExpression[] booleanExpression = getBooleanExpression(memberId, lastPageName, lastPageUpdatedAt, sortBy);
-		OrderSpecifier[] orderSpecifier = getOrderSpecifier(sortBy);
+		OrderSpecifier<?>[] orderSpecifier = getOrderSpecifier(sortBy);
 
 		List<Refrigerator> refrigerators = queryFactory.select(refrigerator)
 			.from(refrigerator)
@@ -149,5 +90,50 @@ public class RefrigeratorRepositoryImpl implements RefrigeratorRepositoryCustom 
 		}
 
 		return refrigerator.updatedAt.lt(updatedAt);
+	}
+
+	private BooleanExpression[] getBooleanExpression(Long memberId, String lastPageName, LocalDateTime lastPageUpdatedAt, String sortBy) {
+		RefrigeratorSortType refrigeratorSortType = RefrigeratorSortType.findRefrigeratorSortType(sortBy);
+
+		return switch (refrigeratorSortType) {
+			case NAME_ASC ->
+				createBooleanExpressions(memberId, gtRefrigeratorNameAndLtUpdatedAt(lastPageName, lastPageUpdatedAt));
+			case NAME_DESC ->
+				createBooleanExpressions(memberId, ltRefrigeratorNameAndLtUpdatedAt(lastPageName, lastPageUpdatedAt));
+			case UPDATED_AT_ASC ->
+				createBooleanExpressions(memberId, gtRefrigeratorUpdatedAt(lastPageUpdatedAt));
+			default ->
+				createBooleanExpressions(memberId, ltRefrigeratorUpdatedAt(lastPageUpdatedAt));
+		};
+	}
+
+	private BooleanExpression[] createBooleanExpressions(Long memberId, BooleanExpression booleanExpression) {
+
+		return new BooleanExpression[]{
+			refrigerator.member.id.eq(memberId),
+			booleanExpression
+		};
+	}
+
+	private OrderSpecifier<?>[] getOrderSpecifier(String sortBy) {
+		RefrigeratorSortType refrigeratorSortType = RefrigeratorSortType.findRefrigeratorSortType(sortBy);
+
+		return switch (refrigeratorSortType) {
+			case NAME_ASC ->
+				createOrderSpecifier(refrigerator.name.asc(), refrigerator.updatedAt.desc());
+			case NAME_DESC ->
+				createOrderSpecifier(refrigerator.name.desc(), refrigerator.updatedAt.desc());
+			case UPDATED_AT_ASC ->
+				createOrderSpecifier(null, refrigerator.updatedAt.asc());
+			default ->
+				createOrderSpecifier(null, refrigerator.updatedAt.desc());
+		};
+	}
+
+	private OrderSpecifier<?>[] createOrderSpecifier(OrderSpecifier<String> nameOrderSpecifier, OrderSpecifier<LocalDateTime> updatedAtOrderSpecifier) {
+
+		return Optional.ofNullable(nameOrderSpecifier)
+			.map(nameSpecifier -> new OrderSpecifier<?>[]{nameSpecifier, updatedAtOrderSpecifier})
+			.orElse(new OrderSpecifier<?>[]{updatedAtOrderSpecifier});
 	}
 }
