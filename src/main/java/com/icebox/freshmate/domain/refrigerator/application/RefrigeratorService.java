@@ -20,7 +20,6 @@ import com.icebox.freshmate.domain.refrigerator.domain.Refrigerator;
 import com.icebox.freshmate.domain.refrigerator.domain.RefrigeratorRepository;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
-import com.icebox.freshmate.domain.refrigerator.domain.RefrigeratorSortType;
 import com.icebox.freshmate.global.error.ErrorCode;
 import com.icebox.freshmate.global.error.exception.BusinessException;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
@@ -59,19 +58,7 @@ public class RefrigeratorService {
 
 		LocalDateTime lastUpdatedAt = getLastPageUpdatedAt(lastPageUpdatedAt);
 
-		RefrigeratorSortType refrigeratorSortType = RefrigeratorSortType.findRefrigeratorSortType(sortBy);
-		Slice<Refrigerator> refrigerators = null;
-
-		switch (refrigeratorSortType) {
-			case NAME_ASC ->
-				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByNameAsc(member.getId(), pageable, lastPageName, lastUpdatedAt);
-			case NAME_DESC ->
-				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByNameDesc(member.getId(), pageable, lastPageName, lastUpdatedAt);
-			case UPDATED_AT_ASC ->
-				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByUpdatedAtAsc(member.getId(), pageable, lastUpdatedAt);
-			case UPDATED_AT_DESC ->
-				refrigerators = refrigeratorRepository.findAllByMemberIdOrderByUpdatedAtDesc(member.getId(), pageable, lastUpdatedAt);
-		}
+		Slice<Refrigerator> refrigerators = refrigeratorRepository.findAllByMemberIdOrderBySortCondition(member.getId(), pageable, lastPageName, lastUpdatedAt, sortBy);
 
 		return RefrigeratorsRes.from(refrigerators);
 	}

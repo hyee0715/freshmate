@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -18,60 +19,75 @@ public class RefrigeratorRepositoryImpl implements RefrigeratorRepositoryCustom 
 	private final JPAQueryFactory queryFactory;
 	private QRefrigerator refrigerator = QRefrigerator.refrigerator;
 
-	@Override
-	public Slice<Refrigerator> findAllByMemberIdOrderByNameAsc(Long memberId, Pageable pageable, String lastPageName, LocalDateTime lastPageUpdatedAt) {
-		List<Refrigerator> refrigerators = queryFactory.select(refrigerator)
-			.from(refrigerator)
-			.where(
-				refrigerator.member.id.eq(memberId),
-				gtRefrigeratorNameAndLtUpdatedAt(lastPageName, lastPageUpdatedAt)
-			)
-			.orderBy(refrigerator.name.asc(), refrigerator.updatedAt.desc())
-			.limit(pageable.getPageSize() + 1)
-			.fetch();
+	private BooleanExpression[] getBooleanExpression(Long memberId, String lastPageName, LocalDateTime lastPageUpdatedAt, String sortBy) {
+		RefrigeratorSortType refrigeratorSortType = RefrigeratorSortType.findRefrigeratorSortType(sortBy);
 
-		return checkLastPage(pageable, refrigerators);
+		switch (refrigeratorSortType) {
+			case NAME_ASC -> {
+				return new BooleanExpression[]{
+					refrigerator.member.id.eq(memberId),
+					gtRefrigeratorNameAndLtUpdatedAt(lastPageName, lastPageUpdatedAt)
+				};
+			}
+
+			case NAME_DESC -> {
+				return new BooleanExpression[]{
+					refrigerator.member.id.eq(memberId),
+					ltRefrigeratorNameAndLtUpdatedAt(lastPageName, lastPageUpdatedAt)
+				};
+			}
+
+			case UPDATED_AT_ASC -> {
+				return new BooleanExpression[]{
+					refrigerator.member.id.eq(memberId),
+					gtRefrigeratorUpdatedAt(lastPageUpdatedAt)
+				};
+			}
+		}
+
+		return new BooleanExpression[] {
+			refrigerator.member.id.eq(memberId),
+			ltRefrigeratorUpdatedAt(lastPageUpdatedAt)
+		};
+	}
+
+	private OrderSpecifier[] getOrderSpecifier(String sortBy) {
+		RefrigeratorSortType refrigeratorSortType = RefrigeratorSortType.findRefrigeratorSortType(sortBy);
+
+		switch (refrigeratorSortType) {
+			case NAME_ASC -> {
+				return new OrderSpecifier[]{
+					refrigerator.name.asc(), refrigerator.updatedAt.desc()
+				};
+			}
+
+			case NAME_DESC -> {
+				return new OrderSpecifier[]{
+					refrigerator.name.desc(), refrigerator.updatedAt.desc()
+				};
+			}
+
+			case UPDATED_AT_ASC -> {
+				return new OrderSpecifier[]{
+					refrigerator.updatedAt.asc()
+				};
+			}
+		}
+
+		return new OrderSpecifier[]{
+			refrigerator.updatedAt.desc()
+		};
 	}
 
 	@Override
-	public Slice<Refrigerator> findAllByMemberIdOrderByNameDesc(Long memberId, Pageable pageable, String lastPageName, LocalDateTime lastPageUpdatedAt) {
+	public Slice<Refrigerator> findAllByMemberIdOrderBySortCondition(Long memberId, Pageable pageable, String lastPageName, LocalDateTime lastPageUpdatedAt, String sortBy) {
+		BooleanExpression[] booleanExpression = getBooleanExpression(memberId, lastPageName, lastPageUpdatedAt, sortBy);
+		OrderSpecifier[] orderSpecifier = getOrderSpecifier(sortBy);
+
 		List<Refrigerator> refrigerators = queryFactory.select(refrigerator)
 			.from(refrigerator)
-			.where(
-				refrigerator.member.id.eq(memberId),
-				ltRefrigeratorNameAndLtUpdatedAt(lastPageName, lastPageUpdatedAt)
-			)
-			.orderBy(refrigerator.name.desc(), refrigerator.updatedAt.desc())
-			.limit(pageable.getPageSize() + 1)
-			.fetch();
-
-		return checkLastPage(pageable, refrigerators);
-	}
-
-	@Override
-	public Slice<Refrigerator> findAllByMemberIdOrderByUpdatedAtAsc(Long memberId, Pageable pageable, LocalDateTime lastPageUpdatedAt) {
-		List<Refrigerator> refrigerators = queryFactory.select(refrigerator)
-			.from(refrigerator)
-			.where(
-				refrigerator.member.id.eq(memberId),
-				gtRefrigeratorUpdatedAt(lastPageUpdatedAt)
-			)
-			.orderBy(refrigerator.updatedAt.asc())
-			.limit(pageable.getPageSize() + 1)
-			.fetch();
-
-		return checkLastPage(pageable, refrigerators);
-	}
-
-	@Override
-	public Slice<Refrigerator> findAllByMemberIdOrderByUpdatedAtDesc(Long memberId, Pageable pageable, LocalDateTime lastPageUpdatedAt) {
-		List<Refrigerator> refrigerators = queryFactory.select(refrigerator)
-			.from(refrigerator)
-			.where(
-				refrigerator.member.id.eq(memberId),
-				ltRefrigeratorUpdatedAt(lastPageUpdatedAt)
-			)
-			.orderBy(refrigerator.updatedAt.desc())
+			.where(booleanExpression)
+			.orderBy(orderSpecifier)
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
 
