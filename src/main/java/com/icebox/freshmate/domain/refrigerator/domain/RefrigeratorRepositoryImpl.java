@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 
+import com.icebox.freshmate.global.util.SortTypeUtils;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -93,9 +94,9 @@ public class RefrigeratorRepositoryImpl implements RefrigeratorRepositoryCustom 
 	}
 
 	private BooleanExpression[] getBooleanExpression(Long memberId, String lastPageName, LocalDateTime lastPageUpdatedAt, String sortBy) {
-		RefrigeratorSortType refrigeratorSortType = RefrigeratorSortType.findRefrigeratorSortType(sortBy);
+		SortTypeUtils sortTypeUtils = SortTypeUtils.findSortType(sortBy);
 
-		return switch (refrigeratorSortType) {
+		return switch (sortTypeUtils) {
 			case NAME_ASC ->
 				createBooleanExpressions(memberId, gtRefrigeratorNameAndLtUpdatedAt(lastPageName, lastPageUpdatedAt));
 			case NAME_DESC ->
@@ -116,9 +117,9 @@ public class RefrigeratorRepositoryImpl implements RefrigeratorRepositoryCustom 
 	}
 
 	private OrderSpecifier<?>[] getOrderSpecifier(String sortBy) {
-		RefrigeratorSortType refrigeratorSortType = RefrigeratorSortType.findRefrigeratorSortType(sortBy);
+		SortTypeUtils sortTypeUtils = SortTypeUtils.findSortType(sortBy);
 
-		return switch (refrigeratorSortType) {
+		return switch (sortTypeUtils) {
 			case NAME_ASC ->
 				createOrderSpecifier(refrigerator.name.asc(), refrigerator.updatedAt.desc());
 			case NAME_DESC ->
