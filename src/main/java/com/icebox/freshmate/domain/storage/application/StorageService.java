@@ -4,8 +4,8 @@ import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_REFRIGERATOR;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_STORAGE;
 
-import java.util.List;
-
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +19,7 @@ import com.icebox.freshmate.domain.storage.application.dto.response.StorageRes;
 import com.icebox.freshmate.domain.storage.application.dto.response.StoragesRes;
 import com.icebox.freshmate.domain.storage.domain.Storage;
 import com.icebox.freshmate.domain.storage.domain.StorageRepository;
+import com.icebox.freshmate.domain.storage.domain.StorageType;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class StorageService {
 	public StorageRes create(StorageCreateReq storageCreateReq, String username) {
 		Member member = getMemberByUsername(username);
 
-		Refrigerator refrigerator = getRefrigerator(storageCreateReq.refrigeratorId(), member.getId());
+		Refrigerator refrigerator = getRefrigeratorByIdAndMemberId(storageCreateReq.refrigeratorId(), member.getId());
 
 		Storage storage = StorageCreateReq.toStorage(storageCreateReq, refrigerator);
 		Storage savedStorage = storageRepository.save(storage);
@@ -53,11 +54,34 @@ public class StorageService {
 	}
 
 	@Transactional(readOnly = true)
-	public StoragesRes findAllByRefrigeratorId(Long refrigeratorId, String username) {
+	public StoragesRes findAllByRefrigeratorId(Long refrigeratorId, String sortBy, String storageType, Pageable pageable, String username) {
 		Member member = getMemberByUsername(username);
-		Refrigerator refrigerator = getRefrigerator(refrigeratorId, member.getId());
+		Refrigerator refrigerator = getRefrigeratorByIdAndMemberId(refrigeratorId, member.getId());
 
-		List<Storage> storages = storageRepository.findAllByRefrigeratorId(refrigerator.getId());
+		Slice<Storage> storages = null;
+		if (storageType.equalsIgnoreCase("all")) {
+			if (sortBy.equalsIgnoreCase("nameAsc")) {
+				storages = storageRepository.findAllByRefrigeratorIdOrderByNameAsc(refrigerator.getId(), pageable);
+			} else if (sortBy.equalsIgnoreCase("nameDesc")) {
+				storages = storageRepository.findAllByRefrigeratorIdOrderByNameDesc(refrigerator.getId(), pageable);
+			} else if (sortBy.equalsIgnoreCase("updatedAtAsc")) {
+				storages = storageRepository.findAllByRefrigeratorIdOrderByUpdatedAtAsc(refrigerator.getId(), pageable);
+			} else {
+				storages = storageRepository.findAllByRefrigeratorIdOrderByUpdatedAtDesc(refrigerator.getId(), pageable);
+			}
+		} else {
+			StorageType type = StorageType.findStorageType(storageType);
+
+			if (sortBy.equalsIgnoreCase("nameAsc")) {
+				storages = storageRepository.findAllByRefrigeratorIdAndStorageTypeOrderByNameAsc(refrigerator.getId(), type, pageable);
+			} else if (sortBy.equalsIgnoreCase("nameDesc")) {
+				storages = storageRepository.findAllByRefrigeratorIdAndStorageTypeOrderByNameDesc(refrigerator.getId(), type, pageable);
+			} else if (sortBy.equalsIgnoreCase("updatedAtAsc")) {
+				storages = storageRepository.findAllByRefrigeratorIdAndStorageTypeOrderByUpdatedAtAsc(refrigerator.getId(), type, pageable);
+			} else {
+				storages = storageRepository.findAllByRefrigeratorIdAndStorageTypeOrderByUpdatedAtDesc(refrigerator.getId(), type, pageable);
+			}
+		}
 
 		return StoragesRes.from(storages);
 	}
@@ -99,7 +123,7 @@ public class StorageService {
 			});
 	}
 
-	private Refrigerator getRefrigerator(Long refrigeratorId, Long memberId) {
+	private Refrigerator getRefrigeratorByIdAndMemberId(Long refrigeratorId, Long memberId) {
 
 		return refrigeratorRepository.findByIdAndMemberId(refrigeratorId, memberId)
 			.orElseThrow(() -> {
