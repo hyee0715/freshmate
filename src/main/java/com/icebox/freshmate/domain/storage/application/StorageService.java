@@ -1,8 +1,14 @@
 package com.icebox.freshmate.domain.storage.application;
 
+import static com.icebox.freshmate.global.error.ErrorCode.INVALID_LAST_PAGE_UPDATED_AT_FORMAT;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_REFRIGERATOR;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_STORAGE;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -20,6 +26,7 @@ import com.icebox.freshmate.domain.storage.application.dto.response.StoragesRes;
 import com.icebox.freshmate.domain.storage.domain.Storage;
 import com.icebox.freshmate.domain.storage.domain.StorageRepository;
 import com.icebox.freshmate.domain.storage.domain.StorageType;
+import com.icebox.freshmate.global.error.exception.BusinessException;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -54,32 +61,34 @@ public class StorageService {
 	}
 
 	@Transactional(readOnly = true)
-	public StoragesRes findAllByRefrigeratorId(Long refrigeratorId, String sortBy, String storageType, Pageable pageable, String username) {
+	public StoragesRes findAllByRefrigeratorId(Long refrigeratorId, String sortBy, String storageType, Pageable pageable, String lastPageName, String lastPageUpdatedAt,String username) {
 		Member member = getMemberByUsername(username);
 		Refrigerator refrigerator = getRefrigeratorByIdAndMemberId(refrigeratorId, member.getId());
+
+		LocalDateTime lastUpdatedAt = getLastPageUpdatedAt(lastPageUpdatedAt);
 
 		Slice<Storage> storages = null;
 		if (storageType.equalsIgnoreCase("all")) {
 			if (sortBy.equalsIgnoreCase("nameAsc")) {
-				storages = storageRepository.findAllByRefrigeratorIdOrderByNameAsc(refrigerator.getId(), pageable);
+				storages = storageRepository.findAllByRefrigeratorIdOrderByNameAsc(refrigerator.getId(), pageable, lastPageName, lastUpdatedAt);
 			} else if (sortBy.equalsIgnoreCase("nameDesc")) {
-				storages = storageRepository.findAllByRefrigeratorIdOrderByNameDesc(refrigerator.getId(), pageable);
+				storages = storageRepository.findAllByRefrigeratorIdOrderByNameDesc(refrigerator.getId(), pageable, lastPageName, lastUpdatedAt);
 			} else if (sortBy.equalsIgnoreCase("updatedAtAsc")) {
-				storages = storageRepository.findAllByRefrigeratorIdOrderByUpdatedAtAsc(refrigerator.getId(), pageable);
+				storages = storageRepository.findAllByRefrigeratorIdOrderByUpdatedAtAsc(refrigerator.getId(), pageable, lastUpdatedAt);
 			} else {
-				storages = storageRepository.findAllByRefrigeratorIdOrderByUpdatedAtDesc(refrigerator.getId(), pageable);
+				storages = storageRepository.findAllByRefrigeratorIdOrderByUpdatedAtDesc(refrigerator.getId(), pageable, lastUpdatedAt);
 			}
 		} else {
 			StorageType type = StorageType.findStorageType(storageType);
 
 			if (sortBy.equalsIgnoreCase("nameAsc")) {
-				storages = storageRepository.findAllByRefrigeratorIdAndStorageTypeOrderByNameAsc(refrigerator.getId(), type, pageable);
+				storages = storageRepository.findAllByRefrigeratorIdAndStorageTypeOrderByNameAsc(refrigerator.getId(), type, pageable, lastPageName, lastUpdatedAt);
 			} else if (sortBy.equalsIgnoreCase("nameDesc")) {
-				storages = storageRepository.findAllByRefrigeratorIdAndStorageTypeOrderByNameDesc(refrigerator.getId(), type, pageable);
+				storages = storageRepository.findAllByRefrigeratorIdAndStorageTypeOrderByNameDesc(refrigerator.getId(), type, pageable, lastPageName, lastUpdatedAt);
 			} else if (sortBy.equalsIgnoreCase("updatedAtAsc")) {
-				storages = storageRepository.findAllByRefrigeratorIdAndStorageTypeOrderByUpdatedAtAsc(refrigerator.getId(), type, pageable);
+				storages = storageRepository.findAllByRefrigeratorIdAndStorageTypeOrderByUpdatedAtAsc(refrigerator.getId(), type, pageable, lastUpdatedAt);
 			} else {
-				storages = storageRepository.findAllByRefrigeratorIdAndStorageTypeOrderByUpdatedAtDesc(refrigerator.getId(), type, pageable);
+				storages = storageRepository.findAllByRefrigeratorIdAndStorageTypeOrderByUpdatedAtDesc(refrigerator.getId(), type, pageable, lastUpdatedAt);
 			}
 		}
 
@@ -141,5 +150,36 @@ public class StorageService {
 
 				return new EntityNotFoundException(NOT_FOUND_MEMBER);
 			});
+	}
+
+	private LocalDateTime getLastPageUpdatedAt(String lastPageUpdatedAt) {
+		return Optional.ofNullable(lastPageUpdatedAt)
+			.map(date -> {
+				if (checkLocalDateTimeFormat(date)) {
+					date += "0";
+				}
+				return date;
+			})
+			.map(date -> {
+				validateLastPageUpdatedAtFormat(date);
+				return LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"));
+			})
+			.orElse(null);
+	}
+
+	private boolean checkLocalDateTimeFormat(String date) {
+		String pattern = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{5}";
+
+		return Pattern.matches(pattern, date);
+	}
+
+	private void validateLastPageUpdatedAtFormat(String lastPageUpdatedAt) {
+		String pattern = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}";
+
+		if (!Pattern.matches(pattern, lastPageUpdatedAt)) {
+			log.warn("GET:READ:INVALID_LAST_PAGE_UPDATED_AT_FORMAT : {}", lastPageUpdatedAt);
+
+			throw new BusinessException(INVALID_LAST_PAGE_UPDATED_AT_FORMAT);
+		}
 	}
 }
