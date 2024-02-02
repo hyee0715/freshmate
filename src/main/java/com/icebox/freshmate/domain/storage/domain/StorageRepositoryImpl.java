@@ -2,6 +2,7 @@ package com.icebox.freshmate.domain.storage.domain;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -22,7 +23,7 @@ public class StorageRepositoryImpl implements StorageRepositoryCustom {
 
 	@Override
 	public Slice<Storage> findAllByRefrigeratorIdOrderBySortCondition(Long refrigeratorId, Pageable pageable, String lastPageName, LocalDateTime lastPageUpdatedAt, String sortBy) {
-		BooleanExpression[] booleanExpression = getBooleanExpressionForRefrigeratorId(refrigeratorId, lastPageName, lastPageUpdatedAt, sortBy);
+		BooleanExpression[] booleanExpression = getBooleanExpressionByRefrigeratorId(refrigeratorId, lastPageName, lastPageUpdatedAt, sortBy);
 		OrderSpecifier<?>[] orderSpecifier = getOrderSpecifier(sortBy);
 
 		List<Storage> storages = queryFactory.select(storage)
@@ -37,7 +38,7 @@ public class StorageRepositoryImpl implements StorageRepositoryCustom {
 
 	@Override
 	public Slice<Storage> findAllByRefrigeratorIdAndStorageTypeOrderBySortCondition(Long refrigeratorId, StorageType storageType, Pageable pageable, String lastPageName, LocalDateTime lastPageUpdatedAt, String sortBy) {
-		BooleanExpression[] booleanExpression = getBooleanExpressionForRefrigeratorIdAndStorageType(refrigeratorId, storageType, lastPageName, lastPageUpdatedAt, sortBy);
+		BooleanExpression[] booleanExpression = getBooleanExpressionByRefrigeratorIdAndStorageType(refrigeratorId, storageType, lastPageName, lastPageUpdatedAt, sortBy);
 		OrderSpecifier<?>[] orderSpecifier = getOrderSpecifier(sortBy);
 
 		List<Storage> storages = queryFactory.select(storage)
@@ -50,99 +51,61 @@ public class StorageRepositoryImpl implements StorageRepositoryCustom {
 		return checkLastPage(pageable, storages);
 	}
 
-	private BooleanExpression[] getBooleanExpressionForRefrigeratorId(Long refrigeratorId, String lastPageName, LocalDateTime lastPageUpdatedAt, String sortBy) {
+	private BooleanExpression[] getBooleanExpressionByRefrigeratorId(Long refrigeratorId, String lastPageName, LocalDateTime lastPageUpdatedAt, String sortBy) {
 		SortTypeUtils sortType = SortTypeUtils.findSortType(sortBy);
 
-		switch (sortType) {
-			case NAME_ASC -> {
-				return new BooleanExpression[]{
-					storage.refrigerator.id.eq(refrigeratorId),
-					gtStorageNameAndLtUpdatedAt(lastPageName, lastPageUpdatedAt)
-				};
-			}
-
-			case NAME_DESC -> {
-				return new BooleanExpression[]{
-					storage.refrigerator.id.eq(refrigeratorId),
-					ltStorageNameAndLtUpdatedAt(lastPageName, lastPageUpdatedAt)
-				};
-			}
-
-			case UPDATED_AT_ASC -> {
-				return new BooleanExpression[]{
-					storage.refrigerator.id.eq(refrigeratorId),
-					gtStorageUpdatedAt(lastPageUpdatedAt)
-				};
-			}
-		}
-
-		return new BooleanExpression[] {
-			storage.refrigerator.id.eq(refrigeratorId),
-			ltStorageUpdatedAt(lastPageUpdatedAt)
+		return switch (sortType) {
+			case NAME_ASC ->
+				createBooleanExpressions(refrigeratorId, null, gtStorageNameAndLtUpdatedAt(lastPageName, lastPageUpdatedAt));
+			case NAME_DESC ->
+				createBooleanExpressions(refrigeratorId, null, ltStorageNameAndLtUpdatedAt(lastPageName, lastPageUpdatedAt));
+			case UPDATED_AT_ASC ->
+				createBooleanExpressions(refrigeratorId, null, gtStorageUpdatedAt(lastPageUpdatedAt));
+			default -> createBooleanExpressions(refrigeratorId, null, ltStorageUpdatedAt(lastPageUpdatedAt));
 		};
 	}
 
 	private OrderSpecifier<?>[] getOrderSpecifier(String sortBy) {
 		SortTypeUtils sortType = SortTypeUtils.findSortType(sortBy);
 
-		switch (sortType) {
-			case NAME_ASC -> {
-				return new OrderSpecifier[]{
-					storage.name.asc(), storage.updatedAt.desc()
-				};
-			}
-
-			case NAME_DESC -> {
-				return new OrderSpecifier[]{
-					storage.name.desc(), storage.updatedAt.desc()
-				};
-			}
-
-			case UPDATED_AT_ASC -> {
-				return new OrderSpecifier[]{
-					storage.updatedAt.asc()
-				};
-			}
-		}
-
-		return new OrderSpecifier[]{
-			storage.updatedAt.desc()
+		return switch (sortType) {
+			case NAME_ASC -> createOrderSpecifier(storage.name.asc(), storage.updatedAt.desc());
+			case NAME_DESC -> createOrderSpecifier(storage.name.desc(), storage.updatedAt.desc());
+			case UPDATED_AT_ASC -> createOrderSpecifier(null, storage.updatedAt.asc());
+			default -> createOrderSpecifier(null, storage.updatedAt.desc());
 		};
 	}
 
-	private BooleanExpression[] getBooleanExpressionForRefrigeratorIdAndStorageType(Long refrigeratorId, StorageType storageType, String lastPageName, LocalDateTime lastPageUpdatedAt, String sortBy) {
+	private OrderSpecifier<?>[] createOrderSpecifier(OrderSpecifier<String> nameOrderSpecifier, OrderSpecifier<LocalDateTime> updatedAtOrderSpecifier) {
+
+		return Optional.ofNullable(nameOrderSpecifier)
+			.map(nameSpecifier -> new OrderSpecifier<?>[]{nameSpecifier, updatedAtOrderSpecifier})
+			.orElse(new OrderSpecifier<?>[]{updatedAtOrderSpecifier});
+	}
+
+	private BooleanExpression[] createBooleanExpressions(Long refrigeratorId, StorageType storageType, BooleanExpression booleanExpression) {
+
+		return Optional.ofNullable(storageType)
+			.map(type -> new BooleanExpression[]{
+				storage.refrigerator.id.eq(refrigeratorId),
+				storage.storageType.eq(type),
+				booleanExpression})
+			.orElse(new BooleanExpression[]{
+				storage.refrigerator.id.eq(refrigeratorId),
+				booleanExpression});
+	}
+
+	private BooleanExpression[] getBooleanExpressionByRefrigeratorIdAndStorageType(Long refrigeratorId, StorageType storageType, String lastPageName, LocalDateTime lastPageUpdatedAt, String sortBy) {
 		SortTypeUtils sortType = SortTypeUtils.findSortType(sortBy);
 
-		switch (sortType) {
-			case NAME_ASC -> {
-				return new BooleanExpression[]{
-					storage.refrigerator.id.eq(refrigeratorId),
-					storage.storageType.eq(storageType),
-					gtStorageNameAndLtUpdatedAt(lastPageName, lastPageUpdatedAt)
-				};
-			}
-
-			case NAME_DESC -> {
-				return new BooleanExpression[]{
-					storage.refrigerator.id.eq(refrigeratorId),
-					storage.storageType.eq(storageType),
-					ltStorageNameAndLtUpdatedAt(lastPageName, lastPageUpdatedAt)
-				};
-			}
-
-			case UPDATED_AT_ASC -> {
-				return new BooleanExpression[]{
-					storage.refrigerator.id.eq(refrigeratorId),
-					storage.storageType.eq(storageType),
-					gtStorageUpdatedAt(lastPageUpdatedAt)
-				};
-			}
-		}
-
-		return new BooleanExpression[] {
-			storage.refrigerator.id.eq(refrigeratorId),
-			storage.storageType.eq(storageType),
-			ltStorageUpdatedAt(lastPageUpdatedAt)
+		return switch (sortType) {
+			case NAME_ASC ->
+				createBooleanExpressions(refrigeratorId, storageType, gtStorageNameAndLtUpdatedAt(lastPageName, lastPageUpdatedAt));
+			case NAME_DESC ->
+				createBooleanExpressions(refrigeratorId, storageType, ltStorageNameAndLtUpdatedAt(lastPageName, lastPageUpdatedAt));
+			case UPDATED_AT_ASC ->
+				createBooleanExpressions(refrigeratorId, storageType, gtStorageUpdatedAt(lastPageUpdatedAt));
+			default -> createBooleanExpressions(refrigeratorId, storageType, ltStorageUpdatedAt(lastPageUpdatedAt));
 		};
 	}
 
@@ -188,18 +151,16 @@ public class StorageRepositoryImpl implements StorageRepositoryCustom {
 	}
 
 	private BooleanExpression gtStorageUpdatedAt(LocalDateTime updatedAt) {
-		if (updatedAt == null) {
-			return null;
-		}
 
-		return storage.updatedAt.gt(updatedAt);
+		return Optional.ofNullable(updatedAt)
+			.map(storage.updatedAt::gt)
+			.orElse(null);
 	}
 
 	private BooleanExpression ltStorageUpdatedAt(LocalDateTime updatedAt) {
-		if (updatedAt == null) {
-			return null;
-		}
 
-		return storage.updatedAt.lt(updatedAt);
+		return Optional.ofNullable(updatedAt)
+			.map(storage.updatedAt::lt)
+			.orElse(null);
 	}
 }
