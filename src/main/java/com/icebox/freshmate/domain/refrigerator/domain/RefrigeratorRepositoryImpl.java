@@ -78,19 +78,17 @@ public class RefrigeratorRepositoryImpl implements RefrigeratorRepositoryCustom 
 	}
 
 	private BooleanExpression gtRefrigeratorUpdatedAt(LocalDateTime updatedAt) {
-		if (updatedAt == null) {
-			return null;
-		}
 
-		return refrigerator.updatedAt.gt(updatedAt);
+		return Optional.ofNullable(updatedAt)
+			.map(refrigerator.updatedAt::gt)
+			.orElse(null);
 	}
 
 	private BooleanExpression ltRefrigeratorUpdatedAt(LocalDateTime updatedAt) {
-		if (updatedAt == null) {
-			return null;
-		}
 
-		return refrigerator.updatedAt.lt(updatedAt);
+		return Optional.ofNullable(updatedAt)
+			.map(refrigerator.updatedAt::lt)
+			.orElse(null);
 	}
 
 	private BooleanExpression[] getBooleanExpression(Long memberId, String lastPageName, LocalDateTime lastPageUpdatedAt, String sortBy) {
