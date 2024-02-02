@@ -48,7 +48,7 @@ public class RefrigeratorController {
 	}
 
 	@GetMapping
-	public ResponseEntity<RefrigeratorsRes> findAll(@RequestParam(value = "sort-by", required = false, defaultValue = "updatedAt") String sortBy,
+	public ResponseEntity<RefrigeratorsRes> findAll(@RequestParam(value = "sort-by", required = false, defaultValue = "updatedAtDesc") String sortBy,
 													@RequestParam(value= "last-page-name", required = false) String lastPageName,
 													@RequestParam(value = "last-page-updated-at", required = false) String lastPageUpdatedAt,
 													@RequestParam(required = false, defaultValue = "0") int page,

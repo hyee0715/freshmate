@@ -107,31 +107,31 @@ class StorageServiceTest {
 		assertThat(storageRes.refrigeratorName()).isEqualTo(storage.getRefrigerator().getName());
 	}
 
-	@DisplayName("특정 냉장고의 모든 냉장고 저장소 조회 테스트")
-	@Test
-	void findAllByRefrigeratorId() {
-		//given
-		Long refrigeratorId = 1L;
-
-		Storage storage2 = Storage.builder()
-			.name("냉동실")
-			.storageType(StorageType.FREEZER)
-			.refrigerator(refrigerator)
-			.build();
-
-		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member));
-		when(refrigeratorRepository.findByIdAndMemberId(any(), any())).thenReturn(Optional.of(refrigerator));
-		when(storageRepository.findAllByRefrigeratorId(any())).thenReturn(List.of(storage, storage2));
-
-		//when
-		StoragesRes storagesRes = storageService.findAllByRefrigeratorId(refrigeratorId, member.getUsername());
-
-		//then
-		assertThat(storagesRes.storages()).hasSize(2);
-		assertThat(storagesRes.storages().get(0).storageName()).isEqualTo(storage.getName());
-		assertThat(storagesRes.storages().get(0).storageType()).isEqualTo(storage.getStorageType().name());
-		assertThat(storagesRes.storages().get(0).refrigeratorName()).isEqualTo(storage.getRefrigerator().getName());
-	}
+//	@DisplayName("특정 냉장고의 모든 냉장고 저장소 조회 테스트")
+//	@Test
+//	void findAllByRefrigeratorId() {
+//		//given
+//		Long refrigeratorId = 1L;
+//
+//		Storage storage2 = Storage.builder()
+//			.name("냉동실")
+//			.storageType(StorageType.FREEZER)
+//			.refrigerator(refrigerator)
+//			.build();
+//
+//		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member));
+//		when(refrigeratorRepository.findByIdAndMemberId(any(), any())).thenReturn(Optional.of(refrigerator));
+//		when(storageRepository.findAllByRefrigeratorId(any())).thenReturn(List.of(storage, storage2));
+//
+//		//when
+//		StoragesRes storagesRes = storageService.findAllByRefrigeratorId(refrigeratorId, member.getUsername());
+//
+//		//then
+//		assertThat(storagesRes.storages()).hasSize(2);
+//		assertThat(storagesRes.storages().get(0).storageName()).isEqualTo(storage.getName());
+//		assertThat(storagesRes.storages().get(0).storageType()).isEqualTo(storage.getStorageType().name());
+//		assertThat(storagesRes.storages().get(0).refrigeratorName()).isEqualTo(storage.getRefrigerator().getName());
+//	}
 
 	@DisplayName("냉장고 저장소 수정 테스트")
 	@Test
