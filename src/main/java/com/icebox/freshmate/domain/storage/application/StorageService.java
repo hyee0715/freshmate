@@ -148,8 +148,10 @@ public class StorageService {
 
 	private StorageType findStorageType(String storageType) {
 		try {
+
 			return StorageType.findStorageType(storageType);
 		} catch (BusinessException e) {
+
 			return null;
 		}
 	}
