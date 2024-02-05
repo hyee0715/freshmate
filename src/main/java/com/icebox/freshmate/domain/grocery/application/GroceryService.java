@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,9 +21,11 @@ import com.icebox.freshmate.domain.grocery.application.dto.request.GroceryReq;
 import com.icebox.freshmate.domain.grocery.application.dto.response.GroceriesRes;
 import com.icebox.freshmate.domain.grocery.application.dto.response.GroceryRes;
 import com.icebox.freshmate.domain.grocery.domain.Grocery;
+import com.icebox.freshmate.domain.grocery.domain.GroceryExpirationType;
 import com.icebox.freshmate.domain.grocery.domain.GroceryImage;
 import com.icebox.freshmate.domain.grocery.domain.GroceryImageRepository;
 import com.icebox.freshmate.domain.grocery.domain.GroceryRepository;
+import com.icebox.freshmate.domain.grocery.domain.GroceryType;
 import com.icebox.freshmate.domain.image.application.ImageService;
 import com.icebox.freshmate.domain.image.application.dto.request.ImageDeleteReq;
 import com.icebox.freshmate.domain.image.application.dto.request.ImageUploadReq;
@@ -34,6 +38,7 @@ import com.icebox.freshmate.domain.storage.domain.Storage;
 import com.icebox.freshmate.domain.storage.domain.StorageRepository;
 import com.icebox.freshmate.global.error.exception.BusinessException;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
+import com.icebox.freshmate.global.util.SortTypeUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -90,10 +95,55 @@ public class GroceryService {
 	}
 
 	@Transactional(readOnly = true)
-	public GroceriesRes findAllByStorageId(Long storageId, String username) {
+	public GroceriesRes findAllByStorageId(Long storageId, String sortBy, String groceryType, String groceryExpirationType, Pageable pageable, String username) {
 		Member member = getMemberByUsername(username);
 
-		List<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberId(storageId, member.getId());
+		Storage storage = getStorageByIdAndMemberId(storageId, member.getId());
+
+		GroceryType type = findGroceryType(groceryType);
+		GroceryExpirationType expirationType = findGroceryExpirationType(groceryExpirationType);
+		SortTypeUtils sortType = SortTypeUtils.findSortType(sortBy);
+
+		Slice<Grocery> groceries = null;
+
+		if (type == null) {
+			if (expirationType != null) {
+				switch (sortType) {
+					case NAME_ASC -> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderByNameAsc(storage.getId(), member.getId(), expirationType, pageable);
+					case NAME_DESC -> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderByNameDesc(storage.getId(), member.getId(), expirationType, pageable);
+					case UPDATED_AT_ASC -> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderByUpdatedAtAsc(storage.getId(), member.getId(), expirationType, pageable);
+					case UPDATED_AT_DESC -> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderByUpdatedAtDesc(storage.getId(), member.getId(), expirationType, pageable);
+					case EXPIRATION_DATE_ASC -> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderByExpirationDateAsc(storage.getId(), member.getId(), expirationType, pageable);
+					case EXPIRATION_DATE_DESC -> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderByExpirationDateDesc(storage.getId(), member.getId(), expirationType, pageable);
+				}
+
+			} else {
+				switch (sortType) {
+					case NAME_ASC -> groceries = groceryRepository.findAllByStorageIdAndMemberIdOrderByNameAsc(storage.getId(), member.getId(), pageable);
+					case NAME_DESC -> groceries = groceryRepository.findAllByStorageIdAndMemberIdOrderByNameDesc(storage.getId(), member.getId(), pageable);
+					case UPDATED_AT_ASC -> groceries = groceryRepository.findAllByStorageIdAndMemberIdOrderByUpdatedAtAsc(storage.getId(), member.getId(), pageable);
+					case UPDATED_AT_DESC -> groceries = groceryRepository.findAllByStorageIdAndMemberIdOrderByUpdatedAtDesc(storage.getId(), member.getId(), pageable);
+				}
+			}
+		} else {
+			if (expirationType != null) {
+				switch (sortType) {
+					case NAME_ASC -> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderByNameAsc(storage.getId(), member.getId(), type, expirationType, pageable);
+					case NAME_DESC -> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderByNameDesc(storage.getId(), member.getId(), type, expirationType, pageable);
+					case UPDATED_AT_ASC -> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderByUpdatedAtAsc(storage.getId(), member.getId(), type, expirationType, pageable);
+					case UPDATED_AT_DESC -> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderByUpdatedAtDesc(storage.getId(), member.getId(), type, expirationType, pageable);
+					case EXPIRATION_DATE_ASC -> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderByExpirationDateAsc(storage.getId(), member.getId(), type, expirationType, pageable);
+					case EXPIRATION_DATE_DESC -> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderByExpirationDateDesc(storage.getId(), member.getId(), type, expirationType, pageable);
+				}
+			} else {
+				switch (sortType) {
+					case NAME_ASC -> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeOrderByNameAsc(storage.getId(), member.getId(), type, pageable);
+					case NAME_DESC -> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeOrderByNameDesc(storage.getId(), member.getId(), type, pageable);
+					case UPDATED_AT_ASC -> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeOrderByUpdatedAtAsc(storage.getId(), member.getId(), type, pageable);
+					case UPDATED_AT_DESC -> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeOrderByUpdatedAtDesc(storage.getId(), member.getId(), type, pageable);
+				}
+			}
+		}
 
 		return GroceriesRes.from(groceries);
 	}
@@ -257,5 +307,25 @@ public class GroceryService {
 
 				return new EntityNotFoundException(NOT_FOUND_IMAGE);
 			});
+	}
+
+	private GroceryType findGroceryType(String groceryType) {
+		try {
+
+			return GroceryType.findGroceryType(groceryType);
+		} catch (BusinessException e) {
+
+			return null;
+		}
+	}
+
+	private GroceryExpirationType findGroceryExpirationType(String groceryExpirationType) {
+		try {
+
+			return GroceryExpirationType.findGroceryExpirationType(groceryExpirationType);
+		} catch (BusinessException e) {
+
+			return null;
+		}
 	}
 }

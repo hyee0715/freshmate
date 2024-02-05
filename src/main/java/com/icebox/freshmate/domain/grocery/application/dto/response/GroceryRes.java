@@ -26,6 +26,10 @@ public record GroceryRes(
 
 	@JsonFormat(shape = STRING, pattern = "YYYY-MM-dd HH:mm", timezone = "Asia/Seoul")
 	LocalDateTime createdAt,
+
+	@JsonFormat(shape = STRING, pattern = "YYYY-MM-dd HH:mm", timezone = "Asia/Seoul")
+	LocalDateTime updatedAt,
+
 	List<ImageRes> images
 ) {
 
@@ -42,6 +46,7 @@ public record GroceryRes(
 			grocery.getStorage().getName(),
 			grocery.getGroceryExpirationType().name(),
 			grocery.getCreatedAt(),
+			grocery.getUpdatedAt(),
 			imagesRes
 		);
 	}

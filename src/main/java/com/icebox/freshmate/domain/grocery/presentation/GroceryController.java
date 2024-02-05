@@ -2,6 +2,7 @@ package com.icebox.freshmate.domain.grocery.presentation;
 
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +33,8 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/groceries")
 @RestController
 public class GroceryController {
+
+	private static final String DEFAULT_PAGE_SIZE = "5";
 
 	private final GroceryService groceryService;
 
@@ -61,8 +65,17 @@ public class GroceryController {
 	}
 
 	@GetMapping("/storages/{storageId}")
-	public ResponseEntity<GroceriesRes> findAllByStorageId(@PathVariable Long storageId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		GroceriesRes groceriesRes = groceryService.findAllByStorageId(storageId, principalDetails.getUsername());
+	public ResponseEntity<GroceriesRes> findAllByStorageId(@PathVariable Long storageId,
+														   @RequestParam(value = "sort-by", required = false, defaultValue = "updatedAtDesc") String sortBy,
+														   @RequestParam(value = "grocery-type", required = false, defaultValue = "all") String groceryType,
+														   @RequestParam(value = "expiration-type", required = false, defaultValue = "all") String groceryExpirationType,
+														   @RequestParam(required = false, defaultValue = "0") int page,
+														   @RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) int size,
+														   @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		page = Math.max(page - 1, 0);
+		PageRequest pageable = PageRequest.of(page, size);
+
+		GroceriesRes groceriesRes = groceryService.findAllByStorageId(storageId, sortBy, groceryType, groceryExpirationType, pageable, principalDetails.getUsername());
 
 		return ResponseEntity.ok(groceriesRes);
 	}

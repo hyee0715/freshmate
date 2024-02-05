@@ -2,15 +2,18 @@ package com.icebox.freshmate.domain.grocery.application.dto.response;
 
 import java.util.List;
 
+import org.springframework.data.domain.Slice;
+
 import com.icebox.freshmate.domain.grocery.domain.Grocery;
 import com.icebox.freshmate.domain.grocery.domain.GroceryImage;
 import com.icebox.freshmate.domain.image.application.dto.response.ImageRes;
 
 public record GroceriesRes(
-	List<GroceryRes> groceries
+	List<GroceryRes> groceries,
+	boolean hasNext
 ) {
 
-	public static GroceriesRes from(List<Grocery> groceries) {
+	public static GroceriesRes from(Slice<Grocery> groceries) {
 		List<GroceryRes> groceriesRes = groceries.stream()
 			.map(grocery ->
 			{
@@ -20,7 +23,7 @@ public record GroceriesRes(
 			})
 			.toList();
 
-		return new GroceriesRes(groceriesRes);
+		return new GroceriesRes(groceriesRes, groceries.hasNext());
 	}
 
 	private static List<ImageRes> getGroceryImagesRes(Grocery grocery) {

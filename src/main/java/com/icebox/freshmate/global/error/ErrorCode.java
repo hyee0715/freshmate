@@ -40,6 +40,7 @@ public enum ErrorCode {
 	//식료품
 	INVALID_GROCERY_TYPE("G001", "유효하지 않은 식료품 타입입니다."),
 	NOT_FOUND_GROCERY("G002", "식료품이 존재하지 않습니다."),
+	INVALID_GROCERY_EXPIRATION_TYPE("G003", "유효하지 않은 식료품 유통기한 타입입니다."),
 
 	//즐겨 찾는 식료품
 	NOT_FOUND_GROCERY_BUCKET("GB001", "즐겨 찾는 식료품이 존재하지 않습니다."),
