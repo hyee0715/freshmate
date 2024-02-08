@@ -1,6 +1,9 @@
 package com.icebox.freshmate.domain.grocery.domain;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -9,6 +12,8 @@ import org.springframework.data.domain.SliceImpl;
 import com.icebox.freshmate.domain.member.domain.QMember;
 import com.icebox.freshmate.domain.refrigerator.domain.QRefrigerator;
 import com.icebox.freshmate.domain.storage.domain.QStorage;
+import com.icebox.freshmate.global.util.SortTypeUtils;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -23,7 +28,9 @@ public class GroceryRepositoryImpl implements GroceryRepositoryCustom {
 	private final QMember member = QMember.member;
 
 	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdOrderByNameAsc(Long storageId, Long memberId, Pageable pageable) {
+	public Slice<Grocery> findAllByStorageIdAndMemberIdOrderBySortCondition(Long storageId, Long memberId, Pageable pageable, String sortBy) {
+		OrderSpecifier<?>[] orderSpecifier = getOrderSpecifier(sortBy);
+
 		List<Grocery> groceries = queryFactory.select(grocery)
 			.from(grocery)
 			.join(grocery.storage, storage).fetchJoin()
@@ -31,7 +38,7 @@ public class GroceryRepositoryImpl implements GroceryRepositoryCustom {
 			.join(refrigerator.member, member).fetchJoin()
 			.where(storage.id.eq(storageId),
 				member.id.eq(memberId))
-			.orderBy(grocery.name.asc(), grocery.updatedAt.desc())
+			.orderBy(orderSpecifier)
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
@@ -40,58 +47,9 @@ public class GroceryRepositoryImpl implements GroceryRepositoryCustom {
 	}
 
 	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdOrderByNameDesc(Long storageId, Long memberId, Pageable pageable) {
-		List<Grocery> groceries = queryFactory.select(grocery)
-			.from(grocery)
-			.join(grocery.storage, storage).fetchJoin()
-			.join(storage.refrigerator, refrigerator).fetchJoin()
-			.join(refrigerator.member, member).fetchJoin()
-			.where(storage.id.eq(storageId),
-				member.id.eq(memberId))
-			.orderBy(grocery.name.desc(), grocery.updatedAt.desc())
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize() + 1)
-			.fetch();
+	public Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderBySortCondition(Long storageId, Long memberId, GroceryExpirationType groceryExpirationType, Pageable pageable, String sortBy) {
+		OrderSpecifier<?>[] orderSpecifier = getOrderSpecifier(sortBy);
 
-		return checkLastPage(pageable, groceries);
-	}
-
-	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdOrderByUpdatedAtAsc(Long storageId, Long memberId, Pageable pageable) {
-		List<Grocery> groceries = queryFactory.select(grocery)
-			.from(grocery)
-			.join(grocery.storage, storage).fetchJoin()
-			.join(storage.refrigerator, refrigerator).fetchJoin()
-			.join(refrigerator.member, member).fetchJoin()
-			.where(storage.id.eq(storageId),
-				member.id.eq(memberId))
-			.orderBy(grocery.updatedAt.asc())
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize() + 1)
-			.fetch();
-
-		return checkLastPage(pageable, groceries);
-	}
-
-	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdOrderByUpdatedAtDesc(Long storageId, Long memberId, Pageable pageable) {
-		List<Grocery> groceries = queryFactory.select(grocery)
-			.from(grocery)
-			.join(grocery.storage, storage).fetchJoin()
-			.join(storage.refrigerator, refrigerator).fetchJoin()
-			.join(refrigerator.member, member).fetchJoin()
-			.where(storage.id.eq(storageId),
-				member.id.eq(memberId))
-			.orderBy(grocery.updatedAt.desc())
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize() + 1)
-			.fetch();
-
-		return checkLastPage(pageable, groceries);
-	}
-
-	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderByNameAsc(Long storageId, Long memberId, GroceryExpirationType groceryExpirationType, Pageable pageable) {
 		List<Grocery> groceries = queryFactory.select(grocery)
 			.from(grocery)
 			.join(grocery.storage, storage).fetchJoin()
@@ -100,106 +58,19 @@ public class GroceryRepositoryImpl implements GroceryRepositoryCustom {
 			.where(storage.id.eq(storageId),
 				member.id.eq(memberId),
 				grocery.groceryExpirationType.eq(groceryExpirationType))
-			.orderBy(grocery.name.asc(), grocery.updatedAt.desc())
+			.orderBy(orderSpecifier)
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
 
 		return checkLastPage(pageable, groceries);
+
 	}
 
 	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderByNameDesc(Long storageId, Long memberId, GroceryExpirationType groceryExpirationType, Pageable pageable) {
-		List<Grocery> groceries = queryFactory.select(grocery)
-			.from(grocery)
-			.join(grocery.storage, storage).fetchJoin()
-			.join(storage.refrigerator, refrigerator).fetchJoin()
-			.join(refrigerator.member, member).fetchJoin()
-			.where(storage.id.eq(storageId),
-				member.id.eq(memberId),
-				grocery.groceryExpirationType.eq(groceryExpirationType))
-			.orderBy(grocery.name.desc(), grocery.updatedAt.desc())
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize() + 1)
-			.fetch();
+	public Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderBySortCondition(Long storageId, Long memberId, GroceryType groceryType, GroceryExpirationType groceryExpirationType, Pageable pageable, String sortBy) {
+		OrderSpecifier<?>[] orderSpecifier = getOrderSpecifier(sortBy);
 
-		return checkLastPage(pageable, groceries);
-	}
-
-	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderByUpdatedAtAsc(Long storageId, Long memberId, GroceryExpirationType groceryExpirationType, Pageable pageable) {
-		List<Grocery> groceries = queryFactory.select(grocery)
-			.from(grocery)
-			.join(grocery.storage, storage).fetchJoin()
-			.join(storage.refrigerator, refrigerator).fetchJoin()
-			.join(refrigerator.member, member).fetchJoin()
-			.where(storage.id.eq(storageId),
-				member.id.eq(memberId),
-				grocery.groceryExpirationType.eq(groceryExpirationType))
-			.orderBy(grocery.updatedAt.asc())
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize() + 1)
-			.fetch();
-
-		return checkLastPage(pageable, groceries);
-	}
-
-	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderByUpdatedAtDesc(Long storageId, Long memberId, GroceryExpirationType groceryExpirationType, Pageable pageable) {
-		List<Grocery> groceries = queryFactory.select(grocery)
-			.from(grocery)
-			.join(grocery.storage, storage).fetchJoin()
-			.join(storage.refrigerator, refrigerator).fetchJoin()
-			.join(refrigerator.member, member).fetchJoin()
-			.where(storage.id.eq(storageId),
-				member.id.eq(memberId),
-				grocery.groceryExpirationType.eq(groceryExpirationType))
-			.orderBy(grocery.updatedAt.desc())
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize() + 1)
-			.fetch();
-
-		return checkLastPage(pageable, groceries);
-	}
-
-	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderByExpirationDateAsc(Long storageId, Long memberId, GroceryExpirationType groceryExpirationType, Pageable pageable) {
-		List<Grocery> groceries = queryFactory.select(grocery)
-			.from(grocery)
-			.join(grocery.storage, storage).fetchJoin()
-			.join(storage.refrigerator, refrigerator).fetchJoin()
-			.join(refrigerator.member, member).fetchJoin()
-			.where(storage.id.eq(storageId),
-				member.id.eq(memberId),
-				grocery.groceryExpirationType.eq(groceryExpirationType))
-			.orderBy(grocery.expirationDate.asc(), grocery.updatedAt.desc())
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize() + 1)
-			.fetch();
-
-		return checkLastPage(pageable, groceries);
-	}
-
-	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderByExpirationDateDesc(Long storageId, Long memberId, GroceryExpirationType groceryExpirationType, Pageable pageable) {
-		List<Grocery> groceries = queryFactory.select(grocery)
-			.from(grocery)
-			.join(grocery.storage, storage).fetchJoin()
-			.join(storage.refrigerator, refrigerator).fetchJoin()
-			.join(refrigerator.member, member).fetchJoin()
-			.where(storage.id.eq(storageId),
-				member.id.eq(memberId),
-				grocery.groceryExpirationType.eq(groceryExpirationType))
-			.orderBy(grocery.expirationDate.desc(), grocery.updatedAt.desc())
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize() + 1)
-			.fetch();
-
-		return checkLastPage(pageable, groceries);
-	}
-
-	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderByNameAsc(Long storageId, Long memberId, GroceryType groceryType, GroceryExpirationType groceryExpirationType, Pageable pageable) {
 		List<Grocery> groceries = queryFactory.select(grocery)
 			.from(grocery)
 			.join(grocery.storage, storage).fetchJoin()
@@ -209,7 +80,7 @@ public class GroceryRepositoryImpl implements GroceryRepositoryCustom {
 				member.id.eq(memberId),
 				grocery.groceryType.eq(groceryType),
 				grocery.groceryExpirationType.eq(groceryExpirationType))
-			.orderBy(grocery.name.asc(), grocery.updatedAt.desc())
+			.orderBy(orderSpecifier)
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
@@ -218,102 +89,9 @@ public class GroceryRepositoryImpl implements GroceryRepositoryCustom {
 	}
 
 	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderByNameDesc(Long storageId, Long memberId, GroceryType groceryType, GroceryExpirationType groceryExpirationType, Pageable pageable) {
-		List<Grocery> groceries = queryFactory.select(grocery)
-			.from(grocery)
-			.join(grocery.storage, storage).fetchJoin()
-			.join(storage.refrigerator, refrigerator).fetchJoin()
-			.join(refrigerator.member, member).fetchJoin()
-			.where(storage.id.eq(storageId),
-				member.id.eq(memberId),
-				grocery.groceryType.eq(groceryType),
-				grocery.groceryExpirationType.eq(groceryExpirationType))
-			.orderBy(grocery.name.desc(), grocery.updatedAt.desc())
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize() + 1)
-			.fetch();
+	public Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryTypeOrderBySortCondition(Long storageId, Long memberId, GroceryType groceryType, Pageable pageable, String sortBy) {
+		OrderSpecifier<?>[] orderSpecifier = getOrderSpecifier(sortBy);
 
-		return checkLastPage(pageable, groceries);
-	}
-
-	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderByUpdatedAtAsc(Long storageId, Long memberId, GroceryType groceryType, GroceryExpirationType groceryExpirationType, Pageable pageable) {
-		List<Grocery> groceries = queryFactory.select(grocery)
-			.from(grocery)
-			.join(grocery.storage, storage).fetchJoin()
-			.join(storage.refrigerator, refrigerator).fetchJoin()
-			.join(refrigerator.member, member).fetchJoin()
-			.where(storage.id.eq(storageId),
-				member.id.eq(memberId),
-				grocery.groceryType.eq(groceryType),
-				grocery.groceryExpirationType.eq(groceryExpirationType))
-			.orderBy(grocery.updatedAt.asc())
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize() + 1)
-			.fetch();
-
-		return checkLastPage(pageable, groceries);
-	}
-
-	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderByUpdatedAtDesc(Long storageId, Long memberId, GroceryType groceryType, GroceryExpirationType groceryExpirationType, Pageable pageable) {
-		List<Grocery> groceries = queryFactory.select(grocery)
-			.from(grocery)
-			.join(grocery.storage, storage).fetchJoin()
-			.join(storage.refrigerator, refrigerator).fetchJoin()
-			.join(refrigerator.member, member).fetchJoin()
-			.where(storage.id.eq(storageId),
-				member.id.eq(memberId),
-				grocery.groceryType.eq(groceryType),
-				grocery.groceryExpirationType.eq(groceryExpirationType))
-			.orderBy(grocery.updatedAt.desc())
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize() + 1)
-			.fetch();
-
-		return checkLastPage(pageable, groceries);
-	}
-
-	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderByExpirationDateAsc(Long storageId, Long memberId, GroceryType groceryType, GroceryExpirationType groceryExpirationType, Pageable pageable) {
-		List<Grocery> groceries = queryFactory.select(grocery)
-			.from(grocery)
-			.join(grocery.storage, storage).fetchJoin()
-			.join(storage.refrigerator, refrigerator).fetchJoin()
-			.join(refrigerator.member, member).fetchJoin()
-			.where(storage.id.eq(storageId),
-				member.id.eq(memberId),
-				grocery.groceryType.eq(groceryType),
-				grocery.groceryExpirationType.eq(groceryExpirationType))
-			.orderBy(grocery.expirationDate.asc(), grocery.updatedAt.desc())
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize() + 1)
-			.fetch();
-
-		return checkLastPage(pageable, groceries);
-	}
-
-	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderByExpirationDateDesc(Long storageId, Long memberId, GroceryType groceryType, GroceryExpirationType groceryExpirationType, Pageable pageable) {
-		List<Grocery> groceries = queryFactory.select(grocery)
-			.from(grocery)
-			.join(grocery.storage, storage).fetchJoin()
-			.join(storage.refrigerator, refrigerator).fetchJoin()
-			.join(refrigerator.member, member).fetchJoin()
-			.where(storage.id.eq(storageId),
-				member.id.eq(memberId),
-				grocery.groceryType.eq(groceryType),
-				grocery.groceryExpirationType.eq(groceryExpirationType))
-			.orderBy(grocery.expirationDate.desc(), grocery.updatedAt.desc())
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize() + 1)
-			.fetch();
-
-		return checkLastPage(pageable, groceries);
-	}
-
-	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryTypeOrderByNameAsc(Long storageId, Long memberId, GroceryType groceryType, Pageable pageable) {
 		List<Grocery> groceries = queryFactory.select(grocery)
 			.from(grocery)
 			.join(grocery.storage, storage).fetchJoin()
@@ -322,61 +100,7 @@ public class GroceryRepositoryImpl implements GroceryRepositoryCustom {
 			.where(storage.id.eq(storageId),
 				member.id.eq(memberId),
 				grocery.groceryType.eq(groceryType))
-			.orderBy(grocery.name.asc(), grocery.updatedAt.desc())
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize() + 1)
-			.fetch();
-
-		return checkLastPage(pageable, groceries);
-	}
-
-	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryTypeOrderByNameDesc(Long storageId, Long memberId, GroceryType groceryType, Pageable pageable) {
-		List<Grocery> groceries = queryFactory.select(grocery)
-			.from(grocery)
-			.join(grocery.storage, storage).fetchJoin()
-			.join(storage.refrigerator, refrigerator).fetchJoin()
-			.join(refrigerator.member, member).fetchJoin()
-			.where(storage.id.eq(storageId),
-				member.id.eq(memberId),
-				grocery.groceryType.eq(groceryType))
-			.orderBy(grocery.name.desc(), grocery.updatedAt.desc())
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize() + 1)
-			.fetch();
-
-		return checkLastPage(pageable, groceries);
-	}
-
-	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryTypeOrderByUpdatedAtAsc(Long storageId, Long memberId, GroceryType groceryType, Pageable pageable) {
-		List<Grocery> groceries = queryFactory.select(grocery)
-			.from(grocery)
-			.join(grocery.storage, storage).fetchJoin()
-			.join(storage.refrigerator, refrigerator).fetchJoin()
-			.join(refrigerator.member, member).fetchJoin()
-			.where(storage.id.eq(storageId),
-				member.id.eq(memberId),
-				grocery.groceryType.eq(groceryType))
-			.orderBy(grocery.updatedAt.asc())
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize() + 1)
-			.fetch();
-
-		return checkLastPage(pageable, groceries);
-	}
-
-	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryTypeOrderByUpdatedAtDesc(Long storageId, Long memberId, GroceryType groceryType, Pageable pageable) {
-		List<Grocery> groceries = queryFactory.select(grocery)
-			.from(grocery)
-			.join(grocery.storage, storage).fetchJoin()
-			.join(storage.refrigerator, refrigerator).fetchJoin()
-			.join(refrigerator.member, member).fetchJoin()
-			.where(storage.id.eq(storageId),
-				member.id.eq(memberId),
-				grocery.groceryType.eq(groceryType))
-			.orderBy(grocery.updatedAt.desc())
+			.orderBy(orderSpecifier)
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
@@ -393,5 +117,29 @@ public class GroceryRepositoryImpl implements GroceryRepositoryCustom {
 		}
 
 		return new SliceImpl<>(groceries, pageable, hasNext);
+	}
+
+	private OrderSpecifier<?>[] getOrderSpecifier(String sortBy) {
+		SortTypeUtils sortType = SortTypeUtils.findSortType(sortBy);
+
+		return switch (sortType) {
+			case NAME_ASC -> createOrderSpecifier(grocery.name.asc(), grocery.updatedAt.desc(), null);
+			case NAME_DESC -> createOrderSpecifier(grocery.name.desc(), grocery.updatedAt.desc(), null);
+			case UPDATED_AT_ASC -> createOrderSpecifier(null, grocery.updatedAt.asc(), null);
+			case UPDATED_AT_DESC -> createOrderSpecifier(null, grocery.updatedAt.desc(), null);
+			case EXPIRATION_DATE_ASC -> createOrderSpecifier(null, grocery.updatedAt.desc(), grocery.expirationDate.asc());
+			default -> createOrderSpecifier(null, grocery.updatedAt.desc(), grocery.expirationDate.desc());
+		};
+	}
+
+	private OrderSpecifier<?>[] createOrderSpecifier(OrderSpecifier<String> nameOrderSpecifier, OrderSpecifier<LocalDateTime> updatedAtOrderSpecifier, OrderSpecifier<LocalDate> expirationDateOrderSpecifier) {
+
+		return Optional.ofNullable(nameOrderSpecifier)
+			.map(name -> Optional.ofNullable(expirationDateOrderSpecifier)
+				.map(expiration -> new OrderSpecifier<?>[]{updatedAtOrderSpecifier})
+				.orElse(new OrderSpecifier<?>[]{nameOrderSpecifier, updatedAtOrderSpecifier}))
+			.orElseGet(() -> Optional.ofNullable(expirationDateOrderSpecifier)
+				.map(expiration -> new OrderSpecifier<?>[]{expiration, updatedAtOrderSpecifier})
+				.orElse(new OrderSpecifier<?>[]{updatedAtOrderSpecifier}));
 	}
 }
