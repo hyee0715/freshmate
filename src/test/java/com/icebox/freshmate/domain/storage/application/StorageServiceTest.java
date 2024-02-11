@@ -16,6 +16,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.SliceImpl;
 
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
@@ -107,31 +109,37 @@ class StorageServiceTest {
 		assertThat(storageRes.refrigeratorName()).isEqualTo(storage.getRefrigerator().getName());
 	}
 
-//	@DisplayName("특정 냉장고의 모든 냉장고 저장소 조회 테스트")
-//	@Test
-//	void findAllByRefrigeratorId() {
-//		//given
-//		Long refrigeratorId = 1L;
-//
-//		Storage storage2 = Storage.builder()
-//			.name("냉동실")
-//			.storageType(StorageType.FREEZER)
-//			.refrigerator(refrigerator)
-//			.build();
-//
-//		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member));
-//		when(refrigeratorRepository.findByIdAndMemberId(any(), any())).thenReturn(Optional.of(refrigerator));
-//		when(storageRepository.findAllByRefrigeratorId(any())).thenReturn(List.of(storage, storage2));
-//
-//		//when
-//		StoragesRes storagesRes = storageService.findAllByRefrigeratorId(refrigeratorId, member.getUsername());
-//
-//		//then
-//		assertThat(storagesRes.storages()).hasSize(2);
-//		assertThat(storagesRes.storages().get(0).storageName()).isEqualTo(storage.getName());
-//		assertThat(storagesRes.storages().get(0).storageType()).isEqualTo(storage.getStorageType().name());
-//		assertThat(storagesRes.storages().get(0).refrigeratorName()).isEqualTo(storage.getRefrigerator().getName());
-//	}
+	@DisplayName("특정 냉장고의 모든 냉장고 저장소 조회 테스트")
+	@Test
+	void findAllByRefrigeratorId() {
+		//given
+		Long refrigeratorId = 1L;
+
+		Storage storage2 = Storage.builder()
+			.name("냉동실")
+			.storageType(StorageType.FREEZER)
+			.refrigerator(refrigerator)
+			.build();
+
+		int page = 0;
+		int size = 5;
+		PageRequest pageRequest = PageRequest.of(page, size);
+
+		SliceImpl<Storage> storages = new SliceImpl<>(List.of(storage, storage2));
+
+		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member));
+		when(refrigeratorRepository.findByIdAndMemberId(any(), any())).thenReturn(Optional.of(refrigerator));
+		when(storageRepository.findAllByRefrigeratorIdOrderBySortCondition(any(), any(), any(), any(), any())).thenReturn(storages);
+
+		//when
+		StoragesRes storagesRes = storageService.findAllByRefrigeratorId(refrigeratorId, "updatedAtAsc", null, pageRequest, null, null, member.getUsername());
+
+		//then
+		assertThat(storagesRes.storages()).hasSize(2);
+		assertThat(storagesRes.storages().get(0).storageName()).isEqualTo(storage.getName());
+		assertThat(storagesRes.storages().get(0).storageType()).isEqualTo(storage.getStorageType().name());
+		assertThat(storagesRes.storages().get(0).refrigeratorName()).isEqualTo(storage.getRefrigerator().getName());
+	}
 
 	@DisplayName("냉장고 저장소 수정 테스트")
 	@Test
