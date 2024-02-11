@@ -108,7 +108,7 @@ public class GroceryService {
 		LocalDateTime lastUpdatedAt = getLastPageUpdatedAt(lastPageUpdatedAt);
 		LocalDate lastExpirationDate = getLastPageExpirationDate(lastPageExpirationDate);
 
-		Slice<Grocery> groceries = getGroceries(storage, member, pageable, sortBy, type, expirationType, lastPageName, lastExpirationDate, lastUpdatedAt);
+		Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storage.getId(), member.getId(), type, expirationType, pageable, sortBy, lastPageName, lastExpirationDate, lastUpdatedAt);
 
 		return GroceriesRes.from(groceries);
 	}
@@ -292,17 +292,6 @@ public class GroceryService {
 
 			return null;
 		}
-	}
-
-	private Slice<Grocery> getGroceries(Storage storage, Member member, Pageable pageable, String sortBy, GroceryType groceryType, GroceryExpirationType groceryExpirationType, String lastPageName, LocalDate lastPageExpirationDate, LocalDateTime lastPageUpdatedAt) {
-
-		return Optional.ofNullable(groceryType)
-			.map(type -> Optional.ofNullable(groceryExpirationType)
-				.map(expirationType -> groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderBySortCondition(storage.getId(), member.getId(), type, expirationType, pageable, sortBy, lastPageName, lastPageExpirationDate, lastPageUpdatedAt))
-				.orElseGet(() -> groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeOrderBySortCondition(storage.getId(), member.getId(), type, pageable, sortBy, lastPageName, lastPageUpdatedAt)))
-			.orElseGet(() -> Optional.ofNullable(groceryExpirationType)
-				.map(expirationType -> groceryRepository.findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderBySortCondition(storage.getId(), member.getId(), expirationType, pageable, sortBy, lastPageName, lastPageExpirationDate, lastPageUpdatedAt))
-				.orElseGet(() -> groceryRepository.findAllByStorageIdAndMemberIdOrderBySortCondition(storage.getId(), member.getId(), pageable, sortBy, lastPageName, lastPageUpdatedAt)));
 	}
 
 	private LocalDate getLastPageExpirationDate(String lastPageExpirationDate) {

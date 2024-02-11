@@ -29,63 +29,9 @@ public class GroceryRepositoryImpl implements GroceryRepositoryCustom {
 	private final QMember member = QMember.member;
 
 	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdOrderBySortCondition(Long storageId, Long memberId, Pageable pageable, String sortBy, String lastPageName, LocalDateTime lastPageUpdatedAt) {
-		OrderSpecifier<?>[] orderSpecifier = getOrderSpecifier(sortBy);
-		BooleanExpression[] booleanExpressions = getBooleanExpressionsByConditions(storageId, memberId, null, null, lastPageName, null, lastPageUpdatedAt, sortBy);
-
-		List<Grocery> groceries = queryFactory.select(grocery)
-			.from(grocery)
-			.join(grocery.storage, storage).fetchJoin()
-			.join(storage.refrigerator, refrigerator).fetchJoin()
-			.join(refrigerator.member, member).fetchJoin()
-			.where(booleanExpressions)
-			.orderBy(orderSpecifier)
-			.limit(pageable.getPageSize() + 1)
-			.fetch();
-
-		return checkLastPage(pageable, groceries);
-	}
-
-	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderBySortCondition(Long storageId, Long memberId, GroceryExpirationType groceryExpirationType, Pageable pageable, String sortBy, String lastPageName, LocalDate lastPageExpirationDate, LocalDateTime lastPageUpdatedAt) {
-		OrderSpecifier<?>[] orderSpecifier = getOrderSpecifier(sortBy);
-		BooleanExpression[] booleanExpressions = getBooleanExpressionsByConditions(storageId, memberId, null, groceryExpirationType, lastPageName, lastPageExpirationDate, lastPageUpdatedAt, sortBy);
-
-		List<Grocery> groceries = queryFactory.select(grocery)
-			.from(grocery)
-			.join(grocery.storage, storage).fetchJoin()
-			.join(storage.refrigerator, refrigerator).fetchJoin()
-			.join(refrigerator.member, member).fetchJoin()
-			.where(booleanExpressions)
-			.orderBy(orderSpecifier)
-			.limit(pageable.getPageSize() + 1)
-			.fetch();
-
-		return checkLastPage(pageable, groceries);
-	}
-
-	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderBySortCondition(Long storageId, Long memberId, GroceryType groceryType, GroceryExpirationType groceryExpirationType, Pageable pageable, String sortBy, String lastPageName, LocalDate lastPageExpirationDate, LocalDateTime lastPageUpdatedAt) {
+	public Slice<Grocery> findAllByWhereConditionsAndOrderBySortConditions(Long storageId, Long memberId, GroceryType groceryType, GroceryExpirationType groceryExpirationType, Pageable pageable, String sortBy, String lastPageName, LocalDate lastPageExpirationDate, LocalDateTime lastPageUpdatedAt) {
 		OrderSpecifier<?>[] orderSpecifier = getOrderSpecifier(sortBy);
 		BooleanExpression[] booleanExpressions = getBooleanExpressionsByConditions(storageId, memberId, groceryType, groceryExpirationType, lastPageName, lastPageExpirationDate, lastPageUpdatedAt, sortBy);
-
-		List<Grocery> groceries = queryFactory.select(grocery)
-			.from(grocery)
-			.join(grocery.storage, storage).fetchJoin()
-			.join(storage.refrigerator, refrigerator).fetchJoin()
-			.join(refrigerator.member, member).fetchJoin()
-			.where(booleanExpressions)
-			.orderBy(orderSpecifier)
-			.limit(pageable.getPageSize() + 1)
-			.fetch();
-
-		return checkLastPage(pageable, groceries);
-	}
-
-	@Override
-	public Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryTypeOrderBySortCondition(Long storageId, Long memberId, GroceryType groceryType, Pageable pageable, String sortBy, String lastPageName, LocalDateTime lastPageUpdatedAt) {
-		OrderSpecifier<?>[] orderSpecifier = getOrderSpecifier(sortBy);
-		BooleanExpression[] booleanExpressions = getBooleanExpressionsByConditions(storageId, memberId, groceryType, null, lastPageName, null, lastPageUpdatedAt, sortBy);
 
 		List<Grocery> groceries = queryFactory.select(grocery)
 			.from(grocery)

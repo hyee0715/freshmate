@@ -8,11 +8,5 @@ import org.springframework.data.domain.Slice;
 
 public interface GroceryRepositoryCustom {
 
-	Slice<Grocery> findAllByStorageIdAndMemberIdOrderBySortCondition(Long storageId, Long memberId, Pageable pageable, String sortBy, String lastPageName, LocalDateTime lastPageUpdatedAt);
-
-	Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderBySortCondition(Long storageId, Long memberId, GroceryExpirationType groceryExpirationType, Pageable pageable, String sortBy, String lastPageName, LocalDate lastPageExpirationDate, LocalDateTime lastPageUpdatedAt);
-
-	Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderBySortCondition(Long storageId, Long memberId, GroceryType groceryType, GroceryExpirationType groceryExpirationType, Pageable pageable, String sortBy, String lastPageName, LocalDate lastPageExpirationDate, LocalDateTime lastPageUpdatedAt);
-
-	Slice<Grocery> findAllByStorageIdAndMemberIdAndGroceryTypeOrderBySortCondition(Long storageId, Long memberId, GroceryType groceryType, Pageable pageable, String sortBy, String lastPageName, LocalDateTime lastPageUpdatedAt);
+	Slice<Grocery> findAllByWhereConditionsAndOrderBySortConditions(Long storageId, Long memberId, GroceryType groceryType, GroceryExpirationType groceryExpirationType, Pageable pageable, String sortBy, String lastPageName, LocalDate lastPageExpirationDate, LocalDateTime lastPageUpdatedAt);
 }
