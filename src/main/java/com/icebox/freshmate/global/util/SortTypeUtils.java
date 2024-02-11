@@ -15,7 +15,9 @@ public enum SortTypeUtils {
 	NAME_ASC("nameAsc"),
 	NAME_DESC("nameDesc"),
 	UPDATED_AT_ASC("updatedAtAsc"),
-	UPDATED_AT_DESC("updatedAtDesc");
+	UPDATED_AT_DESC("updatedAtDesc"),
+	EXPIRATION_DATE_ASC("expirationDateAsc"),
+	EXPIRATION_DATE_DESC("expirationDateDesc");
 
 	String sortType;
 

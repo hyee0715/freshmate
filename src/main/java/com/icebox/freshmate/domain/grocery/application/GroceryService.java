@@ -2,15 +2,23 @@ package com.icebox.freshmate.domain.grocery.application;
 
 import static com.icebox.freshmate.global.error.ErrorCode.EMPTY_IMAGE;
 import static com.icebox.freshmate.global.error.ErrorCode.EXCESSIVE_DELETE_IMAGE_COUNT;
+import static com.icebox.freshmate.global.error.ErrorCode.INVALID_LAST_PAGE_EXPIRATION_DATE_FORMAT;
+import static com.icebox.freshmate.global.error.ErrorCode.INVALID_LAST_PAGE_UPDATED_AT_FORMAT;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_GROCERY;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_IMAGE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_STORAGE;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,9 +27,11 @@ import com.icebox.freshmate.domain.grocery.application.dto.request.GroceryReq;
 import com.icebox.freshmate.domain.grocery.application.dto.response.GroceriesRes;
 import com.icebox.freshmate.domain.grocery.application.dto.response.GroceryRes;
 import com.icebox.freshmate.domain.grocery.domain.Grocery;
+import com.icebox.freshmate.domain.grocery.domain.GroceryExpirationType;
 import com.icebox.freshmate.domain.grocery.domain.GroceryImage;
 import com.icebox.freshmate.domain.grocery.domain.GroceryImageRepository;
 import com.icebox.freshmate.domain.grocery.domain.GroceryRepository;
+import com.icebox.freshmate.domain.grocery.domain.GroceryType;
 import com.icebox.freshmate.domain.image.application.ImageService;
 import com.icebox.freshmate.domain.image.application.dto.request.ImageDeleteReq;
 import com.icebox.freshmate.domain.image.application.dto.request.ImageUploadReq;
@@ -90,10 +100,15 @@ public class GroceryService {
 	}
 
 	@Transactional(readOnly = true)
-	public GroceriesRes findAllByStorageId(Long storageId, String username) {
+	public GroceriesRes findAllByStorageId(Long storageId, String sortBy, String groceryType, String groceryExpirationType, Pageable pageable, String lastPageName, String lastPageExpirationDate, String lastPageUpdatedAt, String username) {
 		Member member = getMemberByUsername(username);
+		Storage storage = getStorageByIdAndMemberId(storageId, member.getId());
+		GroceryType type = findGroceryType(groceryType);
+		GroceryExpirationType expirationType = findGroceryExpirationType(groceryExpirationType);
+		LocalDateTime lastUpdatedAt = getLastPageUpdatedAt(lastPageUpdatedAt);
+		LocalDate lastExpirationDate = getLastPageExpirationDate(lastPageExpirationDate);
 
-		List<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberId(storageId, member.getId());
+		Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storage.getId(), member.getId(), type, expirationType, pageable, sortBy, lastPageName, lastExpirationDate, lastUpdatedAt);
 
 		return GroceriesRes.from(groceries);
 	}
@@ -257,5 +272,80 @@ public class GroceryService {
 
 				return new EntityNotFoundException(NOT_FOUND_IMAGE);
 			});
+	}
+
+	private GroceryType findGroceryType(String groceryType) {
+		try {
+
+			return GroceryType.findGroceryType(groceryType);
+		} catch (BusinessException e) {
+
+			return null;
+		}
+	}
+
+	private GroceryExpirationType findGroceryExpirationType(String groceryExpirationType) {
+		try {
+
+			return GroceryExpirationType.findGroceryExpirationType(groceryExpirationType);
+		} catch (BusinessException e) {
+
+			return null;
+		}
+	}
+
+	private LocalDate getLastPageExpirationDate(String lastPageExpirationDate) {
+
+		return Optional.ofNullable(lastPageExpirationDate)
+				.map(expirationDate -> {
+					validateLastPageExpirationDateFormat(lastPageExpirationDate);
+
+					return LocalDate.parse(lastPageExpirationDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+				})
+					.orElse(null);
+	}
+
+	private LocalDateTime getLastPageUpdatedAt(String lastPageUpdatedAt) {
+
+		return Optional.ofNullable(lastPageUpdatedAt)
+			.map(date -> {
+				if (checkLocalDateTimeFormat(date)) {
+					date += "0";
+				}
+
+				return date;
+			})
+			.map(date -> {
+				validateLastPageUpdatedAtFormat(date);
+
+				return LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"));
+			})
+			.orElse(null);
+	}
+
+	private boolean checkLocalDateTimeFormat(String date) {
+		String pattern = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{5}";
+
+		return Pattern.matches(pattern, date);
+	}
+
+	private void validateLastPageUpdatedAtFormat(String lastPageUpdatedAt) {
+		String pattern = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}";
+
+		if (!Pattern.matches(pattern, lastPageUpdatedAt)) {
+			log.warn("GET:READ:INVALID_LAST_PAGE_UPDATED_AT_FORMAT : {}", lastPageUpdatedAt);
+
+			throw new BusinessException(INVALID_LAST_PAGE_UPDATED_AT_FORMAT);
+		}
+	}
+
+	private void validateLastPageExpirationDateFormat(String lastPageExpirationDate) {
+		String pattern = "\\d{4}-\\d{2}-\\d{2}";
+
+		if (!Pattern.matches(pattern, lastPageExpirationDate)) {
+			log.warn("GET:READ:INVALID_LAST_PAGE_EXPIRATION_DATE_FORMAT : {}", lastPageExpirationDate);
+
+			throw new BusinessException(INVALID_LAST_PAGE_EXPIRATION_DATE_FORMAT);
+		}
 	}
 }

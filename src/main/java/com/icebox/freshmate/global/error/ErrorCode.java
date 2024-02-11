@@ -14,6 +14,7 @@ public enum ErrorCode {
 	INVALID_INPUT_VALUE("C001", "잘못된 값을 입력하셨습니다."),
 	INVALID_LAST_PAGE_UPDATED_AT_FORMAT("C002", "유효하지 않은 이전 페이지의 업데이트 날짜 형식입니다."),
 	INVALID_SORT_TYPE("COO3", "유효하지 않은 정렬 타입 입니다."),
+	INVALID_LAST_PAGE_EXPIRATION_DATE_FORMAT("C004", "유효하지 않은 이전 페이지의 유통기한 날짜 형식입니다."),
 
 	//회원
 	ALREADY_EXIST_USERNAME("M001", "이미 존재하는 아이디입니다."),
@@ -40,6 +41,7 @@ public enum ErrorCode {
 	//식료품
 	INVALID_GROCERY_TYPE("G001", "유효하지 않은 식료품 타입입니다."),
 	NOT_FOUND_GROCERY("G002", "식료품이 존재하지 않습니다."),
+	INVALID_GROCERY_EXPIRATION_TYPE("G003", "유효하지 않은 식료품 유통기한 타입입니다."),
 
 	//즐겨 찾는 식료품
 	NOT_FOUND_GROCERY_BUCKET("GB001", "즐겨 찾는 식료품이 존재하지 않습니다."),

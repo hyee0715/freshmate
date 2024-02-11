@@ -16,6 +16,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.SliceImpl;
 
 import com.icebox.freshmate.domain.refrigerator.application.dto.request.RefrigeratorReq;
 import com.icebox.freshmate.domain.refrigerator.application.dto.response.RefrigeratorRes;
@@ -87,20 +89,32 @@ class RefrigeratorServiceTest {
 		assertThat(refrigeratorRes.refrigeratorName()).isEqualTo(refrigerator.getName());
 	}
 
-//	@DisplayName("회원의 모든 냉장고 조회 테스트")
-//	@Test
-//	void findAll() {
-//		//given
-//		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member));
-//		when(refrigeratorRepository.findAllByMemberId(any())).thenReturn(List.of(refrigerator));
-//
-//		//when
-//		RefrigeratorsRes refrigeratorsRes = refrigeratorService.findAll(member.getUsername());
-//
-//		//then
-//		assertThat(refrigeratorsRes.refrigerators()).hasSize(1);
-//		assertThat(refrigeratorsRes.refrigerators().get(0).refrigeratorName()).isEqualTo(refrigerator.getName());
-//	}
+	@DisplayName("회원의 모든 냉장고 조회 테스트")
+	@Test
+	void findAll() {
+		//given
+		Refrigerator refrigerator2 = Refrigerator.builder()
+			.name("우리 집 냉장고2")
+			.member(member)
+			.build();
+
+		int page = 0;
+		int size = 5;
+		PageRequest pageRequest = PageRequest.of(page, size);
+
+		SliceImpl<Refrigerator> refrigerators = new SliceImpl<>(List.of(refrigerator, refrigerator2));
+
+
+		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member));
+		when(refrigeratorRepository.findAllByMemberIdOrderBySortCondition(any(), any(), any(), any(), any())).thenReturn(refrigerators);
+
+		//when
+		RefrigeratorsRes refrigeratorsRes = refrigeratorService.findAll("updatedAtAsc", pageRequest, null, null, member.getUsername());
+
+		//then
+		assertThat(refrigeratorsRes.refrigerators()).hasSize(2);
+		assertThat(refrigeratorsRes.refrigerators().get(0).refrigeratorName()).isEqualTo(refrigerator.getName());
+	}
 
 	@DisplayName("냉장고 수정 테스트")
 	@Test

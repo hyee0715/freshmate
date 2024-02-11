@@ -14,6 +14,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
+import static org.springframework.restdocs.payload.JsonFieldType.BOOLEAN;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -166,6 +167,7 @@ class GroceryControllerTest {
 		Long storageId = 1L;
 
 		LocalDateTime createdAt = LocalDateTime.now();
+		LocalDateTime updatedAt = createdAt;
 
 		GroceryReq groceryReq = new GroceryReq(grocery.getName(), grocery.getGroceryType().name(), grocery.getQuantity(), grocery.getDescription(), grocery.getExpirationDate(), grocery.getStorage().getId());
 
@@ -178,7 +180,7 @@ class GroceryControllerTest {
 		ImageRes imageRes1 = new ImageRes(groceryImage1.getFileName(), groceryImage1.getPath());
 		ImageRes imageRes2 = new ImageRes(groceryImage2.getFileName(), groceryImage2.getPath());
 
-		GroceryRes groceryRes = new GroceryRes(groceryId, grocery.getName(), grocery.getGroceryType().name(), grocery.getQuantity(), grocery.getDescription(), grocery.getExpirationDate(), storageId, grocery.getStorage().getName(), grocery.getGroceryExpirationType().name(), createdAt, List.of(imageRes1, imageRes2));
+		GroceryRes groceryRes = new GroceryRes(groceryId, grocery.getName(), grocery.getGroceryType().name(), grocery.getQuantity(), grocery.getDescription(), grocery.getExpirationDate(), storageId, grocery.getStorage().getName(), grocery.getGroceryExpirationType().name(), createdAt, updatedAt, List.of(imageRes1, imageRes2));
 
 		when(groceryService.create(any(GroceryReq.class), any(ImageUploadReq.class), any(String.class))).thenReturn(groceryRes);
 
@@ -204,7 +206,8 @@ class GroceryControllerTest {
 			.andExpect(jsonPath("$.storageId").value(groceryRes.storageId()))
 			.andExpect(jsonPath("$.storageName").value(groceryRes.storageName()))
 			.andExpect(jsonPath("$.groceryExpirationType").value(groceryRes.groceryExpirationType()))
-			.andExpect(jsonPath("$.createdAt").value(formatLocalDateTime(groceryRes.createdAt())))
+			.andExpect(jsonPath("$.createdAt").value(substringLocalDateTime(groceryRes.createdAt())))
+			.andExpect(jsonPath("$.updatedAt").value(substringLocalDateTime(groceryRes.updatedAt())))
 			.andExpect(jsonPath("$.images[0].fileName").value(groceryRes.images().get(0).fileName()))
 			.andExpect(jsonPath("$.images[0].path").value(groceryRes.images().get(0).path()))
 			.andDo(print())
@@ -233,6 +236,7 @@ class GroceryControllerTest {
 					fieldWithPath("storageName").type(STRING).description("냉장고 저장소 이름"),
 					fieldWithPath("groceryExpirationType").type(STRING).description("식료품 유통기한 만료 상태"),
 					fieldWithPath("createdAt").type(STRING).description("식료품 생성 날짜"),
+					fieldWithPath("updatedAt").type(STRING).description("식료품 수정 날짜"),
 					fieldWithPath("images[].fileName").type(STRING).description("식료품 이미지 파일 이름"),
 					fieldWithPath("images[].path").type(STRING).description("식료품 이미지 파일 경로")
 				)
@@ -247,11 +251,12 @@ class GroceryControllerTest {
 		Long storageId = 1L;
 
 		LocalDateTime createdAt = LocalDateTime.now();
+		LocalDateTime updatedAt = createdAt;
 
 		ImageRes imageRes1 = new ImageRes(groceryImage1.getFileName(), groceryImage1.getPath());
 		ImageRes imageRes2 = new ImageRes(groceryImage2.getFileName(), groceryImage2.getPath());
 
-		GroceryRes groceryRes = new GroceryRes(groceryId, grocery.getName(), grocery.getGroceryType().name(), grocery.getQuantity(), grocery.getDescription(), grocery.getExpirationDate(), storageId, grocery.getStorage().getName(), grocery.getGroceryExpirationType().name(), createdAt, List.of(imageRes1, imageRes2));
+		GroceryRes groceryRes = new GroceryRes(groceryId, grocery.getName(), grocery.getGroceryType().name(), grocery.getQuantity(), grocery.getDescription(), grocery.getExpirationDate(), storageId, grocery.getStorage().getName(), grocery.getGroceryExpirationType().name(), createdAt, updatedAt, List.of(imageRes1, imageRes2));
 
 		when(groceryService.findById(groceryId)).thenReturn(groceryRes);
 
@@ -271,7 +276,8 @@ class GroceryControllerTest {
 			.andExpect(jsonPath("$.storageId").value(groceryRes.storageId()))
 			.andExpect(jsonPath("$.storageName").value(groceryRes.storageName()))
 			.andExpect(jsonPath("$.groceryExpirationType").value(groceryRes.groceryExpirationType()))
-			.andExpect(jsonPath("$.createdAt").value(formatLocalDateTime(groceryRes.createdAt())))
+			.andExpect(jsonPath("$.createdAt").value(substringLocalDateTime(groceryRes.createdAt())))
+			.andExpect(jsonPath("$.updatedAt").value(substringLocalDateTime(groceryRes.updatedAt())))
 			.andExpect(jsonPath("$.images[0].fileName").value(groceryRes.images().get(0).fileName()))
 			.andExpect(jsonPath("$.images[0].path").value(groceryRes.images().get(0).path()))
 			.andDo(print())
@@ -290,6 +296,7 @@ class GroceryControllerTest {
 					fieldWithPath("storageName").type(STRING).description("냉장고 저장소 이름"),
 					fieldWithPath("groceryExpirationType").type(STRING).description("식료품 유통기한 만료 상태"),
 					fieldWithPath("createdAt").type(STRING).description("식료품 생성 날짜"),
+					fieldWithPath("updatedAt").type(STRING).description("식료품 수정 날짜"),
 					fieldWithPath("images[].fileName").type(STRING).description("식료품 이미지 파일 이름"),
 					fieldWithPath("images[].path").type(STRING).description("식료품 이미지 파일 경로")
 				)
@@ -303,13 +310,14 @@ class GroceryControllerTest {
 		Long storageId = 1L;
 
 		LocalDateTime createdAt = LocalDateTime.now();
+		LocalDateTime updatedAt = createdAt;
 
 		Grocery grocery2 = Grocery.builder()
 			.storage(storage)
-			.name("배추")
-			.groceryType(GroceryType.VEGETABLES)
+			.name("햄")
+			.groceryType(GroceryType.MEAT)
 			.quantity("2개")
-			.description("김장용")
+			.description("김밥 재료")
 			.expirationDate(LocalDate.now().plusDays(7))
 			.build();
 
@@ -319,12 +327,12 @@ class GroceryControllerTest {
 		ImageRes imageRes1 = new ImageRes(groceryImage1.getFileName(), groceryImage1.getPath());
 		ImageRes imageRes2 = new ImageRes(groceryImage2.getFileName(), groceryImage2.getPath());
 
-		GroceryRes groceryRes1 = new GroceryRes(1L, grocery.getName(), grocery.getGroceryType().name(), grocery.getQuantity(), grocery.getDescription(), grocery.getExpirationDate(), storageId, grocery.getStorage().getName(), grocery.getGroceryExpirationType().name(), createdAt, List.of(imageRes1, imageRes2));
-		GroceryRes groceryRes2 = new GroceryRes(2L, grocery2.getName(), grocery2.getGroceryType().name(), grocery2.getQuantity(), grocery2.getDescription(), grocery.getExpirationDate(), storageId, grocery2.getStorage().getName(), grocery2.getGroceryExpirationType().name(), createdAt, List.of(imageRes1, imageRes2));
+		GroceryRes groceryRes1 = new GroceryRes(1L, grocery.getName(), grocery.getGroceryType().name(), grocery.getQuantity(), grocery.getDescription(), grocery.getExpirationDate(), storageId, grocery.getStorage().getName(), grocery.getGroceryExpirationType().name(), createdAt, updatedAt, List.of(imageRes1, imageRes2));
+		GroceryRes groceryRes2 = new GroceryRes(2L, grocery2.getName(), grocery2.getGroceryType().name(), grocery2.getQuantity(), grocery2.getDescription(), grocery.getExpirationDate(), storageId, grocery2.getStorage().getName(), grocery2.getGroceryExpirationType().name(), createdAt, updatedAt, List.of(imageRes1, imageRes2));
 
-		GroceriesRes groceriesRes = new GroceriesRes(List.of(groceryRes1, groceryRes2));
+		GroceriesRes groceriesRes = new GroceriesRes(List.of(groceryRes1, groceryRes2), false);
 
-		when(groceryService.findAllByStorageId(eq(storageId), anyString())).thenReturn(groceriesRes);
+		when(groceryService.findAllByStorageId(eq(storageId), any(), any(), any(), any(), any(), any(), any(), anyString())).thenReturn(groceriesRes);
 
 		//when
 		//then
@@ -345,9 +353,11 @@ class GroceryControllerTest {
 			.andExpect(jsonPath("$.groceries[0].storageId").value(storageId))
 			.andExpect(jsonPath("$.groceries[0].storageName").value(groceryRes1.storageName()))
 			.andExpect(jsonPath("$.groceries[0].groceryExpirationType").value(groceryRes1.groceryExpirationType()))
-			.andExpect(jsonPath("$.groceries[0].createdAt").value(formatLocalDateTime(groceryRes1.createdAt())))
+			.andExpect(jsonPath("$.groceries[0].createdAt").value(substringLocalDateTime(groceryRes1.createdAt())))
+			.andExpect(jsonPath("$.groceries[0].updatedAt").value(substringLocalDateTime(groceryRes1.updatedAt())))
 			.andExpect(jsonPath("$.groceries[0].images[0].fileName").value(groceryRes1.images().get(0).fileName()))
 			.andExpect(jsonPath("$.groceries[0].images[0].path").value(groceryRes1.images().get(0).path()))
+			.andExpect(jsonPath("$.hasNext").value(groceriesRes.hasNext()))
 			.andDo(print())
 			.andDo(document("grocery/grocery-find-all-by-storage-id",
 				preprocessRequest(prettyPrint()),
@@ -368,8 +378,10 @@ class GroceryControllerTest {
 					fieldWithPath("groceries[].storageName").type(STRING).description("냉장고 저장소 이름"),
 					fieldWithPath("groceries[].groceryExpirationType").type(STRING).description("식료품 유통기한 만료 상태"),
 					fieldWithPath("groceries[].createdAt").type(STRING).description("식료품 생성 날짜"),
+					fieldWithPath("groceries[].updatedAt").type(STRING).description("식료품 수정 날짜"),
 					fieldWithPath("groceries[].images[].fileName").type(STRING).description("식료품 이미지 파일 이름"),
-					fieldWithPath("groceries[].images[].path").type(STRING).description("식료품 이미지 파일 경로")
+					fieldWithPath("groceries[].images[].path").type(STRING).description("식료품 이미지 파일 경로"),
+					fieldWithPath("hasNext").type(BOOLEAN).description("다음 페이지(스크롤) 데이터 존재 유무")
 				)
 			));
 	}
@@ -382,12 +394,13 @@ class GroceryControllerTest {
 		Long storageId = 1L;
 
 		LocalDateTime createdAt = LocalDateTime.now();
+		LocalDateTime updatedAt = createdAt;
 
 		ImageRes imageRes1 = new ImageRes(groceryImage1.getFileName(), groceryImage1.getPath());
 		ImageRes imageRes2 = new ImageRes(groceryImage2.getFileName(), groceryImage2.getPath());
 
 		GroceryReq groceryReq = new GroceryReq("식료품 수정", GroceryType.SNACKS.name(), "10개", "수정", LocalDate.now().plusDays(2), storageId);
-		GroceryRes groceryRes = new GroceryRes(groceryId, groceryReq.name(), groceryReq.groceryType(), groceryReq.quantity(), groceryReq.description(), groceryReq.expirationDate(), storageId, grocery.getStorage().getName(), grocery.getGroceryExpirationType().name(), createdAt, List.of(imageRes1, imageRes2));
+		GroceryRes groceryRes = new GroceryRes(groceryId, groceryReq.name(), groceryReq.groceryType(), groceryReq.quantity(), groceryReq.description(), groceryReq.expirationDate(), storageId, grocery.getStorage().getName(), grocery.getGroceryExpirationType().name(), createdAt, updatedAt, List.of(imageRes1, imageRes2));
 
 		when(groceryService.update(eq(groceryId), any(GroceryReq.class), anyString())).thenReturn(groceryRes);
 
@@ -410,7 +423,8 @@ class GroceryControllerTest {
 			.andExpect(jsonPath("$.storageId").value(storageId))
 			.andExpect(jsonPath("$.storageName").value(groceryRes.storageName()))
 			.andExpect(jsonPath("$.groceryExpirationType").value(groceryRes.groceryExpirationType()))
-			.andExpect(jsonPath("$.createdAt").value(formatLocalDateTime(createdAt)))
+			.andExpect(jsonPath("$.createdAt").value(substringLocalDateTime(groceryRes.createdAt())))
+			.andExpect(jsonPath("$.updatedAt").value(substringLocalDateTime(groceryRes.updatedAt())))
 			.andExpect(jsonPath("$.images[0].fileName").value(groceryRes.images().get(0).fileName()))
 			.andExpect(jsonPath("$.images[0].path").value(groceryRes.images().get(0).path()))
 			.andDo(print())
@@ -440,6 +454,7 @@ class GroceryControllerTest {
 					fieldWithPath("storageName").type(STRING).description("냉장고 저장소 이름"),
 					fieldWithPath("groceryExpirationType").type(STRING).description("식료품 유통기한 만료 상태"),
 					fieldWithPath("createdAt").type(STRING).description("식료품 생성 날짜"),
+					fieldWithPath("updatedAt").type(STRING).description("식료품 수정 날짜"),
 					fieldWithPath("images[].fileName").type(STRING).description("식료품 이미지 파일 이름"),
 					fieldWithPath("images[].path").type(STRING).description("식료품 이미지 파일 경로")
 				)
@@ -480,8 +495,21 @@ class GroceryControllerTest {
 		return DateTimeFormatter.ofPattern("yyyy-MM-dd").format(localDate);
 	}
 
-	private String formatLocalDateTime(LocalDateTime localDateTime) {
+	private String substringLocalDateTime(LocalDateTime localDateTime) {
+		StringBuilder ret = new StringBuilder(localDateTime.toString());
 
-		return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").format(localDateTime);
+		if (ret.length() == 26) {
+			return ret.toString();
+		}
+
+		if (ret.length() < 26) {
+			while (ret.length() < 26) {
+				ret.append("0");
+			}
+
+			return ret.toString();
+		}
+
+		return ret.substring(0, ret.length() - 2);
 	}
 }

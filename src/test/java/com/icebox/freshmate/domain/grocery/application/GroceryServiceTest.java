@@ -3,6 +3,7 @@ package com.icebox.freshmate.domain.grocery.application;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -16,6 +17,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.mock.web.MockMultipartFile;
 
 import com.icebox.freshmate.domain.grocery.application.dto.request.GroceryReq;
@@ -175,11 +178,18 @@ class GroceryServiceTest {
 			.expirationDate(LocalDate.now().plusDays(14))
 			.build();
 
+		int page = 0;
+		int size = 5;
+		PageRequest pageRequest = PageRequest.of(page, size);
+
+		SliceImpl<Grocery> groceries = new SliceImpl<>(List.of(grocery, grocery2));
+
 		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member));
-		when(groceryRepository.findAllByStorageIdAndMemberId(any(), any())).thenReturn(List.of(grocery, grocery2));
+		when(storageRepository.findByIdAndMemberId(any(), any())).thenReturn(Optional.of(storage));
+		when(groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(any(), any(), any(), any(), eq(PageRequest.of(page, size)), any(), any(), any(), any())).thenReturn(groceries);
 
 		//when
-		GroceriesRes groceriesRes = groceryService.findAllByStorageId(storageId, member.getUsername());
+		GroceriesRes groceriesRes = groceryService.findAllByStorageId(storageId, "nameAsc", null, "notExpired", pageRequest, null, null, null, member.getUsername());
 
 		//then
 		assertThat(groceriesRes.groceries()).hasSize(2);

@@ -23,9 +23,9 @@ public record GroceryRes(
 	Long storageId,
 	String storageName,
 	String groceryExpirationType,
-
-	@JsonFormat(shape = STRING, pattern = "YYYY-MM-dd HH:mm", timezone = "Asia/Seoul")
 	LocalDateTime createdAt,
+	LocalDateTime updatedAt,
+
 	List<ImageRes> images
 ) {
 
@@ -42,6 +42,7 @@ public record GroceryRes(
 			grocery.getStorage().getName(),
 			grocery.getGroceryExpirationType().name(),
 			grocery.getCreatedAt(),
+			grocery.getUpdatedAt(),
 			imagesRes
 		);
 	}
