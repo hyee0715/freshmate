@@ -66,176 +66,58 @@ class GroceryRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
-		Member memberBuilder = Member.builder()
-			.realName("성이름")
-			.username("aaaa1111")
-			.password("aaaa1111!")
-			.nickName("닉네임닉네임")
-			.role(Role.USER)
-			.build();
+		Member memberBuilder = getMember("성이름", "aaaa1111", "aaaa1111!", "닉네임", Role.USER);
 		member = memberRepository.save(memberBuilder);
 
-		Refrigerator refrigeratorBuilder = Refrigerator.builder()
-			.name("우리 집 냉장고")
-			.member(member)
-			.build();
+		Refrigerator refrigeratorBuilder = getRefrigerator("우리 집 냉장고", member);
 		refrigerator = refrigeratorRepository.save(refrigeratorBuilder);
 
-		Storage storageBuilder = Storage.builder()
-			.name("냉장실")
-			.storageType(StorageType.FRIDGE)
-			.refrigerator(refrigerator)
-			.build();
+		Storage storageBuilder = getStorage("냉장실", StorageType.FRIDGE, refrigerator);
 		storage = storageRepository.save(storageBuilder);
 
-		Grocery groceryBuilder1 = Grocery.builder()
-			.storage(storage)
-			.name("양배추1")
-			.groceryType(GroceryType.VEGETABLES)
-			.quantity("1개")
-			.description("필수 식재료")
-			.expirationDate(LocalDate.now().plusDays(1))
-			.build();
+		Grocery groceryBuilder1 = getGrocery(storage, "양배추1", GroceryType.VEGETABLES, "1개", "필수 식재료", LocalDate.now().plusDays(1));
 		grocery1 = groceryRepository.save(groceryBuilder1);
 
-		Grocery groceryBuilder2 = Grocery.builder()
-			.storage(storage)
-			.name("양배추2")
-			.groceryType(GroceryType.VEGETABLES)
-			.quantity("1개")
-			.description("필수 식재료")
-			.expirationDate(LocalDate.now().minusDays(2))
-			.build();
+		Grocery groceryBuilder2 = getGrocery(storage, "양배추2", GroceryType.VEGETABLES, "1개", "필수 식재료", LocalDate.now().minusDays(2));
 		grocery2 = groceryRepository.save(groceryBuilder2);
 
-		Grocery groceryBuilder3 = Grocery.builder()
-			.storage(storage)
-			.name("양배추3")
-			.groceryType(GroceryType.VEGETABLES)
-			.quantity("1개")
-			.description("필수 식재료")
-			.expirationDate(LocalDate.now().plusDays(9))
-			.build();
+		Grocery groceryBuilder3 = getGrocery(storage, "양배추3", GroceryType.VEGETABLES, "1개", "필수 식재료", LocalDate.now().plusDays(9));
 		grocery3 = groceryRepository.save(groceryBuilder3);
 
-		Grocery groceryBuilder4 = Grocery.builder()
-			.storage(storage)
-			.name("양배추4")
-			.groceryType(GroceryType.VEGETABLES)
-			.quantity("1개")
-			.description("필수 식재료")
-			.expirationDate(LocalDate.now().minusDays(8))
-			.build();
+		Grocery groceryBuilder4 = getGrocery(storage, "양배추4", GroceryType.VEGETABLES, "1개", "필수 식재료", LocalDate.now().minusDays(8));
 		grocery4 = groceryRepository.save(groceryBuilder4);
 
-		Grocery groceryBuilder5 = Grocery.builder()
-			.storage(storage)
-			.name("양배추5")
-			.groceryType(GroceryType.VEGETABLES)
-			.quantity("1개")
-			.description("필수 식재료")
-			.expirationDate(LocalDate.now().plusDays(6))
-			.build();
+		Grocery groceryBuilder5 = getGrocery(storage, "양배추5", GroceryType.VEGETABLES, "1개", "필수 식재료", LocalDate.now().plusDays(6));
 		grocery5 = groceryRepository.save(groceryBuilder5);
 
-		Grocery groceryBuilder6 = Grocery.builder()
-			.storage(storage)
-			.name("양배추6")
-			.groceryType(GroceryType.VEGETABLES)
-			.quantity("1개")
-			.description("필수 식재료")
-			.expirationDate(LocalDate.now().minusDays(11))
-			.build();
+		Grocery groceryBuilder6 = getGrocery(storage, "양배추6", GroceryType.VEGETABLES, "1개", "필수 식재료", LocalDate.now().minusDays(11));
 		grocery6 = groceryRepository.save(groceryBuilder6);
 
-		Grocery groceryBuilder7 = Grocery.builder()
-			.storage(storage)
-			.name("양배추7")
-			.groceryType(GroceryType.VEGETABLES)
-			.quantity("1개")
-			.description("필수 식재료")
-			.expirationDate(LocalDate.now().plusDays(15))
-			.build();
+		Grocery groceryBuilder7 = getGrocery(storage, "양배추7", GroceryType.VEGETABLES, "1개", "필수 식재료", LocalDate.now().plusDays(15));
 		grocery7 = groceryRepository.save(groceryBuilder7);
 
-		Grocery groceryBuilder8 = Grocery.builder()
-			.storage(storage)
-			.name("기타1")
-			.groceryType(GroceryType.ETC)
-			.quantity("1개")
-			.description("필수 식재료")
-			.expirationDate(LocalDate.now().minusDays(15))
-			.build();
+		Grocery groceryBuilder8 = getGrocery(storage, "기타1", GroceryType.ETC, "1개", "필수 식재료", LocalDate.now().minusDays(15));
 		grocery8 = groceryRepository.save(groceryBuilder8);
 
-		Grocery groceryBuilder9 = Grocery.builder()
-			.storage(storage)
-			.name("기타2")
-			.groceryType(GroceryType.ETC)
-			.quantity("1개")
-			.description("필수 식재료")
-			.expirationDate(LocalDate.now().minusDays(10))
-			.build();
+		Grocery groceryBuilder9 = getGrocery(storage, "기타2", GroceryType.ETC, "1개", "필수 식재료", LocalDate.now().minusDays(10));
 		grocery9 = groceryRepository.save(groceryBuilder9);
 
-		Grocery groceryBuilder10 = Grocery.builder()
-			.storage(storage)
-			.name("기타3")
-			.groceryType(GroceryType.ETC)
-			.quantity("1개")
-			.description("필수 식재료")
-			.expirationDate(LocalDate.now().plusDays(5))
-			.build();
+		Grocery groceryBuilder10 = getGrocery(storage, "기타3", GroceryType.ETC, "1개", "필수 식재료", LocalDate.now().plusDays(5));
 		grocery10 = groceryRepository.save(groceryBuilder10);
 
-		Grocery groceryBuilder11 = Grocery.builder()
-			.storage(storage)
-			.name("기타4")
-			.groceryType(GroceryType.ETC)
-			.quantity("1개")
-			.description("필수 식재료")
-			.expirationDate(LocalDate.now().minusDays(3))
-			.build();
+		Grocery groceryBuilder11 = getGrocery(storage, "기타4", GroceryType.ETC, "1개", "필수 식재료", LocalDate.now().minusDays(3));
 		grocery11 = groceryRepository.save(groceryBuilder11);
 
-		Grocery groceryBuilder12 = Grocery.builder()
-			.storage(storage)
-			.name("기타5")
-			.groceryType(GroceryType.ETC)
-			.quantity("1개")
-			.description("필수 식재료")
-			.expirationDate(LocalDate.now().plusDays(9))
-			.build();
+		Grocery groceryBuilder12 = getGrocery(storage, "기타5", GroceryType.ETC, "1개", "필수 식재료", LocalDate.now().plusDays(9));
 		grocery12 = groceryRepository.save(groceryBuilder12);
 
-		Grocery groceryBuilder13 = Grocery.builder()
-			.storage(storage)
-			.name("기타6")
-			.groceryType(GroceryType.ETC)
-			.quantity("1개")
-			.description("필수 식재료")
-			.expirationDate(LocalDate.now())
-			.build();
+		Grocery groceryBuilder13 = getGrocery(storage, "기타6", GroceryType.ETC, "1개", "필수 식재료", LocalDate.now());
 		grocery13 = groceryRepository.save(groceryBuilder13);
 
-		Grocery groceryBuilder14 = Grocery.builder()
-			.storage(storage)
-			.name("기타7")
-			.groceryType(GroceryType.ETC)
-			.quantity("1개")
-			.description("필수 식재료")
-			.expirationDate(LocalDate.now())
-			.build();
+		Grocery groceryBuilder14 = getGrocery(storage, "기타7", GroceryType.ETC, "1개", "필수 식재료", LocalDate.now());
 		grocery14 = groceryRepository.save(groceryBuilder14);
 
-		Grocery groceryBuilder15 = Grocery.builder()
-			.storage(storage)
-			.name("기타8")
-			.groceryType(GroceryType.ETC)
-			.quantity("1개")
-			.description("필수 식재료")
-			.expirationDate(LocalDate.now())
-			.build();
+		Grocery groceryBuilder15 = getGrocery(storage, "기타8", GroceryType.ETC, "1개", "필수 식재료", LocalDate.now());
 		grocery15 = groceryRepository.save(groceryBuilder15);
 	}
 
@@ -256,7 +138,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery8, grocery9, grocery10, grocery11, grocery12));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdOrderBySortConditions(storageId, memberId, pageable, sortBy, null, null);
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, null, null, pageable, sortBy, null, null, null);
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -276,7 +158,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery11, grocery12, grocery13, grocery14, grocery15));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdOrderBySortConditions(storageId, memberId, pageable, sortBy, grocery10.getName(), grocery10.getUpdatedAt());
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, null, null, pageable, sortBy, grocery10.getName(), grocery10.getExpirationDate(), grocery10.getUpdatedAt());
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -297,7 +179,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery7, grocery6, grocery5, grocery4, grocery3));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdOrderBySortConditions(storageId, memberId, pageable, sortBy, null, null);
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, null, null, pageable, sortBy, null, null, null);
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -317,7 +199,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery3, grocery2, grocery1, grocery15, grocery14));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdOrderBySortConditions(storageId, memberId, pageable, sortBy, grocery4.getName(), grocery4.getUpdatedAt());
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, null, null, pageable, sortBy, grocery4.getName(), grocery4.getExpirationDate(), grocery4.getUpdatedAt());
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -338,7 +220,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery1, grocery2, grocery3, grocery4, grocery5));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdOrderBySortConditions(storageId, memberId, pageable, sortBy, null, null);
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, null, null, pageable, sortBy, null, null, null);
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -358,7 +240,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery4, grocery5, grocery6, grocery7, grocery8));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdOrderBySortConditions(storageId, memberId, pageable, sortBy, grocery3.getName(), grocery3.getUpdatedAt());
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, null, null, pageable, sortBy, grocery3.getName(), grocery3.getExpirationDate(), grocery3.getUpdatedAt());
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -378,7 +260,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery15, grocery14, grocery13, grocery12, grocery11));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdOrderBySortConditions(storageId, memberId, pageable, sortBy, null, null);
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, null, null, pageable, sortBy, null, null, null);
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -398,7 +280,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery12, grocery11, grocery10, grocery9, grocery8));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdOrderBySortConditions(storageId, memberId, pageable, sortBy, grocery13.getName(), grocery13.getUpdatedAt());
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, null, null, pageable, sortBy, grocery13.getName(), grocery13.getExpirationDate(), grocery13.getUpdatedAt());
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -423,7 +305,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery10, grocery12, grocery13, grocery14, grocery15));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, null, null, null);
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, null, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, null, null, null);
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -443,7 +325,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery14, grocery15, grocery1, grocery3, grocery5));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, grocery13.getName(), grocery13.getExpirationDate(), grocery13.getUpdatedAt());
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, null, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, grocery13.getName(), grocery13.getExpirationDate(), grocery13.getUpdatedAt());
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -463,7 +345,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery6, grocery4, grocery2, grocery11, grocery9));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryExpirationType.EXPIRED, pageable, sortBy, null, null, null);
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, null, GroceryExpirationType.EXPIRED, pageable, sortBy, null, null, null);
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -483,7 +365,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery9, grocery8));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryExpirationType.EXPIRED, pageable, sortBy, grocery11.getName(), grocery11.getExpirationDate(), grocery11.getUpdatedAt());
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, null, GroceryExpirationType.EXPIRED, pageable, sortBy, grocery11.getName(), grocery11.getExpirationDate(), grocery11.getUpdatedAt());
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -503,7 +385,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery2, grocery4, grocery6, grocery8, grocery9));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryExpirationType.EXPIRED, pageable, sortBy, null, null, null);
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, null, GroceryExpirationType.EXPIRED, pageable, sortBy, null, null, null);
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -523,7 +405,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery6, grocery8, grocery9, grocery11));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryExpirationType.EXPIRED, pageable, sortBy, grocery4.getName(), grocery4.getExpirationDate(), grocery4.getUpdatedAt());
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, null, GroceryExpirationType.EXPIRED, pageable, sortBy, grocery4.getName(), grocery4.getExpirationDate(), grocery4.getUpdatedAt());
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -543,7 +425,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery15, grocery14, grocery13, grocery12, grocery10));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, null, null, null);
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, null, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, null, null, null);
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -563,7 +445,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery3, grocery1));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, grocery4.getName(), grocery4.getExpirationDate(), grocery4.getUpdatedAt());
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, null, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, grocery4.getName(), grocery4.getExpirationDate(), grocery4.getUpdatedAt());
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -583,7 +465,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery15, grocery14, grocery13, grocery1, grocery10));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, null, null, null);
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, null, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, null, null, null);
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -603,7 +485,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery10, grocery5, grocery12, grocery3, grocery7));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, grocery1.getName(), grocery1.getExpirationDate(), grocery1.getUpdatedAt());
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, null, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, grocery1.getName(), grocery1.getExpirationDate(), grocery1.getUpdatedAt());
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -623,7 +505,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery2, grocery11, grocery4, grocery9, grocery6));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryExpirationType.EXPIRED, pageable, sortBy, null, null, null);
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, null, GroceryExpirationType.EXPIRED, pageable, sortBy, null, null, null);
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -643,7 +525,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery6, grocery8));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryExpirationType.EXPIRED, pageable, sortBy, grocery9.getName(), grocery9.getExpirationDate(), grocery9.getUpdatedAt());
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, null, GroceryExpirationType.EXPIRED, pageable, sortBy, grocery9.getName(), grocery9.getExpirationDate(), grocery9.getUpdatedAt());
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -668,7 +550,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery1, grocery3, grocery5, grocery7));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryType.VEGETABLES, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, null, null, null);
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, GroceryType.VEGETABLES, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, null, null, null);
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -688,7 +570,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery5, grocery7));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryType.VEGETABLES, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, grocery3.getName(), grocery3.getExpirationDate(), grocery3.getUpdatedAt());
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, GroceryType.VEGETABLES, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, grocery3.getName(), grocery3.getExpirationDate(), grocery3.getUpdatedAt());
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -708,7 +590,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery11, grocery9, grocery8));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryType.ETC, GroceryExpirationType.EXPIRED, pageable, sortBy, null, null, null);
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, GroceryType.ETC, GroceryExpirationType.EXPIRED, pageable, sortBy, null, null, null);
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -728,7 +610,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery8));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryType.ETC, GroceryExpirationType.EXPIRED, pageable, sortBy, grocery9.getName(), grocery9.getExpirationDate(), grocery9.getUpdatedAt());
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, GroceryType.ETC, GroceryExpirationType.EXPIRED, pageable, sortBy, grocery9.getName(), grocery9.getExpirationDate(), grocery9.getUpdatedAt());
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -748,7 +630,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery2, grocery4, grocery6));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryType.VEGETABLES, GroceryExpirationType.EXPIRED, pageable, sortBy, null, null, null);
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, GroceryType.VEGETABLES, GroceryExpirationType.EXPIRED, pageable, sortBy, null, null, null);
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -768,7 +650,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery6));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryType.VEGETABLES, GroceryExpirationType.EXPIRED, pageable, sortBy, grocery4.getName(), grocery4.getExpirationDate(), grocery4.getUpdatedAt());
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, GroceryType.VEGETABLES, GroceryExpirationType.EXPIRED, pageable, sortBy, grocery4.getName(), grocery4.getExpirationDate(), grocery4.getUpdatedAt());
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -788,7 +670,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery15, grocery14, grocery13, grocery12, grocery10));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryType.ETC, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, null, null, null);
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, GroceryType.ETC, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, null, null, null);
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -808,7 +690,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery13, grocery12, grocery10));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryType.ETC, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, grocery14.getName(), grocery14.getExpirationDate(), grocery14.getUpdatedAt());
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, GroceryType.ETC, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, grocery14.getName(), grocery14.getExpirationDate(), grocery14.getUpdatedAt());
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -828,7 +710,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery15, grocery14, grocery13, grocery10, grocery12));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryType.ETC, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, null, null, null);
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, GroceryType.ETC, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, null, null, null);
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -848,7 +730,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery10, grocery12));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryType.ETC, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, grocery13.getName(), grocery13.getExpirationDate(), grocery13.getUpdatedAt());
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, GroceryType.ETC, GroceryExpirationType.NOT_EXPIRED, pageable, sortBy, grocery13.getName(), grocery13.getExpirationDate(), grocery13.getUpdatedAt());
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -868,7 +750,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery2, grocery4, grocery6));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryType.VEGETABLES, GroceryExpirationType.EXPIRED, pageable, sortBy, null, null, null);
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, GroceryType.VEGETABLES, GroceryExpirationType.EXPIRED, pageable, sortBy, null, null, null);
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -888,7 +770,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery6));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderBySortConditions(storageId, memberId, GroceryType.VEGETABLES, GroceryExpirationType.EXPIRED, pageable, sortBy, grocery4.getName(), grocery4.getExpirationDate(), grocery4.getUpdatedAt());
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, GroceryType.VEGETABLES, GroceryExpirationType.EXPIRED, pageable, sortBy, grocery4.getName(), grocery4.getExpirationDate(), grocery4.getUpdatedAt());
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -913,7 +795,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery1, grocery2, grocery3, grocery4, grocery5));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeOrderBySortConditions(storageId, memberId, GroceryType.VEGETABLES, pageable, sortBy, null, null);
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, GroceryType.VEGETABLES, null, pageable, sortBy, null, null, null);
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -933,7 +815,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery5, grocery6, grocery7));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeOrderBySortConditions(storageId, memberId, GroceryType.VEGETABLES, pageable, sortBy, grocery4.getName(), grocery4.getUpdatedAt());
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, GroceryType.VEGETABLES, null, pageable, sortBy, grocery4.getName(), grocery4.getExpirationDate(), grocery4.getUpdatedAt());
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -953,7 +835,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery15, grocery14, grocery13, grocery12, grocery11));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeOrderBySortConditions(storageId, memberId, GroceryType.ETC, pageable, sortBy, null, null);
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, GroceryType.ETC, null, pageable, sortBy, null, null, null);
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -973,7 +855,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery11, grocery10, grocery9, grocery8));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeOrderBySortConditions(storageId, memberId, GroceryType.ETC, pageable, sortBy, grocery12.getName(), grocery12.getUpdatedAt());
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, GroceryType.ETC, null, pageable, sortBy, grocery12.getName(), grocery12.getExpirationDate(), grocery12.getUpdatedAt());
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -993,7 +875,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery1, grocery2, grocery3, grocery4, grocery5));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeOrderBySortConditions(storageId, memberId, GroceryType.VEGETABLES, pageable, sortBy, null, null);
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, GroceryType.VEGETABLES, null, pageable, sortBy, null, null, null);
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -1013,7 +895,7 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery5, grocery6, grocery7));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeOrderBySortConditions(storageId, memberId, GroceryType.VEGETABLES, pageable, sortBy, grocery4.getName(), grocery4.getUpdatedAt());
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, GroceryType.VEGETABLES, null, pageable, sortBy, grocery4.getName(), grocery4.getExpirationDate(), grocery4.getUpdatedAt());
 			List<Grocery> groceriesResult = groceries.stream().toList();
 
 			//then
@@ -1033,11 +915,9 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery15, grocery14, grocery13, grocery12, grocery11));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeOrderBySortConditions(storageId, memberId, GroceryType.ETC, pageable, sortBy, null, null);
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, GroceryType.ETC, null, pageable, sortBy, null, null, null);
 			List<Grocery> groceriesResult = groceries.stream().toList();
-			for (Grocery g : groceriesResult) {
-				System.out.println(g.getName());
-			}
+
 			//then
 			assertThat(groceriesResult.size()).isEqualTo(expected.size());
 			assertThat(groceriesResult).containsExactlyElementsOf(expected);
@@ -1055,14 +935,52 @@ class GroceryRepositoryTest {
 			List<Grocery> expected = new ArrayList<>(List.of(grocery11, grocery10, grocery9, grocery8));
 
 			//when
-			Slice<Grocery> groceries = groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeOrderBySortConditions(storageId, memberId, GroceryType.ETC, pageable, sortBy, grocery12.getName(), grocery12.getUpdatedAt());
+			Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storageId, memberId, GroceryType.ETC, null, pageable, sortBy, grocery12.getName(), grocery12.getExpirationDate(), grocery12.getUpdatedAt());
 			List<Grocery> groceriesResult = groceries.stream().toList();
-			for (Grocery g : groceriesResult) {
-				System.out.println(g.getName());
-			}
+
 			//then
 			assertThat(groceriesResult.size()).isEqualTo(expected.size());
 			assertThat(groceriesResult).containsExactlyElementsOf(expected);
 		}
+	}
+
+	private Grocery getGrocery(Storage storage, String name, GroceryType groceryType, String quantity, String description, LocalDate expirationDate) {
+
+		return Grocery.builder()
+			.storage(storage)
+			.name(name)
+			.groceryType(groceryType)
+			.quantity(quantity)
+			.description(description)
+			.expirationDate(expirationDate)
+			.build();
+	}
+
+	private Member getMember(String realName, String username, String password, String nickName, Role role) {
+
+		return Member.builder()
+			.realName(realName)
+			.username(username)
+			.password(password)
+			.nickName(nickName)
+			.role(role)
+			.build();
+	}
+
+	private Refrigerator getRefrigerator(String name, Member member) {
+
+		return Refrigerator.builder()
+			.name(name)
+			.member(member)
+			.build();
+	}
+
+	private Storage getStorage(String name, StorageType storageType, Refrigerator refrigerator) {
+
+		return Storage.builder()
+			.name(name)
+			.storageType(storageType)
+			.refrigerator(refrigerator)
+			.build();
 	}
 }
