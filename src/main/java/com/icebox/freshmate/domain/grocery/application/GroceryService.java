@@ -2,14 +2,20 @@ package com.icebox.freshmate.domain.grocery.application;
 
 import static com.icebox.freshmate.global.error.ErrorCode.EMPTY_IMAGE;
 import static com.icebox.freshmate.global.error.ErrorCode.EXCESSIVE_DELETE_IMAGE_COUNT;
+import static com.icebox.freshmate.global.error.ErrorCode.INVALID_LAST_PAGE_EXPIRATION_DATE_FORMAT;
+import static com.icebox.freshmate.global.error.ErrorCode.INVALID_LAST_PAGE_UPDATED_AT_FORMAT;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_GROCERY;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_IMAGE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_STORAGE;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -94,13 +100,15 @@ public class GroceryService {
 	}
 
 	@Transactional(readOnly = true)
-	public GroceriesRes findAllByStorageId(Long storageId, String sortBy, String groceryType, String groceryExpirationType, Pageable pageable, String username) {
+	public GroceriesRes findAllByStorageId(Long storageId, String sortBy, String groceryType, String groceryExpirationType, Pageable pageable, String lastPageName, String lastPageExpirationDate, String lastPageUpdatedAt, String username) {
 		Member member = getMemberByUsername(username);
 		Storage storage = getStorageByIdAndMemberId(storageId, member.getId());
 		GroceryType type = findGroceryType(groceryType);
 		GroceryExpirationType expirationType = findGroceryExpirationType(groceryExpirationType);
+		LocalDateTime lastUpdatedAt = getLastPageUpdatedAt(lastPageUpdatedAt);
+		LocalDate lastExpirationDate = getLastPageExpirationDate(lastPageExpirationDate);
 
-		Slice<Grocery> groceries = getGroceries(storage, member, pageable, sortBy, type, expirationType);
+		Slice<Grocery> groceries = getGroceries(storage, member, pageable, sortBy, type, expirationType, lastPageName, lastExpirationDate, lastUpdatedAt);
 
 		return GroceriesRes.from(groceries);
 	}
@@ -286,14 +294,69 @@ public class GroceryService {
 		}
 	}
 
-	private Slice<Grocery> getGroceries(Storage storage, Member member, Pageable pageable, String sortBy, GroceryType groceryType, GroceryExpirationType groceryExpirationType) {
+	private Slice<Grocery> getGroceries(Storage storage, Member member, Pageable pageable, String sortBy, GroceryType groceryType, GroceryExpirationType groceryExpirationType, String lastPageName, LocalDate lastPageExpirationDate, LocalDateTime lastPageUpdatedAt) {
 
 		return Optional.ofNullable(groceryType)
 			.map(type -> Optional.ofNullable(groceryExpirationType)
-				.map(expirationType -> groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderBySortCondition(storage.getId(), member.getId(), type, expirationType, pageable, sortBy))
-				.orElseGet(() -> groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeOrderBySortCondition(storage.getId(), member.getId(), type, pageable, sortBy)))
+				.map(expirationType -> groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeAndGroceryExpirationTypeOrderBySortCondition(storage.getId(), member.getId(), type, expirationType, pageable, sortBy, lastPageName, lastPageExpirationDate, lastPageUpdatedAt))
+				.orElseGet(() -> groceryRepository.findAllByStorageIdAndMemberIdAndGroceryTypeOrderBySortCondition(storage.getId(), member.getId(), type, pageable, sortBy, lastPageName, lastPageUpdatedAt)))
 			.orElseGet(() -> Optional.ofNullable(groceryExpirationType)
-				.map(expirationType -> groceryRepository.findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderBySortCondition(storage.getId(), member.getId(), expirationType, pageable, sortBy))
-				.orElseGet(() -> groceryRepository.findAllByStorageIdAndMemberIdOrderBySortCondition(storage.getId(), member.getId(), pageable, sortBy)));
+				.map(expirationType -> groceryRepository.findAllByStorageIdAndMemberIdAndGroceryExpirationTypeOrderBySortCondition(storage.getId(), member.getId(), expirationType, pageable, sortBy, lastPageName, lastPageExpirationDate, lastPageUpdatedAt))
+				.orElseGet(() -> groceryRepository.findAllByStorageIdAndMemberIdOrderBySortCondition(storage.getId(), member.getId(), pageable, sortBy, lastPageName, lastPageUpdatedAt)));
+	}
+
+	private LocalDate getLastPageExpirationDate(String lastPageExpirationDate) {
+
+		return Optional.ofNullable(lastPageExpirationDate)
+				.map(expirationDate -> {
+					validateLastPageExpirationDateFormat(lastPageExpirationDate);
+
+					return LocalDate.parse(lastPageExpirationDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+				})
+					.orElse(null);
+	}
+
+	private LocalDateTime getLastPageUpdatedAt(String lastPageUpdatedAt) {
+
+		return Optional.ofNullable(lastPageUpdatedAt)
+			.map(date -> {
+				if (checkLocalDateTimeFormat(date)) {
+					date += "0";
+				}
+
+				return date;
+			})
+			.map(date -> {
+				validateLastPageUpdatedAtFormat(date);
+
+				return LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"));
+			})
+			.orElse(null);
+	}
+
+	private boolean checkLocalDateTimeFormat(String date) {
+		String pattern = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{5}";
+
+		return Pattern.matches(pattern, date);
+	}
+
+	private void validateLastPageUpdatedAtFormat(String lastPageUpdatedAt) {
+		String pattern = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}";
+
+		if (!Pattern.matches(pattern, lastPageUpdatedAt)) {
+			log.warn("GET:READ:INVALID_LAST_PAGE_UPDATED_AT_FORMAT : {}", lastPageUpdatedAt);
+
+			throw new BusinessException(INVALID_LAST_PAGE_UPDATED_AT_FORMAT);
+		}
+	}
+
+	private void validateLastPageExpirationDateFormat(String lastPageExpirationDate) {
+		String pattern = "\\d{4}-\\d{2}-\\d{2}";
+
+		if (!Pattern.matches(pattern, lastPageExpirationDate)) {
+			log.warn("GET:READ:INVALID_LAST_PAGE_EXPIRATION_DATE_FORMAT : {}", lastPageExpirationDate);
+
+			throw new BusinessException(INVALID_LAST_PAGE_EXPIRATION_DATE_FORMAT);
+		}
 	}
 }

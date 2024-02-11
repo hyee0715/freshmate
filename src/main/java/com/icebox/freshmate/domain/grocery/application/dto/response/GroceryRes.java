@@ -23,11 +23,7 @@ public record GroceryRes(
 	Long storageId,
 	String storageName,
 	String groceryExpirationType,
-
-	@JsonFormat(shape = STRING, pattern = "YYYY-MM-dd HH:mm", timezone = "Asia/Seoul")
 	LocalDateTime createdAt,
-
-	@JsonFormat(shape = STRING, pattern = "YYYY-MM-dd HH:mm", timezone = "Asia/Seoul")
 	LocalDateTime updatedAt,
 
 	List<ImageRes> images

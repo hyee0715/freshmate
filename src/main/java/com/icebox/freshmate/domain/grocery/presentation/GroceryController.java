@@ -69,13 +69,16 @@ public class GroceryController {
 														   @RequestParam(value = "sort-by", required = false, defaultValue = "updatedAtDesc") String sortBy,
 														   @RequestParam(value = "grocery-type", required = false, defaultValue = "all") String groceryType,
 														   @RequestParam(value = "expiration-type", required = false, defaultValue = "all") String groceryExpirationType,
+														   @RequestParam(value = "last-page-name", required = false) String lastPageName,
+														   @RequestParam(value = "last-page-expiration-date", required = false) String lastPageExpirationDate,
+														   @RequestParam(value = "last-page-updated-at", required = false) String lastPageUpdatedAt,
 														   @RequestParam(required = false, defaultValue = "0") int page,
 														   @RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) int size,
 														   @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		page = Math.max(page - 1, 0);
 		PageRequest pageable = PageRequest.of(page, size);
 
-		GroceriesRes groceriesRes = groceryService.findAllByStorageId(storageId, sortBy, groceryType, groceryExpirationType, pageable, principalDetails.getUsername());
+		GroceriesRes groceriesRes = groceryService.findAllByStorageId(storageId, sortBy, groceryType, groceryExpirationType, pageable, lastPageName, lastPageExpirationDate, lastPageUpdatedAt, principalDetails.getUsername());
 
 		return ResponseEntity.ok(groceriesRes);
 	}
