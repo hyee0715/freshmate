@@ -14,6 +14,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
+import static org.springframework.restdocs.payload.JsonFieldType.BOOLEAN;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -27,6 +28,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -82,10 +84,10 @@ class RefrigeratorControllerTest {
 	@BeforeEach
 	void setUp(RestDocumentationContextProvider restDocumentationContextProvider) {
 		mockMvc = MockMvcBuilders
-		.webAppContextSetup(context)
+			.webAppContextSetup(context)
 			.apply(documentationConfiguration(restDocumentationContextProvider))
-		.apply(springSecurity())
-		.alwaysDo(print()).build();
+			.apply(springSecurity())
+			.alwaysDo(print()).build();
 
 		principalDetails = (PrincipalDetails) testUserDetailsService.loadUserByUsername(TestPrincipalDetailsService.USERNAME);
 
@@ -103,188 +105,219 @@ class RefrigeratorControllerTest {
 			.build();
 	}
 
-//	@DisplayName("냉장고 생성 테스트")
-//	@Test
-//	void create() throws Exception {
-//		//given
-//		Long refrigeratorId = 1L;
-//		Long memberId = 1L;
-//		RefrigeratorReq refrigeratorReq = new RefrigeratorReq(refrigerator.getName());
-//		RefrigeratorRes refrigeratorRes = new RefrigeratorRes(refrigeratorId, refrigerator.getName(), memberId, refrigerator.getMember().getUsername(), refrigerator.getMember().getNickName());
-//
-//		when(refrigeratorService.create(any(RefrigeratorReq.class), any(String.class))).thenReturn(refrigeratorRes);
-//
-//		//when
-//		//then
-//		mockMvc.perform(RestDocumentationRequestBuilders.post("/api/refrigerators")
-//				.contentType(MediaType.APPLICATION_JSON)
-//				.header("Authorization", "Bearer {ACCESS_TOKEN}")
-//				.with(user(principalDetails))
-//				.with(csrf().asHeader())
-//				.content(objectMapper.writeValueAsString(refrigeratorReq)))
-//			.andExpect(content().json(objectMapper.writeValueAsString(refrigeratorRes)))
-//			.andExpect(status().isCreated())
-//			.andExpect(jsonPath("$.refrigeratorId").value(refrigeratorId))
-//			.andExpect(jsonPath("$.refrigeratorName").value(refrigerator.getName()))
-//			.andExpect(jsonPath("$.memberId").value(memberId))
-//			.andExpect(jsonPath("$.memberUsername").value(member.getUsername()))
-//			.andExpect(jsonPath("$.memberNickName").value(member.getNickName()))
-//			.andDo(print())
-//			.andDo(document("refrigerator/refrigerator-create",
-//				preprocessRequest(prettyPrint()),
-//				preprocessResponse(prettyPrint()),
-//				requestHeaders(
-//					headerWithName("Authorization").description("Access Token")
-//				),
-//				requestFields(
-//					fieldWithPath("name").description("냉장고 이름")
-//				),
-//				responseFields(
-//					fieldWithPath("refrigeratorId").type(NUMBER).description("냉장고 ID"),
-//					fieldWithPath("refrigeratorName").type(STRING).description("냉장고 이름"),
-//					fieldWithPath("memberId").type(NUMBER).description("회원 ID"),
-//					fieldWithPath("memberUsername").type(STRING).description("회원 아이디"),
-//					fieldWithPath("memberNickName").type(STRING).description("회원 닉네임")
-//				)
-//			));
-//	}
+	@DisplayName("냉장고 생성 테스트")
+	@Test
+	void create() throws Exception {
+		//given
+		Long refrigeratorId = 1L;
+		Long memberId = 1L;
 
-//	@DisplayName("냉장고 단건 조회 테스트")
-//	@Test
-//	void findById() throws Exception {
-//		//given
-//		Long refrigeratorId = 1L;
-//		Long memberId = 1L;
-//
-//		RefrigeratorRes refrigeratorRes = new RefrigeratorRes(refrigeratorId, refrigerator.getName(), memberId, refrigerator.getMember().getUsername(), refrigerator.getMember().getNickName());
-//
-//		when(refrigeratorService.findById(anyLong())).thenReturn(refrigeratorRes);
-//
-//		//when
-//		//then
-//		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/refrigerators/{id}", refrigeratorId)
-//				.contentType(MediaType.APPLICATION_JSON)
-//			.with(user(principalDetails))
-//			.with(csrf().asHeader()))
-//			.andExpect(content().json(objectMapper.writeValueAsString(refrigeratorRes)))
-//			.andExpect(status().isOk())
-//			.andExpect(jsonPath("$.refrigeratorId").value(refrigeratorId))
-//			.andExpect(jsonPath("$.refrigeratorName").value(refrigerator.getName()))
-//			.andExpect(jsonPath("$.memberId").value(memberId))
-//			.andExpect(jsonPath("$.memberUsername").value(member.getUsername()))
-//			.andExpect(jsonPath("$.memberNickName").value(member.getNickName()))
-//			.andDo(print())
-//			.andDo(document("refrigerator/refrigerator-find-by-id",
-//				preprocessRequest(prettyPrint()),
-//				preprocessResponse(prettyPrint()),
-//				pathParameters(parameterWithName("id").description("냉장고 ID")),
-//				responseFields(
-//					fieldWithPath("refrigeratorId").type(NUMBER).description("냉장고 ID"),
-//					fieldWithPath("refrigeratorName").type(STRING).description("냉장고 이름"),
-//					fieldWithPath("memberId").type(NUMBER).description("회원 ID"),
-//					fieldWithPath("memberUsername").type(STRING).description("회원 아이디"),
-//					fieldWithPath("memberNickName").type(STRING).description("회원 닉네임")
-//				)
-//			));
-//	}
+		LocalDateTime createdAt = LocalDateTime.now();
+		LocalDateTime updatedAt = createdAt;
 
-//	@DisplayName("회원의 모든 냉장고 조회 테스트")
-//	@Test
-//	void findAll() throws Exception {
-//		//given
-//		Refrigerator refrigerator2 = Refrigerator.builder()
-//			.name("우리 집 냉장고2")
-//			.build();
-//
-//		Long memberId = 1L;
-//
-//		RefrigeratorRes refrigeratorRes1 = new RefrigeratorRes(1L, refrigerator.getName(), memberId, refrigerator.getMember().getUsername(), refrigerator.getMember().getNickName());
-//		RefrigeratorRes refrigeratorRes2 = new RefrigeratorRes(2L, refrigerator2.getName(), memberId, refrigerator.getMember().getUsername(), refrigerator.getMember().getNickName());
-//		RefrigeratorsRes refrigeratorsRes = new RefrigeratorsRes(List.of(refrigeratorRes1, refrigeratorRes2));
-//
-//		when(refrigeratorService.findAll(any(String.class))).thenReturn(refrigeratorsRes);
-//
-//		//when
-//		//then
-//		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/refrigerators")
-//				.contentType(MediaType.APPLICATION_JSON)
-//				.header("Authorization", "Bearer {ACCESS_TOKEN}")
-//				.with(user(principalDetails))
-//				.with(csrf().asHeader()))
-//			.andExpect(status().isOk())
-//			.andExpect(jsonPath("$.refrigerators", hasSize(2)))
-//			.andExpect(jsonPath("$.refrigerators[0].refrigeratorId").value(1))
-//			.andExpect(jsonPath("$.refrigerators[0].refrigeratorName").value(refrigerator.getName()))
-//			.andExpect(jsonPath("$.refrigerators[0].memberId").value(memberId))
-//			.andExpect(jsonPath("$.refrigerators[0].memberUsername").value(member.getUsername()))
-//			.andExpect(jsonPath("$.refrigerators[0].memberNickName").value(member.getNickName()))
-//			.andDo(print())
-//			.andDo(document("refrigerator/refrigerator-find-all",
-//				preprocessRequest(prettyPrint()),
-//				preprocessResponse(prettyPrint()),
-//				requestHeaders(
-//					headerWithName("Authorization").description("Access Token")
-//				),
-//				responseFields(
-//					fieldWithPath("refrigerators").type(ARRAY).description("냉장고 배열"),
-//					fieldWithPath("refrigerators[].refrigeratorId").type(NUMBER).description("냉장고 ID"),
-//					fieldWithPath("refrigerators[].refrigeratorName").type(STRING).description("냉장고 이름"),
-//					fieldWithPath("refrigerators[].memberId").type(NUMBER).description("회원 ID"),
-//					fieldWithPath("refrigerators[].memberUsername").type(STRING).description("회원 아이디"),
-//					fieldWithPath("refrigerators[].memberNickName").type(STRING).description("회원 닉네임")
-//				)
-//			));
-//	}
+		RefrigeratorReq refrigeratorReq = new RefrigeratorReq(refrigerator.getName());
+		RefrigeratorRes refrigeratorRes = new RefrigeratorRes(refrigeratorId, refrigerator.getName(), memberId, refrigerator.getMember().getUsername(), refrigerator.getMember().getNickName(), createdAt, updatedAt);
 
-//	@DisplayName("냉장고 수정 테스트")
-//	@Test
-//	void update() throws Exception {
-//		//given
-//		Long refrigeratorId = 1L;
-//		Long memberId = 1L;
-//
-//		RefrigeratorReq refrigeratorReq = new RefrigeratorReq(refrigerator.getName());
-//		RefrigeratorRes refrigeratorRes = new RefrigeratorRes(refrigeratorId, refrigerator.getName(), memberId, refrigerator.getMember().getUsername(), refrigerator.getMember().getNickName());
-//
-//		when(refrigeratorService.update(any(Long.class), any(RefrigeratorReq.class), any(String.class)))
-//			.thenReturn(refrigeratorRes);
-//
-//		//when
-//		//then
-//		mockMvc.perform(patch("/api/refrigerators/{id}", refrigeratorId)
-//				.contentType(MediaType.APPLICATION_JSON)
-//				.header("Authorization", "Bearer {ACCESS_TOKEN}")
-//				.with(user(principalDetails))
-//				.with(csrf().asHeader())
-//				.content(objectMapper.writeValueAsString(refrigeratorReq)))
-//			.andExpect(status().isOk())
-//			.andExpect(jsonPath("$.refrigeratorId").value(refrigeratorId))
-//			.andExpect(jsonPath("$.refrigeratorName").value(refrigerator.getName()))
-//			.andExpect(jsonPath("$.memberId").value(memberId))
-//			.andExpect(jsonPath("$.memberUsername").value(member.getUsername()))
-//			.andExpect(jsonPath("$.memberNickName").value(member.getNickName()))
-//			.andDo(print())
-//			.andDo(document("refrigerator/refrigerator-update",
-//				preprocessRequest(prettyPrint()),
-//				preprocessResponse(prettyPrint()),
-//				requestHeaders(
-//					headerWithName("Authorization").description("Access Token")
-//				),
-//				pathParameters(
-//					parameterWithName("id").description("냉장고 ID")
-//				),
-//				requestFields(
-//					fieldWithPath("name").description("수정할 냉장고 이름")
-//				),
-//				responseFields(
-//					fieldWithPath("refrigeratorId").type(NUMBER).description("냉장고 ID"),
-//					fieldWithPath("refrigeratorName").type(STRING).description("냉장고 이름"),
-//					fieldWithPath("memberId").type(NUMBER).description("회원 ID"),
-//					fieldWithPath("memberUsername").type(STRING).description("회원 아이디"),
-//					fieldWithPath("memberNickName").type(STRING).description("회원 닉네임")
-//				)
-//			));
-//	}
+		when(refrigeratorService.create(any(RefrigeratorReq.class), any(String.class))).thenReturn(refrigeratorRes);
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.post("/api/refrigerators")
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader())
+				.content(objectMapper.writeValueAsString(refrigeratorReq)))
+			.andExpect(content().json(objectMapper.writeValueAsString(refrigeratorRes)))
+			.andExpect(status().isCreated())
+			.andExpect(jsonPath("$.refrigeratorId").value(refrigeratorRes.refrigeratorId()))
+			.andExpect(jsonPath("$.refrigeratorName").value(refrigeratorRes.refrigeratorName()))
+			.andExpect(jsonPath("$.memberId").value(refrigeratorRes.memberId()))
+			.andExpect(jsonPath("$.memberUsername").value(refrigeratorRes.memberUsername()))
+			.andExpect(jsonPath("$.memberNickName").value(refrigeratorRes.memberNickName()))
+			.andExpect(jsonPath("$.createdAt").value(substringLocalDateTime(refrigeratorRes.createdAt())))
+			.andExpect(jsonPath("$.updatedAt").value(substringLocalDateTime(refrigeratorRes.updatedAt())))
+			.andDo(print())
+			.andDo(document("refrigerator/refrigerator-create",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				requestFields(
+					fieldWithPath("name").description("냉장고 이름")
+				),
+				responseFields(
+					fieldWithPath("refrigeratorId").type(NUMBER).description("냉장고 ID"),
+					fieldWithPath("refrigeratorName").type(STRING).description("냉장고 이름"),
+					fieldWithPath("memberId").type(NUMBER).description("회원 ID"),
+					fieldWithPath("memberUsername").type(STRING).description("회원 아이디"),
+					fieldWithPath("memberNickName").type(STRING).description("회원 닉네임"),
+					fieldWithPath("createdAt").type(STRING).description("냉장고 생성 날짜"),
+					fieldWithPath("updatedAt").type(STRING).description("냉장고 수정 날짜")
+				)
+			));
+	}
+
+	@DisplayName("냉장고 단건 조회 테스트")
+	@Test
+	void findById() throws Exception {
+		//given
+		Long refrigeratorId = 1L;
+		Long memberId = 1L;
+
+		LocalDateTime createdAt = LocalDateTime.now();
+		LocalDateTime updatedAt = createdAt;
+
+		RefrigeratorRes refrigeratorRes = new RefrigeratorRes(refrigeratorId, refrigerator.getName(), memberId, refrigerator.getMember().getUsername(), refrigerator.getMember().getNickName(), createdAt, updatedAt);
+
+		when(refrigeratorService.findById(anyLong())).thenReturn(refrigeratorRes);
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/refrigerators/{id}", refrigeratorId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(content().json(objectMapper.writeValueAsString(refrigeratorRes)))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.refrigeratorId").value(refrigeratorId))
+			.andExpect(jsonPath("$.refrigeratorName").value(refrigerator.getName()))
+			.andExpect(jsonPath("$.memberId").value(memberId))
+			.andExpect(jsonPath("$.memberUsername").value(member.getUsername()))
+			.andExpect(jsonPath("$.memberNickName").value(member.getNickName()))
+			.andExpect(jsonPath("$.createdAt").value(substringLocalDateTime(refrigeratorRes.createdAt())))
+			.andExpect(jsonPath("$.updatedAt").value(substringLocalDateTime(refrigeratorRes.updatedAt())))
+			.andDo(print())
+			.andDo(document("refrigerator/refrigerator-find-by-id",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				pathParameters(parameterWithName("id").description("냉장고 ID")),
+				responseFields(
+					fieldWithPath("refrigeratorId").type(NUMBER).description("냉장고 ID"),
+					fieldWithPath("refrigeratorName").type(STRING).description("냉장고 이름"),
+					fieldWithPath("memberId").type(NUMBER).description("회원 ID"),
+					fieldWithPath("memberUsername").type(STRING).description("회원 아이디"),
+					fieldWithPath("memberNickName").type(STRING).description("회원 닉네임"),
+					fieldWithPath("createdAt").type(STRING).description("냉장고 생성 날짜"),
+					fieldWithPath("updatedAt").type(STRING).description("냉장고 수정 날짜")
+				)
+			));
+	}
+
+	@DisplayName("회원의 모든 냉장고 조회 테스트")
+	@Test
+	void findAll() throws Exception {
+		//given
+		Refrigerator refrigerator2 = Refrigerator.builder()
+			.name("우리 집 냉장고2")
+			.build();
+
+		Long memberId = 1L;
+
+		LocalDateTime createdAt = LocalDateTime.now();
+		LocalDateTime updatedAt = createdAt;
+
+		RefrigeratorRes refrigeratorRes1 = new RefrigeratorRes(1L, refrigerator.getName(), memberId, refrigerator.getMember().getUsername(), refrigerator.getMember().getNickName(), createdAt, updatedAt);
+		RefrigeratorRes refrigeratorRes2 = new RefrigeratorRes(2L, refrigerator2.getName(), memberId, refrigerator.getMember().getUsername(), refrigerator.getMember().getNickName(), createdAt.plusMinutes(1), updatedAt.plusMinutes(1));
+		RefrigeratorsRes refrigeratorsRes = new RefrigeratorsRes(List.of(refrigeratorRes1, refrigeratorRes2), false);
+
+		when(refrigeratorService.findAll(any(String.class), any(), any(), any(), any())).thenReturn(refrigeratorsRes);
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/refrigerators")
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.refrigerators", hasSize(2)))
+			.andExpect(jsonPath("$.refrigerators[0].refrigeratorId").value(refrigeratorRes1.refrigeratorId()))
+			.andExpect(jsonPath("$.refrigerators[0].refrigeratorName").value(refrigeratorRes1.refrigeratorName()))
+			.andExpect(jsonPath("$.refrigerators[0].memberId").value(refrigeratorRes1.memberId()))
+			.andExpect(jsonPath("$.refrigerators[0].memberUsername").value(refrigeratorRes1.memberUsername()))
+			.andExpect(jsonPath("$.refrigerators[0].memberNickName").value(refrigeratorRes1.memberNickName()))
+			.andExpect(jsonPath("$.refrigerators[0].createdAt").value(substringLocalDateTime(refrigeratorRes1.createdAt())))
+			.andExpect(jsonPath("$.refrigerators[0].updatedAt").value(substringLocalDateTime(refrigeratorRes1.updatedAt())))
+			.andExpect(jsonPath("$.hasNext").value(refrigeratorsRes.hasNext()))
+			.andDo(print())
+			.andDo(document("refrigerator/refrigerator-find-all",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				responseFields(
+					fieldWithPath("refrigerators").type(ARRAY).description("냉장고 배열"),
+					fieldWithPath("refrigerators[].refrigeratorId").type(NUMBER).description("냉장고 ID"),
+					fieldWithPath("refrigerators[].refrigeratorName").type(STRING).description("냉장고 이름"),
+					fieldWithPath("refrigerators[].memberId").type(NUMBER).description("회원 ID"),
+					fieldWithPath("refrigerators[].memberUsername").type(STRING).description("회원 아이디"),
+					fieldWithPath("refrigerators[].memberNickName").type(STRING).description("회원 닉네임"),
+					fieldWithPath("refrigerators[].createdAt").type(STRING).description("냉장고 생성 날짜"),
+					fieldWithPath("refrigerators[].updatedAt").type(STRING).description("냉장고 수정 날짜"),
+					fieldWithPath("hasNext").type(BOOLEAN).description("다음 페이지(스크롤) 데이터 존재 유무")
+				)
+			));
+	}
+
+	@DisplayName("냉장고 수정 테스트")
+	@Test
+	void update() throws Exception {
+		//given
+		Long refrigeratorId = 1L;
+		Long memberId = 1L;
+
+		LocalDateTime createdAt = LocalDateTime.now();
+		LocalDateTime updatedAt = createdAt;
+
+		RefrigeratorReq refrigeratorReq = new RefrigeratorReq(refrigerator.getName());
+		RefrigeratorRes refrigeratorRes = new RefrigeratorRes(refrigeratorId, refrigerator.getName(), memberId, refrigerator.getMember().getUsername(), refrigerator.getMember().getNickName(), createdAt, updatedAt);
+
+		when(refrigeratorService.update(any(Long.class), any(RefrigeratorReq.class), any(String.class)))
+			.thenReturn(refrigeratorRes);
+
+		//when
+		//then
+		mockMvc.perform(patch("/api/refrigerators/{id}", refrigeratorId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader())
+				.content(objectMapper.writeValueAsString(refrigeratorReq)))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.refrigeratorId").value(refrigeratorRes.refrigeratorId()))
+			.andExpect(jsonPath("$.refrigeratorName").value(refrigeratorRes.refrigeratorName()))
+			.andExpect(jsonPath("$.memberId").value(refrigeratorRes.memberId()))
+			.andExpect(jsonPath("$.memberUsername").value(refrigeratorRes.memberUsername()))
+			.andExpect(jsonPath("$.memberNickName").value(refrigeratorRes.memberNickName()))
+			.andExpect(jsonPath("$.createdAt").value(substringLocalDateTime(refrigeratorRes.createdAt())))
+			.andExpect(jsonPath("$.updatedAt").value(substringLocalDateTime(refrigeratorRes.updatedAt())))
+			.andDo(print())
+			.andDo(document("refrigerator/refrigerator-update",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				pathParameters(
+					parameterWithName("id").description("냉장고 ID")
+				),
+				requestFields(
+					fieldWithPath("name").description("수정할 냉장고 이름")
+				),
+				responseFields(
+					fieldWithPath("refrigeratorId").type(NUMBER).description("냉장고 ID"),
+					fieldWithPath("refrigeratorName").type(STRING).description("냉장고 이름"),
+					fieldWithPath("memberId").type(NUMBER).description("회원 ID"),
+					fieldWithPath("memberUsername").type(STRING).description("회원 아이디"),
+					fieldWithPath("memberNickName").type(STRING).description("회원 닉네임"),
+					fieldWithPath("createdAt").type(STRING).description("냉장고 생성 날짜"),
+					fieldWithPath("updatedAt").type(STRING).description("냉장고 수정 날짜")
+				)
+			));
+	}
 
 	@DisplayName("냉장고 삭제 테스트")
 	@Test
@@ -312,5 +345,23 @@ class RefrigeratorControllerTest {
 					parameterWithName("id").description("냉장고 ID")
 				)
 			));
+	}
+
+	private String substringLocalDateTime(LocalDateTime localDateTime) {
+		StringBuilder ret = new StringBuilder(localDateTime.toString());
+
+		if (ret.length() == 26) {
+			return ret.toString();
+		}
+
+		if (ret.length() < 26) {
+			while (ret.length() < 26) {
+				ret.append("0");
+			}
+
+			return ret.toString();
+		}
+
+		return ret.substring(0, ret.length() - 2);
 	}
 }
