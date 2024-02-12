@@ -2,6 +2,7 @@ package com.icebox.freshmate.domain.recipe.presentation;
 
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,6 +35,8 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/recipes")
 @RestController
 public class RecipeController {
+
+	private static final String DEFAULT_PAGE_SIZE = "5";
 
 	private final RecipeService recipeService;
 
@@ -71,25 +74,35 @@ public class RecipeController {
 	}
 
 	@GetMapping("/writers")
-	public ResponseEntity<RecipesRes> findAllByWriterId(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-		RecipesRes recipesRes = recipeService.findAllByWriterId(principalDetails.getUsername());
+	public ResponseEntity<RecipesRes> findAllByWriterId(@RequestParam(required = false, defaultValue = "0") int page,
+														@RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) int size,
+														@AuthenticationPrincipal PrincipalDetails principalDetails) {
+		page = Math.max(page - 1, 0);
+		PageRequest pageable = PageRequest.of(page, size);
+
+		RecipesRes recipesRes = recipeService.findAllByWriterId(pageable, principalDetails.getUsername());
 
 		return ResponseEntity.ok(recipesRes);
 	}
 
 	@GetMapping("/owners")
-	public ResponseEntity<RecipesRes> findAllByOwnerId(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-		RecipesRes recipesRes = recipeService.findAllByOwnerId(principalDetails.getUsername());
+	public ResponseEntity<RecipesRes> findAllByOwnerId(@RequestParam(required = false, defaultValue = "0") int page,
+													   @RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) int size,
+													   @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		page = Math.max(page - 1, 0);
+		PageRequest pageable = PageRequest.of(page, size);
+
+		RecipesRes recipesRes = recipeService.findAllByOwnerId(pageable, principalDetails.getUsername());
 
 		return ResponseEntity.ok(recipesRes);
 	}
 
-	@GetMapping
-	public ResponseEntity<RecipesRes> findAllByGroceryId(@RequestParam("grocery-id") Long groceryId) {
-		RecipesRes recipesRes = recipeService.findAllByGroceryId(groceryId);
-
-		return ResponseEntity.ok(recipesRes);
-	}
+//	@GetMapping
+//	public ResponseEntity<RecipesRes> findAllByGroceryId(@RequestParam("grocery-id") Long groceryId) {
+//		RecipesRes recipesRes = recipeService.findAllByGroceryId(groceryId);
+//
+//		return ResponseEntity.ok(recipesRes);
+//	}
 
 	@PatchMapping("/{id}")
 	public ResponseEntity<RecipeRes> update(@PathVariable Long id, @Validated @RequestBody RecipeUpdateReq recipeUpdateReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {

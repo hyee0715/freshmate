@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -107,33 +109,33 @@ public class RecipeService {
 	}
 
 	@Transactional(readOnly = true)
-	public RecipesRes findAllByWriterId(String username) {
+	public RecipesRes findAllByWriterId(Pageable pageable, String username) {
 		Member member = getMemberByUsername(username);
 
-		List<Recipe> recipes = recipeRepository.findAllByWriterId(member.getId());
+		Slice<Recipe> recipes = recipeRepository.findAllByWriterId(member.getId(), pageable);
 
 		return RecipesRes.from(recipes);
 	}
 
 	@Transactional(readOnly = true)
-	public RecipesRes findAllByOwnerId(String username) {
+	public RecipesRes findAllByOwnerId(Pageable pageable, String username) {
 		Member member = getMemberByUsername(username);
 
-		List<Recipe> recipes = recipeRepository.findAllByOwnerId(member.getId());
+		Slice<Recipe> recipes = recipeRepository.findAllByOwnerId(member.getId(), pageable);
 
 		return RecipesRes.from(recipes);
 	}
 
-	@Transactional(readOnly = true)
-	public RecipesRes findAllByGroceryId(Long groceryId) {
-		Grocery grocery = getGroceryById(groceryId);
-
-		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByGroceryId(grocery.getId());
-
-		List<Recipe> recipes = getRecipesFromRecipeGroceries(recipeGroceries);
-
-		return RecipesRes.from(recipes);
-	}
+//	@Transactional(readOnly = true)
+//	public RecipesRes findAllByGroceryId(Long groceryId) {
+//		Grocery grocery = getGroceryById(groceryId);
+//
+//		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByGroceryId(grocery.getId());
+//
+//		List<Recipe> recipes = getRecipesFromRecipeGroceries(recipeGroceries);
+//
+//		return RecipesRes.from(recipes);
+//	}
 
 	public RecipeRes update(Long id, RecipeUpdateReq recipeUpdateReq, String username) {
 		Member owner = getMemberByUsername(username);

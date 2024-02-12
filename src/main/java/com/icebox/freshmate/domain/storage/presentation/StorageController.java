@@ -52,7 +52,7 @@ public class StorageController {
 	public ResponseEntity<StoragesRes> findAllByRefrigeratorId(@PathVariable Long refrigeratorId,
 															   @RequestParam(value = "sort-by", required = false, defaultValue = "updatedAtDesc") String sortBy,
 															   @RequestParam(value = "type", required = false, defaultValue = "all") String storageType,
-															   @RequestParam(value= "last-page-name", required = false) String lastPageName,
+															   @RequestParam(value = "last-page-name", required = false) String lastPageName,
 															   @RequestParam(value = "last-page-updated-at", required = false) String lastPageUpdatedAt,
 															   @RequestParam(required = false, defaultValue = "0") int page,
 															   @RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) int size,
