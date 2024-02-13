@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -126,16 +127,14 @@ public class RecipeService {
 		return RecipesRes.from(recipes);
 	}
 
-//	@Transactional(readOnly = true)
-//	public RecipesRes findAllByGroceryId(Long groceryId) {
-//		Grocery grocery = getGroceryById(groceryId);
-//
-//		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByGroceryId(grocery.getId());
-//
-//		List<Recipe> recipes = getRecipesFromRecipeGroceries(recipeGroceries);
-//
-//		return RecipesRes.from(recipes);
-//	}
+	@Transactional(readOnly = true)
+	public RecipesRes findAllByGroceryId(Long groceryId, PageRequest pageable) {
+		Grocery grocery = getGroceryById(groceryId);
+
+		Slice<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByGroceryId(grocery.getId(), pageable);
+
+		return RecipesRes.fromRecipeGroceries(recipeGroceries);
+	}
 
 	public RecipeRes update(Long id, RecipeUpdateReq recipeUpdateReq, String username) {
 		Member owner = getMemberByUsername(username);
@@ -467,14 +466,6 @@ public class RecipeService {
 		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByRecipeId(recipeId);
 
 		return RecipeGroceryRes.from(recipeGroceries);
-	}
-
-	private List<Recipe> getRecipesFromRecipeGroceries(List<RecipeGrocery> recipeGroceries) {
-
-		return recipeGroceries.stream()
-			.map(recipeGrocery -> recipeGrocery.getRecipe().getId())
-			.map(this::getRecipeById)
-			.toList();
 	}
 
 	private void validateImageListIsEmpty(List<MultipartFile> images) {

@@ -1,2 +1,6 @@
-package com.icebox.freshmate.domain.recipe.domain;public class RecipeRepositoryImpl {
+package com.icebox.freshmate.domain.recipe.domain;
+
+public class RecipeRepositoryImpl implements RecipeRepositoryCustom {
+
+
 }

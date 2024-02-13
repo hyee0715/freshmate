@@ -97,12 +97,17 @@ public class RecipeController {
 		return ResponseEntity.ok(recipesRes);
 	}
 
-//	@GetMapping
-//	public ResponseEntity<RecipesRes> findAllByGroceryId(@RequestParam("grocery-id") Long groceryId) {
-//		RecipesRes recipesRes = recipeService.findAllByGroceryId(groceryId);
-//
-//		return ResponseEntity.ok(recipesRes);
-//	}
+	@GetMapping
+	public ResponseEntity<RecipesRes> findAllByGroceryId(@RequestParam("grocery-id") Long groceryId,
+														 @RequestParam(required = false, defaultValue = "0") int page,
+														 @RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) int size) {
+		page = Math.max(page - 1, 0);
+		PageRequest pageable = PageRequest.of(page, size);
+
+		RecipesRes recipesRes = recipeService.findAllByGroceryId(groceryId, pageable);
+
+		return ResponseEntity.ok(recipesRes);
+	}
 
 	@PatchMapping("/{id}")
 	public ResponseEntity<RecipeRes> update(@PathVariable Long id, @Validated @RequestBody RecipeUpdateReq recipeUpdateReq, @AuthenticationPrincipal PrincipalDetails principalDetails) {
