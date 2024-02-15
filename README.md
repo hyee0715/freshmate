@@ -47,7 +47,7 @@
   
   - GroceryBucket (즐겨찾는 식료품) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/d9fa699fdb7b41598e769659dcc9eb8285068283/src/main/resources/static/docs/GroceryBucket.html)
   
-  - Recipe (레시피) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/d9fa699fdb7b41598e769659dcc9eb8285068283/src/main/resources/static/docs/Recipe.html)
+  - Recipe (레시피) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/c046d9a1c0cffc00f6d59b529c81679e9a241d65/src/main/resources/static/docs/Recipe.html)
   
   - RecipeBucket (즐겨찾는 레시피) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/d9fa699fdb7b41598e769659dcc9eb8285068283/src/main/resources/static/docs/RecipeBucket.html)
   
