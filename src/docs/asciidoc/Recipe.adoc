@@ -79,36 +79,20 @@ include::{snippets}/recipe/recipe-find-by-id/response-fields.adoc[]
 include::{snippets}/recipe/recipe-find-by-id/response-body.adoc[]
 
 ---
-== GET: 사용자가 작성한 모든 레시피 조회
+== GET: 사용자의 모든 레시피 조회
 === 성공
 
 .Request
-include::{snippets}/recipe/recipe-find-all-by-writer-id/http-request.adoc[]
+include::{snippets}/recipe/recipe-find-all-by-member-id/http-request.adoc[]
 .Request Headers
-include::{snippets}/recipe/recipe-find-all-by-writer-id/request-headers.adoc[]
+include::{snippets}/recipe/recipe-find-all-by-member-id/request-headers.adoc[]
 
 .Response
-include::{snippets}/recipe/recipe-find-all-by-writer-id/http-response.adoc[]
+include::{snippets}/recipe/recipe-find-all-by-member-id/http-response.adoc[]
 .Response Fields
-include::{snippets}/recipe/recipe-find-all-by-writer-id/response-fields.adoc[]
+include::{snippets}/recipe/recipe-find-all-by-member-id/response-fields.adoc[]
 .Response body
-include::{snippets}/recipe/recipe-find-all-by-writer-id/response-body.adoc[]
-
----
-== POST: 사용자가 스크랩한(소유한) 모든 레시피 조회
-=== 성공
-
-.Request
-include::{snippets}/recipe/recipe-find-all-by-owner-id/http-request.adoc[]
-.Request Headers
-include::{snippets}/recipe/recipe-find-all-by-owner-id/request-headers.adoc[]
-
-.Response
-include::{snippets}/recipe/recipe-find-all-by-owner-id/http-response.adoc[]
-.Response Fields
-include::{snippets}/recipe/recipe-find-all-by-owner-id/response-fields.adoc[]
-.Response body
-include::{snippets}/recipe/recipe-find-all-by-owner-id/response-body.adoc[]
+include::{snippets}/recipe/recipe-find-all-by-member-id/response-body.adoc[]
 
 ---
 == PATCH: 사용자가 작성한 레시피 수정
