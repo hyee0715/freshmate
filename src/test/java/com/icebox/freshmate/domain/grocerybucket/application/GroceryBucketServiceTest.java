@@ -15,6 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.SliceImpl;
 
 import com.icebox.freshmate.domain.grocery.domain.GroceryType;
 import com.icebox.freshmate.domain.grocerybucket.application.dto.request.GroceryBucketReq;
@@ -25,6 +27,7 @@ import com.icebox.freshmate.domain.grocerybucket.domain.GroceryBucketRepository;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
 import com.icebox.freshmate.domain.member.domain.Role;
+import com.icebox.freshmate.domain.storage.domain.Storage;
 
 @ExtendWith(MockitoExtension.class)
 class GroceryBucketServiceTest {
@@ -105,11 +108,18 @@ class GroceryBucketServiceTest {
 			.groceryDescription("김장용")
 			.build();
 
+		int page = 0;
+		int size = 5;
+		PageRequest pageRequest = PageRequest.of(page, size);
+
+		SliceImpl<GroceryBucket> groceryBuckets = new SliceImpl<>(List.of(groceryBucket, groceryBucket2));
+
+
 		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member));
-		when(groceryBucketRepository.findAllByMemberId(any())).thenReturn(List.of(groceryBucket, groceryBucket2));
+		when(groceryBucketRepository.findAllByMemberId(any(), any(), any(), any(), any())).thenReturn(groceryBuckets);
 
 		//when
-		GroceryBucketsRes groceryBucketsRes = groceryBucketService.findAll(member.getUsername());
+		GroceryBucketsRes groceryBucketsRes = groceryBucketService.findAll("updatedAtDesc", pageRequest, null, null, member.getUsername());
 
 		//then
 		assertThat(groceryBucketsRes.groceryBuckets()).hasSize(2);

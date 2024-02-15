@@ -48,6 +48,7 @@ public enum ErrorCode {
 
 	//즐겨 찾는 식료품
 	NOT_FOUND_GROCERY_BUCKET("GB001", "즐겨 찾는 식료품이 존재하지 않습니다."),
+	INVALID_GROCERY_BUCKET_SORT_TYPE("GB002", "유효하지 않거나 허용되지 않는 즐겨 찾는 식료품 정렬 타입입니다."),
 
 	//레시피
 	NOT_FOUND_RECIPE("RC001", "레시피가 존재하지 않습니다."),

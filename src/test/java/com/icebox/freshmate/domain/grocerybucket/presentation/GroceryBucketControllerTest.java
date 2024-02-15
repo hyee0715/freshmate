@@ -15,6 +15,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
+import static org.springframework.restdocs.payload.JsonFieldType.BOOLEAN;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -30,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -48,7 +50,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icebox.freshmate.domain.auth.application.PrincipalDetails;
 import com.icebox.freshmate.domain.grocery.domain.GroceryType;
@@ -117,8 +118,11 @@ class GroceryBucketControllerTest {
 		Long groceryBucketId = 1L;
 		Long memberId = 1L;
 
+		LocalDateTime createdAt = LocalDateTime.now();
+		LocalDateTime updatedAt = createdAt;
+
 		GroceryBucketReq groceryBucketReq = new GroceryBucketReq(groceryBucket.getGroceryName(), groceryBucket.getGroceryType().name(), groceryBucket.getGroceryDescription());
-		GroceryBucketRes groceryBucketRes = new GroceryBucketRes(groceryBucketId, memberId, member.getNickName(), groceryBucket.getGroceryName(), groceryBucket.getGroceryType().name(), groceryBucket.getGroceryDescription());
+		GroceryBucketRes groceryBucketRes = new GroceryBucketRes(groceryBucketId, memberId, member.getNickName(), groceryBucket.getGroceryName(), groceryBucket.getGroceryType().name(), groceryBucket.getGroceryDescription(), createdAt, updatedAt);
 
 		when(groceryBucketService.create(any(GroceryBucketReq.class), any(String.class))).thenReturn(groceryBucketRes);
 
@@ -138,6 +142,8 @@ class GroceryBucketControllerTest {
 			.andExpect(jsonPath("$.groceryName").value(groceryBucketRes.groceryName()))
 			.andExpect(jsonPath("$.groceryType").value(groceryBucketRes.groceryType()))
 			.andExpect(jsonPath("$.groceryDescription").value(groceryBucketRes.groceryDescription()))
+			.andExpect(jsonPath("$.createdAt").value(substringLocalDateTime(groceryBucketRes.createdAt())))
+			.andExpect(jsonPath("$.updatedAt").value(substringLocalDateTime(groceryBucketRes.updatedAt())))
 			.andDo(print())
 			.andDo(document("grocery-bucket/grocery-bucket-create",
 				preprocessRequest(prettyPrint()),
@@ -156,7 +162,9 @@ class GroceryBucketControllerTest {
 					fieldWithPath("memberNickName").type(STRING).description("회원 닉네임"),
 					fieldWithPath("groceryName").type(STRING).description("식료품 이름"),
 					fieldWithPath("groceryType").type(STRING).description("식료품 타입"),
-					fieldWithPath("groceryDescription").type(STRING).description("식료품 설명")
+					fieldWithPath("groceryDescription").type(STRING).description("식료품 설명"),
+					fieldWithPath("createdAt").type(STRING).description("즐겨 찾는 생성 날짜"),
+					fieldWithPath("updatedAt").type(STRING).description("즐겨 찾는 수정 날짜")
 				)
 			));
 	}
@@ -168,7 +176,10 @@ class GroceryBucketControllerTest {
 		Long groceryBucketId = 1L;
 		Long memberId = 1L;
 
-		GroceryBucketRes groceryBucketRes = new GroceryBucketRes(groceryBucketId, memberId, member.getNickName(), groceryBucket.getGroceryName(), groceryBucket.getGroceryType().name(), groceryBucket.getGroceryDescription());
+		LocalDateTime createdAt = LocalDateTime.now();
+		LocalDateTime updatedAt = createdAt;
+
+		GroceryBucketRes groceryBucketRes = new GroceryBucketRes(groceryBucketId, memberId, member.getNickName(), groceryBucket.getGroceryName(), groceryBucket.getGroceryType().name(), groceryBucket.getGroceryDescription(), createdAt, updatedAt);
 
 		when(groceryBucketService.findById(any(Long.class))).thenReturn(groceryBucketRes);
 
@@ -185,6 +196,8 @@ class GroceryBucketControllerTest {
 			.andExpect(jsonPath("$.groceryName").value(groceryBucketRes.groceryName()))
 			.andExpect(jsonPath("$.groceryType").value(groceryBucketRes.groceryType()))
 			.andExpect(jsonPath("$.groceryDescription").value(groceryBucketRes.groceryDescription()))
+			.andExpect(jsonPath("$.createdAt").value(substringLocalDateTime(groceryBucketRes.createdAt())))
+			.andExpect(jsonPath("$.updatedAt").value(substringLocalDateTime(groceryBucketRes.updatedAt())))
 			.andDo(print())
 			.andDo(document("grocery-bucket/grocery-bucket-find-by-id",
 				preprocessRequest(prettyPrint()),
@@ -196,7 +209,9 @@ class GroceryBucketControllerTest {
 					fieldWithPath("memberNickName").type(STRING).description("회원 닉네임"),
 					fieldWithPath("groceryName").type(STRING).description("식료품 이름"),
 					fieldWithPath("groceryType").type(STRING).description("식료품 타입"),
-					fieldWithPath("groceryDescription").type(STRING).description("식료품 설명")
+					fieldWithPath("groceryDescription").type(STRING).description("식료품 설명"),
+					fieldWithPath("createdAt").type(STRING).description("즐겨 찾는 생성 날짜"),
+					fieldWithPath("updatedAt").type(STRING).description("즐겨 찾는 수정 날짜")
 				)
 			));
 	}
@@ -214,12 +229,15 @@ class GroceryBucketControllerTest {
 			.groceryDescription("김장용")
 			.build();
 
-		GroceryBucketRes groceryBucketRes1 = new GroceryBucketRes(1L, memberId, member.getNickName(), groceryBucket.getGroceryName(), groceryBucket.getGroceryType().name(), groceryBucket.getGroceryDescription());
-		GroceryBucketRes groceryBucketRes2 = new GroceryBucketRes(2L, memberId, member.getNickName(), groceryBucket2.getGroceryName(), groceryBucket2.getGroceryType().name(), groceryBucket2.getGroceryDescription());
+		LocalDateTime createdAt = LocalDateTime.now();
+		LocalDateTime updatedAt = createdAt;
 
-		GroceryBucketsRes groceryBucketsRes = new GroceryBucketsRes(List.of(groceryBucketRes1, groceryBucketRes2));
+		GroceryBucketRes groceryBucketRes1 = new GroceryBucketRes(1L, memberId, member.getNickName(), groceryBucket.getGroceryName(), groceryBucket.getGroceryType().name(), groceryBucket.getGroceryDescription(), createdAt, updatedAt);
+		GroceryBucketRes groceryBucketRes2 = new GroceryBucketRes(2L, memberId, member.getNickName(), groceryBucket2.getGroceryName(), groceryBucket2.getGroceryType().name(), groceryBucket2.getGroceryDescription(), createdAt.plusMinutes(1), updatedAt.plusMinutes(1));
 
-		when(groceryBucketService.findAll(member.getUsername())).thenReturn(groceryBucketsRes);
+		GroceryBucketsRes groceryBucketsRes = new GroceryBucketsRes(List.of(groceryBucketRes1, groceryBucketRes2), false);
+
+		when(groceryBucketService.findAll(any(), any(), any(), any(), eq(member.getUsername()))).thenReturn(groceryBucketsRes);
 
 		//when
 		//then
@@ -237,6 +255,9 @@ class GroceryBucketControllerTest {
 			.andExpect(jsonPath("$.groceryBuckets[0].groceryName").value(groceryBucketsRes.groceryBuckets().get(0).groceryName()))
 			.andExpect(jsonPath("$.groceryBuckets[0].groceryType").value(groceryBucketsRes.groceryBuckets().get(0).groceryType()))
 			.andExpect(jsonPath("$.groceryBuckets[0].groceryDescription").value(groceryBucketsRes.groceryBuckets().get(0).groceryDescription()))
+			.andExpect(jsonPath("$.groceryBuckets[0].createdAt").value(substringLocalDateTime(groceryBucketsRes.groceryBuckets().get(0).createdAt())))
+			.andExpect(jsonPath("$.groceryBuckets[0].updatedAt").value(substringLocalDateTime(groceryBucketsRes.groceryBuckets().get(0).updatedAt())))
+			.andExpect(jsonPath("$.hasNext").value(groceryBucketsRes.hasNext()))
 			.andDo(print())
 			.andDo(document("grocery-bucket/grocery-bucket-find-all",
 				preprocessRequest(prettyPrint()),
@@ -251,7 +272,10 @@ class GroceryBucketControllerTest {
 					fieldWithPath("groceryBuckets[].memberNickName").type(STRING).description("회원 닉네임"),
 					fieldWithPath("groceryBuckets[].groceryName").type(STRING).description("즐겨 찾는 식료품 이름"),
 					fieldWithPath("groceryBuckets[].groceryType").type(STRING).description("즐겨 찾는 식료품 타입"),
-					fieldWithPath("groceryBuckets[].groceryDescription").type(STRING).description("즐겨 찾는 식료품 설명")
+					fieldWithPath("groceryBuckets[].groceryDescription").type(STRING).description("즐겨 찾는 식료품 설명"),
+					fieldWithPath("groceryBuckets[].createdAt").type(STRING).description("즐겨 찾는 식료품 생성 날짜"),
+					fieldWithPath("groceryBuckets[].updatedAt").type(STRING).description("즐겨 찾는 식료품 수정 날짜"),
+					fieldWithPath("hasNext").type(BOOLEAN).description("다음 페이지(스크롤) 데이터 존재 유무")
 				)
 			));
 	}
@@ -263,8 +287,11 @@ class GroceryBucketControllerTest {
 		Long groceryBucketId = 1L;
 		Long memberId = 1L;
 
+		LocalDateTime createdAt = LocalDateTime.now();
+		LocalDateTime updatedAt = createdAt;
+
 		GroceryBucketReq groceryBucketReq = new GroceryBucketReq("식료품 이름 수정", GroceryType.SNACKS.name(), "설명 수정");
-		GroceryBucketRes groceryBucketRes = new GroceryBucketRes(groceryBucketId, memberId, member.getNickName(), groceryBucket.getGroceryName(), groceryBucket.getGroceryType().name(), groceryBucket.getGroceryDescription());
+		GroceryBucketRes groceryBucketRes = new GroceryBucketRes(groceryBucketId, memberId, member.getNickName(), groceryBucket.getGroceryName(), groceryBucket.getGroceryType().name(), groceryBucket.getGroceryDescription(), createdAt, updatedAt);
 
 		when(groceryBucketService.update(anyLong(), any(GroceryBucketReq.class), anyString())).thenReturn(groceryBucketRes);
 
@@ -284,6 +311,8 @@ class GroceryBucketControllerTest {
 			.andExpect(jsonPath("$.groceryName").value(groceryBucketRes.groceryName()))
 			.andExpect(jsonPath("$.groceryType").value(groceryBucketRes.groceryType()))
 			.andExpect(jsonPath("$.groceryDescription").value(groceryBucketRes.groceryDescription()))
+			.andExpect(jsonPath("$.createdAt").value(substringLocalDateTime(groceryBucketRes.createdAt())))
+			.andExpect(jsonPath("$.updatedAt").value(substringLocalDateTime(groceryBucketRes.updatedAt())))
 			.andDo(print())
 			.andDo(document("grocery-bucket/grocery-bucket-update",
 				preprocessRequest(prettyPrint()),
@@ -300,7 +329,9 @@ class GroceryBucketControllerTest {
 					fieldWithPath("memberNickName").type(STRING).description("회원 닉네임"),
 					fieldWithPath("groceryName").type(STRING).description("식료품 이름"),
 					fieldWithPath("groceryType").type(STRING).description("식료품 타입"),
-					fieldWithPath("groceryDescription").type(STRING).description("식료품 설명")
+					fieldWithPath("groceryDescription").type(STRING).description("식료품 설명"),
+					fieldWithPath("createdAt").type(STRING).description("즐겨 찾는 생성 날짜"),
+					fieldWithPath("updatedAt").type(STRING).description("즐겨 찾는 수정 날짜")
 				)
 			));
 	}
@@ -332,5 +363,21 @@ class GroceryBucketControllerTest {
 					parameterWithName("id").description("즐겨 찾는 식료품 ID")
 				)
 			));
+	}
+
+	private String substringLocalDateTime(LocalDateTime localDateTime) {
+		StringBuilder ret = new StringBuilder(localDateTime.toString());
+
+		if (ret.length() == 26) {
+			if (ret.charAt(ret.length() - 1) == '0') {
+				return ret.substring(0, ret.length() - 1);
+			}
+
+			return ret.toString();
+		}
+
+		ret = new StringBuilder(ret.substring(0, ret.length() - 2));
+
+		return ret.toString();
 	}
 }

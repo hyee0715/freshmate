@@ -1,10 +1,17 @@
 package com.icebox.freshmate.domain.grocerybucket.application;
 
+import static com.icebox.freshmate.global.error.ErrorCode.INVALID_GROCERY_BUCKET_SORT_TYPE;
+import static com.icebox.freshmate.global.error.ErrorCode.INVALID_LAST_PAGE_UPDATED_AT_FORMAT;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_GROCERY_BUCKET;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +22,7 @@ import com.icebox.freshmate.domain.grocerybucket.domain.GroceryBucket;
 import com.icebox.freshmate.domain.grocerybucket.domain.GroceryBucketRepository;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
+import com.icebox.freshmate.global.error.exception.BusinessException;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -46,10 +54,13 @@ public class GroceryBucketService {
 	}
 
 	@Transactional(readOnly = true)
-	public GroceryBucketsRes findAll(String username) {
+	public GroceryBucketsRes findAll(String sortBy, Pageable pageable, String lastPageName, String lastPageUpdatedAt, String username) {
 		Member member = getMemberByUsername(username);
 
-		List<GroceryBucket> groceryBuckets = groceryBucketRepository.findAllByMemberId(member.getId());
+		LocalDateTime lastUpdatedAt = getLastPageUpdatedAt(lastPageUpdatedAt);
+		validateGroceryBucketSortType(sortBy);
+
+		Slice<GroceryBucket> groceryBuckets = groceryBucketRepository.findAllByMemberId(member.getId(), pageable, sortBy, lastPageName, lastUpdatedAt);
 
 		return GroceryBucketsRes.from(groceryBuckets);
 	}
@@ -99,5 +110,44 @@ public class GroceryBucketService {
 
 				return new EntityNotFoundException(NOT_FOUND_GROCERY_BUCKET);
 			});
+	}
+
+	private void validateGroceryBucketSortType(String sortBy) {
+		if (!sortBy.equalsIgnoreCase("nameAsc") && !sortBy.equalsIgnoreCase("nameDesc") && !sortBy.equalsIgnoreCase("updatedAtAsc") && !sortBy.equalsIgnoreCase("updatedAtDesc")) {
+			log.warn("GET:READ:INVALID_GROCERY_BUCKET_SORT_TYPE : {}", sortBy);
+
+			throw new BusinessException(INVALID_GROCERY_BUCKET_SORT_TYPE);
+		}
+	}
+
+	private LocalDateTime getLastPageUpdatedAt(String lastPageUpdatedAt) {
+		return Optional.ofNullable(lastPageUpdatedAt)
+			.map(date -> {
+				if (checkLocalDateTimeFormat(date)) {
+					date += "0";
+				}
+				return date;
+			})
+			.map(date -> {
+				validateLastPageUpdatedAtFormat(date);
+				return LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"));
+			})
+			.orElse(null);
+	}
+
+	private boolean checkLocalDateTimeFormat(String date) {
+		String pattern = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{5}";
+
+		return Pattern.matches(pattern, date);
+	}
+
+	private void validateLastPageUpdatedAtFormat(String lastPageUpdatedAt) {
+		String pattern = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}";
+
+		if (!Pattern.matches(pattern, lastPageUpdatedAt)) {
+			log.warn("GET:READ:INVALID_LAST_PAGE_UPDATED_AT_FORMAT : {}", lastPageUpdatedAt);
+
+			throw new BusinessException(INVALID_LAST_PAGE_UPDATED_AT_FORMAT);
+		}
 	}
 }

@@ -1,5 +1,6 @@
 package com.icebox.freshmate.domain.grocerybucket.presentation;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.icebox.freshmate.domain.auth.application.PrincipalDetails;
@@ -25,6 +27,8 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/grocery-buckets")
 @RestController
 public class GroceryBucketController {
+
+	private static final String DEFAULT_PAGE_SIZE = "5";
 
 	private final GroceryBucketService groceryBucketService;
 
@@ -44,8 +48,16 @@ public class GroceryBucketController {
 	}
 
 	@GetMapping
-	public ResponseEntity<GroceryBucketsRes> findAll(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-		GroceryBucketsRes groceryBucketsRes = groceryBucketService.findAll(principalDetails.getUsername());
+	public ResponseEntity<GroceryBucketsRes> findAll(@RequestParam(value = "sort-by", required = false, defaultValue = "updatedAtDesc") String sortBy,
+													 @RequestParam(value = "last-page-name", required = false) String lastPageName,
+													 @RequestParam(value = "last-page-updated-at", required = false) String lastPageUpdatedAt,
+													 @RequestParam(required = false, defaultValue = "0") int page,
+													 @RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) int size,
+													 @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		page = Math.max(page - 1, 0);
+		PageRequest pageable = PageRequest.of(page, size);
+
+		GroceryBucketsRes groceryBucketsRes = groceryBucketService.findAll(sortBy, pageable, lastPageName, lastPageUpdatedAt, principalDetails.getUsername());
 
 		return ResponseEntity.ok(groceryBucketsRes);
 	}

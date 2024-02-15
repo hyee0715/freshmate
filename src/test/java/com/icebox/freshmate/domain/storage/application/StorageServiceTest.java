@@ -129,7 +129,7 @@ class StorageServiceTest {
 
 		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member));
 		when(refrigeratorRepository.findByIdAndMemberId(any(), any())).thenReturn(Optional.of(refrigerator));
-		when(storageRepository.findAllByRefrigeratorIdOrderBySortCondition(any(), any(), any(), any(), any())).thenReturn(storages);
+		when(storageRepository.findAllByRefrigeratorIdAndStorageTypeOrderBySortCondition(any(), any(), any(), any(), any(), any())).thenReturn(storages);
 
 		//when
 		StoragesRes storagesRes = storageService.findAllByRefrigeratorId(refrigeratorId, "updatedAtAsc", null, pageRequest, null, null, member.getUsername());
