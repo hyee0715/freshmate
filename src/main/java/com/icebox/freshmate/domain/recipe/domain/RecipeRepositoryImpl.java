@@ -24,31 +24,45 @@ public class RecipeRepositoryImpl implements RecipeRepositoryCustom {
 	private final QMember member = QMember.member;
 
 	@Override
-	public Slice<Recipe> findAllByWriterIdAndRecipeType(Long writerId, Pageable pageable, String sortBy, RecipeType recipeType) {
+	public Slice<Recipe> findAllByMemberIdAndRecipeType(Long memberId, Pageable pageable, String sortBy, RecipeType recipeType, String lastPageTitle, LocalDateTime lastPageUpdatedAt) {
+		BooleanExpression[] booleanExpressions = getBooleanExpressionByMemberIdAndRecipeType(memberId, recipeType, lastPageTitle, lastPageUpdatedAt, sortBy);
 		OrderSpecifier<?>[] orderSpecifier = getOrderSpecifier(sortBy);
-		BooleanExpression[] booleanExpressions = createBooleanExpressions(writerId, recipeType);
 
 		List<Recipe> recipes = queryFactory.select(recipe)
 			.from(recipe)
-			.join(recipe.writer, member).fetchJoin()
+			.join(recipe.owner, member).fetchJoin()
 			.where(booleanExpressions)
 			.orderBy(orderSpecifier)
-			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
 
 		return checkLastPage(pageable, recipes);
 	}
 
-	private BooleanExpression[] createBooleanExpressions(Long writerId, RecipeType recipeType) {
+	private BooleanExpression[] getBooleanExpressionByMemberIdAndRecipeType(Long memberId, RecipeType recipeType, String lastPageTitle, LocalDateTime lastPageUpdatedAt, String sortBy) {
+		SortTypeUtils sortType = SortTypeUtils.findSortType(sortBy);
+
+		return switch (sortType) {
+			case TITLE_ASC ->
+				createBooleanExpressions(memberId, recipeType, gtRecipeTitleAndLtUpdatedAt(lastPageTitle, lastPageUpdatedAt));
+			case TITLE_DESC ->
+				createBooleanExpressions(memberId, recipeType, ltRecipeTitleAndLtUpdatedAt(lastPageTitle, lastPageUpdatedAt));
+			case UPDATED_AT_ASC -> createBooleanExpressions(memberId, recipeType, gtRecipeUpdatedAt(lastPageUpdatedAt));
+			default -> createBooleanExpressions(memberId, recipeType, ltRecipeUpdatedAt(lastPageUpdatedAt));
+		};
+	}
+
+	private BooleanExpression[] createBooleanExpressions(Long memberId, RecipeType recipeType, BooleanExpression booleanExpression) {
 
 		return Optional.ofNullable(recipeType)
 			.map(type -> new BooleanExpression[]{
-				recipe.writer.id.eq(writerId),
-				recipe.recipeType.eq(recipeType)
+				recipe.owner.id.eq(memberId),
+				recipe.recipeType.eq(recipeType),
+				booleanExpression
 			})
 			.orElse(new BooleanExpression[]{
-				recipe.writer.id.eq(writerId)
+				recipe.owner.id.eq(memberId),
+				booleanExpression
 			});
 	}
 
@@ -79,5 +93,49 @@ public class RecipeRepositoryImpl implements RecipeRepositoryCustom {
 		}
 
 		return new SliceImpl<>(recipes, pageable, hasNext);
+	}
+
+	private BooleanExpression gtRecipeTitleAndLtUpdatedAt(String recipeTitle, LocalDateTime updatedAt) {
+		if (recipeTitle == null || updatedAt == null) {
+			return null;
+		}
+
+		BooleanExpression predicate = recipe.title.gt(recipeTitle);
+
+		predicate = predicate.or(
+			recipe.title.eq(recipeTitle)
+				.and(recipe.updatedAt.lt(updatedAt))
+		);
+
+		return predicate;
+	}
+
+	private BooleanExpression ltRecipeTitleAndLtUpdatedAt(String recipeTitle, LocalDateTime updatedAt) {
+		if (recipeTitle == null || updatedAt == null) {
+			return null;
+		}
+
+		BooleanExpression predicate = recipe.title.lt(recipeTitle);
+
+		predicate = predicate.or(
+			recipe.title.eq(recipeTitle)
+				.and(recipe.updatedAt.lt(updatedAt))
+		);
+
+		return predicate;
+	}
+
+	private BooleanExpression gtRecipeUpdatedAt(LocalDateTime updatedAt) {
+
+		return Optional.ofNullable(updatedAt)
+			.map(recipe.updatedAt::gt)
+			.orElse(null);
+	}
+
+	private BooleanExpression ltRecipeUpdatedAt(LocalDateTime updatedAt) {
+
+		return Optional.ofNullable(updatedAt)
+			.map(recipe.updatedAt::lt)
+			.orElse(null);
 	}
 }

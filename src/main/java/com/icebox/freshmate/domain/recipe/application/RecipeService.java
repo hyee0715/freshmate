@@ -4,9 +4,12 @@ import static com.icebox.freshmate.global.error.ErrorCode.*;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_RECIPE;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -110,23 +113,15 @@ public class RecipeService {
 	}
 
 	@Transactional(readOnly = true)
-	public RecipesRes findAllByWriterIdAndRecipeType(String sortBy, String recipeType, Pageable pageable, String username) {
+	public RecipesRes findAllByMemberIdAndRecipeType(String sortBy, String recipeType, Pageable pageable, String lastPageTitle, String lastPageUpdatedAt, String username) {
 		Member member = getMemberByUsername(username);
+
+		LocalDateTime lastUpdatedAt = getLastPageUpdatedAt(lastPageUpdatedAt);
 
 		validateRecipeSortType(sortBy);
-
 		RecipeType type = findRecipeType(recipeType);
 
-		Slice<Recipe> recipes = recipeRepository.findAllByWriterIdAndRecipeType(member.getId(), pageable, sortBy, type);
-
-		return RecipesRes.from(recipes);
-	}
-
-	@Transactional(readOnly = true)
-	public RecipesRes findAllByOwnerId(Pageable pageable, String username) {
-		Member member = getMemberByUsername(username);
-
-		Slice<Recipe> recipes = recipeRepository.findAllByOwnerId(member.getId(), pageable);
+		Slice<Recipe> recipes = recipeRepository.findAllByMemberIdAndRecipeType(member.getId(), pageable, sortBy, type, lastPageTitle, lastUpdatedAt);
 
 		return RecipesRes.from(recipes);
 	}
@@ -495,6 +490,37 @@ public class RecipeService {
 		} catch (BusinessException e) {
 
 			return null;
+		}
+	}
+
+	private LocalDateTime getLastPageUpdatedAt(String lastPageUpdatedAt) {
+		return Optional.ofNullable(lastPageUpdatedAt)
+			.map(date -> {
+				if (checkLocalDateTimeFormat(date)) {
+					date += "0";
+				}
+				return date;
+			})
+			.map(date -> {
+				validateLastPageUpdatedAtFormat(date);
+				return LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"));
+			})
+			.orElse(null);
+	}
+
+	private boolean checkLocalDateTimeFormat(String date) {
+		String pattern = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{5}";
+
+		return Pattern.matches(pattern, date);
+	}
+
+	private void validateLastPageUpdatedAtFormat(String lastPageUpdatedAt) {
+		String pattern = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}";
+
+		if (!Pattern.matches(pattern, lastPageUpdatedAt)) {
+			log.warn("GET:READ:INVALID_LAST_PAGE_UPDATED_AT_FORMAT : {}", lastPageUpdatedAt);
+
+			throw new BusinessException(INVALID_LAST_PAGE_UPDATED_AT_FORMAT);
 		}
 	}
 }
