@@ -12,6 +12,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -23,7 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Entity
-@Table(name = "grocery_buckets")
+@Table(name = "grocery_buckets", indexes = {
+	@Index(name = "index_grocery_buckets_grocery_name_updated_at", columnList = "groceryName, updatedAt", unique = true),
+	@Index(name = "index_grocery_buckets_updated_at", columnList = "updatedAt", unique = true)})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
 public class GroceryBucket extends BaseEntity {

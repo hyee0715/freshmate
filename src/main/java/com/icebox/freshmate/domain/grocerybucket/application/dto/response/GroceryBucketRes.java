@@ -1,5 +1,7 @@
 package com.icebox.freshmate.domain.grocerybucket.application.dto.response;
 
+import java.time.LocalDateTime;
+
 import com.icebox.freshmate.domain.grocerybucket.domain.GroceryBucket;
 
 public record GroceryBucketRes(
@@ -8,7 +10,9 @@ public record GroceryBucketRes(
 	String memberNickName,
 	String groceryName,
 	String groceryType,
-	String groceryDescription
+	String groceryDescription,
+	LocalDateTime createdAt,
+	LocalDateTime updatedAt
 ) {
 
 	public static GroceryBucketRes from(GroceryBucket groceryBucket) {
@@ -19,7 +23,9 @@ public record GroceryBucketRes(
 			groceryBucket.getMember().getNickName(),
 			groceryBucket.getGroceryName(),
 			groceryBucket.getGroceryType().name(),
-			groceryBucket.getGroceryDescription()
+			groceryBucket.getGroceryDescription(),
+			groceryBucket.getCreatedAt(),
+			groceryBucket.getUpdatedAt()
 		);
 	}
 }

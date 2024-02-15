@@ -11,6 +11,7 @@ import org.springframework.data.domain.SliceImpl;
 import com.icebox.freshmate.domain.member.domain.QMember;
 import com.icebox.freshmate.global.util.SortTypeUtils;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -23,19 +24,37 @@ public class GroceryBucketRepositoryImpl implements GroceryBucketRepositoryCusto
 	private final QMember member = QMember.member;
 
 	@Override
-	public Slice<GroceryBucket> findAllByMemberId(Long memberId, Pageable pageable, String sortBy) {
+	public Slice<GroceryBucket> findAllByMemberId(Long memberId, Pageable pageable, String sortBy, String lastPageName, LocalDateTime lastPageUpdatedAt) {
+		BooleanExpression[] booleanExpressions = getBooleanExpressionByMemberId(memberId, lastPageName, lastPageUpdatedAt, sortBy);
 		OrderSpecifier<?>[] orderSpecifier = getOrderSpecifier(sortBy);
 
 		List<GroceryBucket> groceryBuckets = queryFactory.select(groceryBucket)
 			.from(groceryBucket)
 			.join(groceryBucket.member, member).fetchJoin()
-			.where(groceryBucket.member.id.eq(memberId))
+			.where(booleanExpressions)
 			.orderBy(orderSpecifier)
-			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
 
 		return checkLastPage(pageable, groceryBuckets);
+	}
+
+	private BooleanExpression[] getBooleanExpressionByMemberId(Long memberId, String lastPageTitle, LocalDateTime lastPageUpdatedAt, String sortBy) {
+		SortTypeUtils sortType = SortTypeUtils.findSortType(sortBy);
+
+		return switch (sortType) {
+			case NAME_ASC ->
+				createBooleanExpressions(memberId, gtGroceryNameAndLtUpdatedAt(lastPageTitle, lastPageUpdatedAt));
+			case NAME_DESC ->
+				createBooleanExpressions(memberId, ltGroceryNameAndLtUpdatedAt(lastPageTitle, lastPageUpdatedAt));
+			case UPDATED_AT_ASC -> createBooleanExpressions(memberId, gtGroceryBucketUpdatedAt(lastPageUpdatedAt));
+			default -> createBooleanExpressions(memberId, ltGroceryBucketUpdatedAt(lastPageUpdatedAt));
+		};
+	}
+
+	private BooleanExpression[] createBooleanExpressions(Long memberId, BooleanExpression booleanExpression) {
+
+		return new BooleanExpression[]{groceryBucket.member.id.eq(memberId), booleanExpression};
 	}
 
 	private OrderSpecifier<?>[] getOrderSpecifier(String sortBy) {
@@ -65,5 +84,49 @@ public class GroceryBucketRepositoryImpl implements GroceryBucketRepositoryCusto
 		}
 
 		return new SliceImpl<>(groceryBucket, pageable, hasNext);
+	}
+
+	private BooleanExpression gtGroceryNameAndLtUpdatedAt(String groceryName, LocalDateTime updatedAt) {
+		if (groceryName == null || updatedAt == null) {
+			return null;
+		}
+
+		BooleanExpression predicate = groceryBucket.groceryName.gt(groceryName);
+
+		predicate = predicate.or(
+			groceryBucket.groceryName.eq(groceryName)
+				.and(groceryBucket.updatedAt.lt(updatedAt))
+		);
+
+		return predicate;
+	}
+
+	private BooleanExpression ltGroceryNameAndLtUpdatedAt(String groceryName, LocalDateTime updatedAt) {
+		if (groceryName == null || updatedAt == null) {
+			return null;
+		}
+
+		BooleanExpression predicate = groceryBucket.groceryName.lt(groceryName);
+
+		predicate = predicate.or(
+			groceryBucket.groceryName.eq(groceryName)
+				.and(groceryBucket.updatedAt.lt(updatedAt))
+		);
+
+		return predicate;
+	}
+
+	private BooleanExpression gtGroceryBucketUpdatedAt(LocalDateTime updatedAt) {
+
+		return Optional.ofNullable(updatedAt)
+			.map(groceryBucket.updatedAt::gt)
+			.orElse(null);
+	}
+
+	private BooleanExpression ltGroceryBucketUpdatedAt(LocalDateTime updatedAt) {
+
+		return Optional.ofNullable(updatedAt)
+			.map(groceryBucket.updatedAt::lt)
+			.orElse(null);
 	}
 }
