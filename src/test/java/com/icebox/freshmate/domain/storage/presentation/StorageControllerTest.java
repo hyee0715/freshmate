@@ -382,6 +382,12 @@ class StorageControllerTest {
 			return ret.toString();
 		}
 
-		return ret.substring(0, ret.length() - 2);
+		ret = new StringBuilder(ret.substring(0, ret.length() - 2));
+
+		if (ret.charAt(ret.length() - 1) == '0') {
+			return ret.substring(0, ret.length() - 1);
+		}
+
+		return ret.toString();
 	}
 }
