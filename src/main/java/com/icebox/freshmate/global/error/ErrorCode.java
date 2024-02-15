@@ -33,15 +33,18 @@ public enum ErrorCode {
 
 	//냉장고
 	NOT_FOUND_REFRIGERATOR("R001", "냉장고가 존재하지 않습니다."),
+	INVALID_REFRIGERATOR_SORT_TYPE("R002", "유효하지 않거나 허용되지 않는 냉장고 정렬 타입입니다."),
 
 	//냉장고 저장소
 	INVALID_STORAGE_TYPE("S001", "유효하지 않은 냉장고 저장소 타입입니다."),
 	NOT_FOUND_STORAGE("S002", "냉장고 저장소가 존재하지 않습니다."),
+	INVALID_STORAGE_SORT_TYPE("S003", "유효하지 않거나 허용되지 않는 냉장고 저장소 정렬 타입입니다."),
 
 	//식료품
 	INVALID_GROCERY_TYPE("G001", "유효하지 않은 식료품 타입입니다."),
 	NOT_FOUND_GROCERY("G002", "식료품이 존재하지 않습니다."),
 	INVALID_GROCERY_EXPIRATION_TYPE("G003", "유효하지 않은 식료품 유통기한 타입입니다."),
+	INVALID_GROCERY_SORT_TYPE("GOO4", "유효하지 않거나 허용되지 않는 식료품 정렬 타입입니다."),
 
 	//즐겨 찾는 식료품
 	NOT_FOUND_GROCERY_BUCKET("GB001", "즐겨 찾는 식료품이 존재하지 않습니다."),
@@ -51,6 +54,8 @@ public enum ErrorCode {
 	INVALID_SCRAP_ATTEMPT_TO_OWN_RECIPE("RC002", "본인이 작성한 레시피는 스크랩할 수 없습니다."),
 	INVALID_UPDATE_ATTEMPT_TO_SCRAPED_RECIPE("RC003", "스크랩한 레시피는 수정할 수 없습니다."),
 	INVALID_ATTEMPT_TO_POST_RECIPE("RC004", "본인이 작성하지 않은 레시피는 게시글로 공유할 수 없습니다."),
+	INVALID_RECIPE_TYPE("RC005", "유효하지 않은 레시피 타입입니다."),
+	INVALID_RECIPE_SORT_TYPE("RC006", "유효하지 않거나 허용되지 않는 레시피 정렬 타입입니다."),
 
 	//레시피의 식재료
 	INVALID_RECIPE_GROCERY_NAME("RG001", "레시피에 추가하려는 식재료 ID와 이름의 정보가 일치하지 않습니다."),

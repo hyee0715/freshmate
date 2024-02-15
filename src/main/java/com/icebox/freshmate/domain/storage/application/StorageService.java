@@ -1,6 +1,7 @@
 package com.icebox.freshmate.domain.storage.application;
 
 import static com.icebox.freshmate.global.error.ErrorCode.INVALID_LAST_PAGE_UPDATED_AT_FORMAT;
+import static com.icebox.freshmate.global.error.ErrorCode.INVALID_STORAGE_SORT_TYPE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_REFRIGERATOR;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_STORAGE;
@@ -67,9 +68,10 @@ public class StorageService {
 
 		LocalDateTime lastUpdatedAt = getLastPageUpdatedAt(lastPageUpdatedAt);
 
+		validateStorageSortType(sortBy);
 		StorageType type = findStorageType(storageType);
 
-		Slice<Storage> storages = findStorages(type, refrigerator, pageable, lastPageName, lastUpdatedAt, sortBy);
+		Slice<Storage> storages = storageRepository.findAllByRefrigeratorIdAndStorageTypeOrderBySortCondition(refrigerator.getId(), type, pageable, lastPageName, lastUpdatedAt, sortBy);
 
 		return StoragesRes.from(storages);
 	}
@@ -172,10 +174,11 @@ public class StorageService {
 		}
 	}
 
-	private Slice<Storage> findStorages(StorageType storageType, Refrigerator refrigerator, Pageable pageable, String lastPageName, LocalDateTime lastPageUpdatedAt, String sortBy) {
+	private void validateStorageSortType(String sortBy) {
+		if (!sortBy.equalsIgnoreCase("nameAsc") && !sortBy.equalsIgnoreCase("nameDesc") && !sortBy.equalsIgnoreCase("updatedAtAsc") && !sortBy.equalsIgnoreCase("updatedAtDesc")) {
+			log.warn("GET:READ:INVALID_STORAGE_SORT_TYPE : {}", sortBy);
 
-		return Optional.ofNullable(storageType)
-			.map(validStorageType -> storageRepository.findAllByRefrigeratorIdAndStorageTypeOrderBySortCondition(refrigerator.getId(), validStorageType, pageable, lastPageName, lastPageUpdatedAt, sortBy))
-			.orElse(storageRepository.findAllByRefrigeratorIdOrderBySortCondition(refrigerator.getId(), pageable, lastPageName, lastPageUpdatedAt, sortBy));
+			throw new BusinessException(INVALID_STORAGE_SORT_TYPE);
+		}
 	}
 }

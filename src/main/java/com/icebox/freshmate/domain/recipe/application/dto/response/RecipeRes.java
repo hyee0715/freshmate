@@ -1,5 +1,6 @@
 package com.icebox.freshmate.domain.recipe.application.dto.response;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.icebox.freshmate.domain.image.application.dto.response.ImageRes;
@@ -16,6 +17,8 @@ public record RecipeRes(
 	Long originalRecipeId,
 	String title,
 	String content,
+	LocalDateTime createdAt,
+	LocalDateTime updatedAt,
 
 	List<RecipeGroceryRes> materials,
 	List<ImageRes> images
@@ -33,6 +36,8 @@ public record RecipeRes(
 			recipe.getOriginalRecipeId(),
 			recipe.getTitle(),
 			recipe.getContent(),
+			recipe.getCreatedAt(),
+			recipe.getUpdatedAt(),
 			recipeGroceriesRes,
 			imagesRes
 		);

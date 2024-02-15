@@ -4,10 +4,16 @@ import static com.icebox.freshmate.global.error.ErrorCode.*;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_RECIPE;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -107,32 +113,26 @@ public class RecipeService {
 	}
 
 	@Transactional(readOnly = true)
-	public RecipesRes findAllByWriterId(String username) {
+	public RecipesRes findAllByMemberIdAndRecipeType(String sortBy, String recipeType, Pageable pageable, String lastPageTitle, String lastPageUpdatedAt, String username) {
 		Member member = getMemberByUsername(username);
 
-		List<Recipe> recipes = recipeRepository.findAllByWriterId(member.getId());
+		LocalDateTime lastUpdatedAt = getLastPageUpdatedAt(lastPageUpdatedAt);
+
+		validateRecipeSortType(sortBy);
+		RecipeType type = findRecipeType(recipeType);
+
+		Slice<Recipe> recipes = recipeRepository.findAllByMemberIdAndRecipeType(member.getId(), pageable, sortBy, type, lastPageTitle, lastUpdatedAt);
 
 		return RecipesRes.from(recipes);
 	}
 
 	@Transactional(readOnly = true)
-	public RecipesRes findAllByOwnerId(String username) {
-		Member member = getMemberByUsername(username);
-
-		List<Recipe> recipes = recipeRepository.findAllByOwnerId(member.getId());
-
-		return RecipesRes.from(recipes);
-	}
-
-	@Transactional(readOnly = true)
-	public RecipesRes findAllByGroceryId(Long groceryId) {
+	public RecipesRes findAllByGroceryId(Long groceryId, PageRequest pageable) {
 		Grocery grocery = getGroceryById(groceryId);
 
-		List<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByGroceryId(grocery.getId());
+		Slice<RecipeGrocery> recipeGroceries = recipeGroceryRepository.findAllByGroceryId(grocery.getId(), pageable);
 
-		List<Recipe> recipes = getRecipesFromRecipeGroceries(recipeGroceries);
-
-		return RecipesRes.from(recipes);
+		return RecipesRes.fromRecipeGroceries(recipeGroceries);
 	}
 
 	public RecipeRes update(Long id, RecipeUpdateReq recipeUpdateReq, String username) {
@@ -467,19 +467,60 @@ public class RecipeService {
 		return RecipeGroceryRes.from(recipeGroceries);
 	}
 
-	private List<Recipe> getRecipesFromRecipeGroceries(List<RecipeGrocery> recipeGroceries) {
-
-		return recipeGroceries.stream()
-			.map(recipeGrocery -> recipeGrocery.getRecipe().getId())
-			.map(this::getRecipeById)
-			.toList();
-	}
-
 	private void validateImageListIsEmpty(List<MultipartFile> images) {
 		if (images.size() == 1 && Objects.equals(images.get(0).getOriginalFilename(), "")) {
 			log.warn("PATCH:WRITE:EMPTY_IMAGE");
 
 			throw new BusinessException(EMPTY_IMAGE);
+		}
+	}
+
+	private void validateRecipeSortType(String sortBy) {
+		if (!sortBy.equalsIgnoreCase("titleAsc") && !sortBy.equalsIgnoreCase("titleDesc") && !sortBy.equalsIgnoreCase("updatedAtAsc") && !sortBy.equalsIgnoreCase("updatedAtDesc")) {
+			log.warn("GET:READ:INVALID_RECIPE_SORT_TYPE : {}", sortBy);
+
+			throw new BusinessException(INVALID_RECIPE_SORT_TYPE);
+		}
+	}
+
+	private RecipeType findRecipeType(String recipeType) {
+		try {
+
+			return RecipeType.findRecipeType(recipeType);
+		} catch (BusinessException e) {
+
+			return null;
+		}
+	}
+
+	private LocalDateTime getLastPageUpdatedAt(String lastPageUpdatedAt) {
+		return Optional.ofNullable(lastPageUpdatedAt)
+			.map(date -> {
+				if (checkLocalDateTimeFormat(date)) {
+					date += "0";
+				}
+				return date;
+			})
+			.map(date -> {
+				validateLastPageUpdatedAtFormat(date);
+				return LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"));
+			})
+			.orElse(null);
+	}
+
+	private boolean checkLocalDateTimeFormat(String date) {
+		String pattern = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{5}";
+
+		return Pattern.matches(pattern, date);
+	}
+
+	private void validateLastPageUpdatedAtFormat(String lastPageUpdatedAt) {
+		String pattern = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}";
+
+		if (!Pattern.matches(pattern, lastPageUpdatedAt)) {
+			log.warn("GET:READ:INVALID_LAST_PAGE_UPDATED_AT_FORMAT : {}", lastPageUpdatedAt);
+
+			throw new BusinessException(INVALID_LAST_PAGE_UPDATED_AT_FORMAT);
 		}
 	}
 }

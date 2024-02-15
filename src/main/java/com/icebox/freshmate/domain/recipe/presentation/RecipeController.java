@@ -2,6 +2,7 @@ package com.icebox.freshmate.domain.recipe.presentation;
 
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,6 +35,8 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/recipes")
 @RestController
 public class RecipeController {
+
+	private static final String DEFAULT_PAGE_SIZE = "5";
 
 	private final RecipeService recipeService;
 
@@ -70,23 +73,30 @@ public class RecipeController {
 		return ResponseEntity.ok(recipeRes);
 	}
 
-	@GetMapping("/writers")
-	public ResponseEntity<RecipesRes> findAllByWriterId(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-		RecipesRes recipesRes = recipeService.findAllByWriterId(principalDetails.getUsername());
-
-		return ResponseEntity.ok(recipesRes);
-	}
-
-	@GetMapping("/owners")
-	public ResponseEntity<RecipesRes> findAllByOwnerId(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-		RecipesRes recipesRes = recipeService.findAllByOwnerId(principalDetails.getUsername());
-
-		return ResponseEntity.ok(recipesRes);
-	}
-
 	@GetMapping
-	public ResponseEntity<RecipesRes> findAllByGroceryId(@RequestParam("grocery-id") Long groceryId) {
-		RecipesRes recipesRes = recipeService.findAllByGroceryId(groceryId);
+	public ResponseEntity<RecipesRes> findAllByMemberIdAndRecipeType(@RequestParam(value = "sort-by", required = false, defaultValue = "updatedAtDesc") String sortBy,
+																	 @RequestParam(value = "type", required = false, defaultValue = "all") String recipeType,
+																	 @RequestParam(value = "last-page-title", required = false) String lastPageTitle,
+																	 @RequestParam(value = "last-page-updated-at", required = false) String lastPageUpdatedAt,
+																	 @RequestParam(required = false, defaultValue = "0") int page,
+																	 @RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) int size,
+																	 @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		page = Math.max(page - 1, 0);
+		PageRequest pageable = PageRequest.of(page, size);
+
+		RecipesRes recipesRes = recipeService.findAllByMemberIdAndRecipeType(sortBy, recipeType, pageable, lastPageTitle, lastPageUpdatedAt, principalDetails.getUsername());
+
+		return ResponseEntity.ok(recipesRes);
+	}
+
+	@GetMapping("/grocery")
+	public ResponseEntity<RecipesRes> findAllByGroceryId(@RequestParam("grocery-id") Long groceryId,
+														 @RequestParam(required = false, defaultValue = "0") int page,
+														 @RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) int size) {
+		page = Math.max(page - 1, 0);
+		PageRequest pageable = PageRequest.of(page, size);
+
+		RecipesRes recipesRes = recipeService.findAllByGroceryId(groceryId, pageable);
 
 		return ResponseEntity.ok(recipesRes);
 	}

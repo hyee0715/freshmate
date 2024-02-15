@@ -351,17 +351,15 @@ class RefrigeratorControllerTest {
 		StringBuilder ret = new StringBuilder(localDateTime.toString());
 
 		if (ret.length() == 26) {
-			return ret.toString();
-		}
-
-		if (ret.length() < 26) {
-			while (ret.length() < 26) {
-				ret.append("0");
+			if (ret.charAt(ret.length() - 1) == '0') {
+				return ret.substring(0, ret.length() - 1);
 			}
 
 			return ret.toString();
 		}
 
-		return ret.substring(0, ret.length() - 2);
+		ret = new StringBuilder(ret.substring(0, ret.length() - 2));
+
+		return ret.toString();
 	}
 }

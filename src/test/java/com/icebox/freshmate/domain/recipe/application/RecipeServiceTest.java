@@ -18,6 +18,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.mock.web.MockMultipartFile;
 
 import com.icebox.freshmate.domain.grocery.domain.Grocery;
@@ -242,37 +244,20 @@ class RecipeServiceTest {
 		assertThat(recipeRes.images().get(0).path()).isEqualTo(recipeImage1.getPath());
 	}
 
-	@DisplayName("사용자가 작성한 모든 레시피 조회 테스트")
+	@DisplayName("사용자의 모든 레시피 조회 테스트")
 	@Test
-	void findAllByWriterId() {
+	void findAllByMemberIdAndRecipeType() {
 		//given
+		int page = 0;
+		int size = 5;
+		PageRequest pageRequest = PageRequest.of(page, size);
+		SliceImpl<Recipe> recipes = new SliceImpl<>(List.of(recipe1, recipe2));
+
 		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member1));
-		when(recipeRepository.findAllByWriterId(any())).thenReturn(List.of(recipe1, recipe2));
+		when(recipeRepository.findAllByMemberIdAndRecipeType(any(), any(), any(), any(), any(), any())).thenReturn(recipes);
 
 		//when
-		RecipesRes recipesRes = recipeService.findAllByWriterId(member1.getUsername());
-
-		//then
-		assertThat(recipesRes.recipes()).hasSize(2);
-		assertThat(recipesRes.recipes().get(0).writerNickName()).isEqualTo(recipe1.getWriter().getNickName());
-		assertThat(recipesRes.recipes().get(0).ownerNickName()).isEqualTo(recipe1.getOwner().getNickName());
-		assertThat(recipesRes.recipes().get(0).recipeType()).isEqualTo(recipe1.getRecipeType().name());
-		assertThat(recipesRes.recipes().get(0).title()).isEqualTo(recipe1.getTitle());
-		assertThat(recipesRes.recipes().get(0).materials().get(0).recipeTitle()).isEqualTo(recipeGrocery1.getRecipe().getTitle());
-		assertThat(recipesRes.recipes().get(0).materials().get(0).groceryName()).isEqualTo(recipeGrocery1.getGroceryName());
-		assertThat(recipesRes.recipes().get(0).images().get(0).fileName()).isEqualTo(recipeImage1.getFileName());
-		assertThat(recipesRes.recipes().get(0).images().get(0).path()).isEqualTo(recipeImage1.getPath());
-	}
-
-	@DisplayName("사용자가 스크랩한(소유한) 모든 레시피 조회 테스트")
-	@Test
-	void findAllByOwnerId() {
-		//given
-		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member1));
-		when(recipeRepository.findAllByWriterId(any())).thenReturn(List.of(recipe1, recipe3));
-
-		//when
-		RecipesRes recipesRes = recipeService.findAllByWriterId(member1.getUsername());
+		RecipesRes recipesRes = recipeService.findAllByMemberIdAndRecipeType("updatedAtAsc", "all", pageRequest, null, null, member1.getUsername());
 
 		//then
 		assertThat(recipesRes.recipes()).hasSize(2);

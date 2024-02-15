@@ -2,6 +2,8 @@ package com.icebox.freshmate.domain.recipegrocery.domain;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RecipeGroceryRepository extends JpaRepository<RecipeGrocery, Long> {
@@ -10,5 +12,5 @@ public interface RecipeGroceryRepository extends JpaRepository<RecipeGrocery, Lo
 
 	List<RecipeGrocery> findAllByRecipeId(Long recipeId);
 
-	List<RecipeGrocery> findAllByGroceryId(Long groceryId);
+	Slice<RecipeGrocery> findAllByGroceryId(Long groceryId, Pageable pageable);
 }

@@ -2,8 +2,10 @@ package com.icebox.freshmate.domain.grocery.application;
 
 import static com.icebox.freshmate.global.error.ErrorCode.EMPTY_IMAGE;
 import static com.icebox.freshmate.global.error.ErrorCode.EXCESSIVE_DELETE_IMAGE_COUNT;
+import static com.icebox.freshmate.global.error.ErrorCode.INVALID_GROCERY_SORT_TYPE;
 import static com.icebox.freshmate.global.error.ErrorCode.INVALID_LAST_PAGE_EXPIRATION_DATE_FORMAT;
 import static com.icebox.freshmate.global.error.ErrorCode.INVALID_LAST_PAGE_UPDATED_AT_FORMAT;
+import static com.icebox.freshmate.global.error.ErrorCode.INVALID_STORAGE_SORT_TYPE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_GROCERY;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_IMAGE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
@@ -103,6 +105,8 @@ public class GroceryService {
 	public GroceriesRes findAllByStorageId(Long storageId, String sortBy, String groceryType, String groceryExpirationType, Pageable pageable, String lastPageName, String lastPageExpirationDate, String lastPageUpdatedAt, String username) {
 		Member member = getMemberByUsername(username);
 		Storage storage = getStorageByIdAndMemberId(storageId, member.getId());
+
+		validateGrocerySortType(sortBy);
 		GroceryType type = findGroceryType(groceryType);
 		GroceryExpirationType expirationType = findGroceryExpirationType(groceryExpirationType);
 		LocalDateTime lastUpdatedAt = getLastPageUpdatedAt(lastPageUpdatedAt);
@@ -346,6 +350,14 @@ public class GroceryService {
 			log.warn("GET:READ:INVALID_LAST_PAGE_EXPIRATION_DATE_FORMAT : {}", lastPageExpirationDate);
 
 			throw new BusinessException(INVALID_LAST_PAGE_EXPIRATION_DATE_FORMAT);
+		}
+	}
+
+	private void validateGrocerySortType(String sortBy) {
+		if (!sortBy.equalsIgnoreCase("nameAsc") && !sortBy.equalsIgnoreCase("nameDesc") && !sortBy.equalsIgnoreCase("updatedAtAsc") && !sortBy.equalsIgnoreCase("updatedAtDesc") && !sortBy.equalsIgnoreCase("expirationDateAsc") && !sortBy.equalsIgnoreCase("expirationDateDesc")) {
+			log.warn("GET:READ:INVALID_GROCERY_SORT_TYPE : {}", sortBy);
+
+			throw new BusinessException(INVALID_GROCERY_SORT_TYPE);
 		}
 	}
 }

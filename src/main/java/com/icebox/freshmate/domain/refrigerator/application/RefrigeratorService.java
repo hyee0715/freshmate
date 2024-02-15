@@ -1,6 +1,7 @@
 package com.icebox.freshmate.domain.refrigerator.application;
 
 import static com.icebox.freshmate.global.error.ErrorCode.INVALID_LAST_PAGE_UPDATED_AT_FORMAT;
+import static com.icebox.freshmate.global.error.ErrorCode.INVALID_REFRIGERATOR_SORT_TYPE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 
 import java.time.LocalDateTime;
@@ -57,6 +58,8 @@ public class RefrigeratorService {
 		Member member = getMemberByUsername(username);
 
 		LocalDateTime lastUpdatedAt = getLastPageUpdatedAt(lastPageUpdatedAt);
+
+		validateRefrigeratorSortType(sortBy);
 
 		Slice<Refrigerator> refrigerators = refrigeratorRepository.findAllByMemberIdOrderBySortCondition(member.getId(), pageable, lastPageName, lastUpdatedAt, sortBy);
 
@@ -141,6 +144,14 @@ public class RefrigeratorService {
 			log.warn("GET:READ:INVALID_LAST_PAGE_UPDATED_AT_FORMAT : {}", lastPageUpdatedAt);
 
 			throw new BusinessException(INVALID_LAST_PAGE_UPDATED_AT_FORMAT);
+		}
+	}
+
+	private void validateRefrigeratorSortType(String sortBy) {
+		if (!sortBy.equalsIgnoreCase("nameAsc") && !sortBy.equalsIgnoreCase("nameDesc") && !sortBy.equalsIgnoreCase("updatedAtAsc") && !sortBy.equalsIgnoreCase("updatedAtDesc")) {
+			log.warn("GET:READ:INVALID_REFRIGERATOR_SORT_TYPE : {}", sortBy);
+
+			throw new BusinessException(INVALID_REFRIGERATOR_SORT_TYPE);
 		}
 	}
 }
