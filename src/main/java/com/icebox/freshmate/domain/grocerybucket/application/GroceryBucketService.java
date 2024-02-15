@@ -1,5 +1,6 @@
 package com.icebox.freshmate.domain.grocerybucket.application;
 
+import static com.icebox.freshmate.global.error.ErrorCode.INVALID_GROCERY_BUCKET_SORT_TYPE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_GROCERY_BUCKET;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 
@@ -15,6 +16,7 @@ import com.icebox.freshmate.domain.grocerybucket.domain.GroceryBucket;
 import com.icebox.freshmate.domain.grocerybucket.domain.GroceryBucketRepository;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
+import com.icebox.freshmate.global.error.exception.BusinessException;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -46,10 +48,12 @@ public class GroceryBucketService {
 	}
 
 	@Transactional(readOnly = true)
-	public GroceryBucketsRes findAll(Pageable pageable, String username) {
+	public GroceryBucketsRes findAll(String sortBy, Pageable pageable, String username) {
 		Member member = getMemberByUsername(username);
 
-		Slice<GroceryBucket> groceryBuckets = groceryBucketRepository.findAllByMemberId(member.getId(), pageable);
+		validateGroceryBucketSortType(sortBy);
+
+		Slice<GroceryBucket> groceryBuckets = groceryBucketRepository.findAllByMemberId(member.getId(), pageable, sortBy);
 
 		return GroceryBucketsRes.from(groceryBuckets);
 	}
@@ -99,5 +103,13 @@ public class GroceryBucketService {
 
 				return new EntityNotFoundException(NOT_FOUND_GROCERY_BUCKET);
 			});
+	}
+
+	private void validateGroceryBucketSortType(String sortBy) {
+		if (!sortBy.equalsIgnoreCase("nameAsc") && !sortBy.equalsIgnoreCase("nameDesc") && !sortBy.equalsIgnoreCase("updatedAtAsc") && !sortBy.equalsIgnoreCase("updatedAtDesc")) {
+			log.warn("GET:READ:INVALID_GROCERY_BUCKET_SORT_TYPE : {}", sortBy);
+
+			throw new BusinessException(INVALID_GROCERY_BUCKET_SORT_TYPE);
+		}
 	}
 }

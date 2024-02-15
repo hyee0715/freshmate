@@ -46,8 +46,9 @@ public enum ErrorCode {
 	INVALID_GROCERY_EXPIRATION_TYPE("G003", "유효하지 않은 식료품 유통기한 타입입니다."),
 	INVALID_GROCERY_SORT_TYPE("GOO4", "유효하지 않거나 허용되지 않는 식료품 정렬 타입입니다."),
 
-	//즐겨 찾는 식료품
+	//즐겨찾는 식료품
 	NOT_FOUND_GROCERY_BUCKET("GB001", "즐겨 찾는 식료품이 존재하지 않습니다."),
+	INVALID_GROCERY_BUCKET_SORT_TYPE("GB002", "유효하지 않거나 허용되지 않는 즐겨찾는 식료품 정렬 타입입니다."),
 
 	//레시피
 	NOT_FOUND_RECIPE("RC001", "레시피가 존재하지 않습니다."),
@@ -62,7 +63,7 @@ public enum ErrorCode {
 	DUPLICATED_RECIPE_GROCERY("RG002", "해당 레시피에 이미 같은 식재료가 등록되어 있습니다."),
 	NOT_FOUND_RECIPE_GROCERY("RG003", "레시피의 식재료 정보가 존재하지 않습니다."),
 
-	//즐겨 찾는 레시피
+	//즐겨찾는 레시피
 	RECIPE_OWNER_MISMATCH_TO_CREATE_RECIPE_BUCKET("RB001", "레시피 소유자의 정보와 즐겨 찾는 레시피로 등록하려는 사용자의 정보가 일치하지 않습니다."),
 	DUPLICATED_RECIPE_BUCKET("RB002", "해당 레시피는 이미 즐겨 찾는 레시피로 등록되어 있습니다."),
 	NOT_FOUND_RECIPE_BUCKET("RB003", "즐겨 찾는 레시피가 존재하지 않습니다."),
