@@ -6,9 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RecipeRepository extends JpaRepository<Recipe, Long> {
-
-	Slice<Recipe> findAllByWriterId(Long writerId, Pageable pageable);
+public interface RecipeRepository extends JpaRepository<Recipe, Long>, RecipeRepositoryCustom {
 
 	Slice<Recipe> findAllByOwnerId(Long ownerId, Pageable pageable);
 

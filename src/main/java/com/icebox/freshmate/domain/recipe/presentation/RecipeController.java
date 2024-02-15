@@ -73,31 +73,21 @@ public class RecipeController {
 		return ResponseEntity.ok(recipeRes);
 	}
 
-	@GetMapping("/writers")
-	public ResponseEntity<RecipesRes> findAllByWriterId(@RequestParam(required = false, defaultValue = "0") int page,
+	@GetMapping
+	public ResponseEntity<RecipesRes> findAllByMemberId(@RequestParam(value = "sort-by", required = false, defaultValue = "updatedAtDesc") String sortBy,
+														@RequestParam(value = "type", required = false, defaultValue = "all") String recipeType,
+														@RequestParam(required = false, defaultValue = "0") int page,
 														@RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) int size,
 														@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		page = Math.max(page - 1, 0);
 		PageRequest pageable = PageRequest.of(page, size);
 
-		RecipesRes recipesRes = recipeService.findAllByWriterId(pageable, principalDetails.getUsername());
+		RecipesRes recipesRes = recipeService.findAllByWriterIdAndRecipeType(sortBy, recipeType, pageable, principalDetails.getUsername());
 
 		return ResponseEntity.ok(recipesRes);
 	}
 
-	@GetMapping("/owners")
-	public ResponseEntity<RecipesRes> findAllByOwnerId(@RequestParam(required = false, defaultValue = "0") int page,
-													   @RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) int size,
-													   @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		page = Math.max(page - 1, 0);
-		PageRequest pageable = PageRequest.of(page, size);
-
-		RecipesRes recipesRes = recipeService.findAllByOwnerId(pageable, principalDetails.getUsername());
-
-		return ResponseEntity.ok(recipesRes);
-	}
-
-	@GetMapping
+	@GetMapping("/grocery")
 	public ResponseEntity<RecipesRes> findAllByGroceryId(@RequestParam("grocery-id") Long groceryId,
 														 @RequestParam(required = false, defaultValue = "0") int page,
 														 @RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) int size) {

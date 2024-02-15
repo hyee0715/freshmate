@@ -110,10 +110,14 @@ public class RecipeService {
 	}
 
 	@Transactional(readOnly = true)
-	public RecipesRes findAllByWriterId(Pageable pageable, String username) {
+	public RecipesRes findAllByWriterIdAndRecipeType(String sortBy, String recipeType, Pageable pageable, String username) {
 		Member member = getMemberByUsername(username);
 
-		Slice<Recipe> recipes = recipeRepository.findAllByWriterId(member.getId(), pageable);
+		validateRecipeSortType(sortBy);
+
+		RecipeType type = findRecipeType(recipeType);
+
+		Slice<Recipe> recipes = recipeRepository.findAllByWriterIdAndRecipeType(member.getId(), pageable, sortBy, type);
 
 		return RecipesRes.from(recipes);
 	}
@@ -473,6 +477,24 @@ public class RecipeService {
 			log.warn("PATCH:WRITE:EMPTY_IMAGE");
 
 			throw new BusinessException(EMPTY_IMAGE);
+		}
+	}
+
+	private void validateRecipeSortType(String sortBy) {
+		if (!sortBy.equalsIgnoreCase("titleAsc") && !sortBy.equalsIgnoreCase("titleDesc") && !sortBy.equalsIgnoreCase("updatedAtAsc") && !sortBy.equalsIgnoreCase("updatedAtDesc")) {
+			log.warn("GET:READ:INVALID_RECIPE_SORT_TYPE : {}", sortBy);
+
+			throw new BusinessException(INVALID_RECIPE_SORT_TYPE);
+		}
+	}
+
+	private RecipeType findRecipeType(String recipeType) {
+		try {
+
+			return RecipeType.findRecipeType(recipeType);
+		} catch (BusinessException e) {
+
+			return null;
 		}
 	}
 }
