@@ -1,7 +1,6 @@
 package com.icebox.freshmate.domain.storage.application;
 
 import static com.icebox.freshmate.global.error.ErrorCode.INVALID_LAST_PAGE_UPDATED_AT_FORMAT;
-import static com.icebox.freshmate.global.error.ErrorCode.INVALID_REFRIGERATOR_SORT_TYPE;
 import static com.icebox.freshmate.global.error.ErrorCode.INVALID_STORAGE_SORT_TYPE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_REFRIGERATOR;
@@ -72,7 +71,7 @@ public class StorageService {
 		validateStorageSortType(sortBy);
 		StorageType type = findStorageType(storageType);
 
-		Slice<Storage> storages = findStorages(type, refrigerator, pageable, lastPageName, lastUpdatedAt, sortBy);
+		Slice<Storage> storages = storageRepository.findAllByRefrigeratorIdAndStorageTypeOrderBySortCondition(refrigerator.getId(), type, pageable, lastPageName, lastUpdatedAt, sortBy);
 
 		return StoragesRes.from(storages);
 	}
@@ -173,13 +172,6 @@ public class StorageService {
 
 			throw new BusinessException(INVALID_LAST_PAGE_UPDATED_AT_FORMAT);
 		}
-	}
-
-	private Slice<Storage> findStorages(StorageType storageType, Refrigerator refrigerator, Pageable pageable, String lastPageName, LocalDateTime lastPageUpdatedAt, String sortBy) {
-
-		return Optional.ofNullable(storageType)
-			.map(validStorageType -> storageRepository.findAllByRefrigeratorIdAndStorageTypeOrderBySortCondition(refrigerator.getId(), validStorageType, pageable, lastPageName, lastPageUpdatedAt, sortBy))
-			.orElse(storageRepository.findAllByRefrigeratorIdOrderBySortCondition(refrigerator.getId(), pageable, lastPageName, lastPageUpdatedAt, sortBy));
 	}
 
 	private void validateStorageSortType(String sortBy) {
