@@ -482,7 +482,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 Content-Type: application/json
 Authorization: Bearer {ACCESS_TOKEN}
 Content-Length: 114
-X-CSRF-TOKEN: SdxaalqOV4KNc0AP68H6l0o59lyoaXThmjl4w6X3SV_6oTkCfrpqWWrrZ7SgFnNs3uzOr30M2z3MXETMog4b98eRK2qexF06
+X-CSRF-TOKEN: wcRbowys0t9klMt8niNngIh2sOagIs-pVdbJMW6PXImJRe8rpfxpwD6ftLpJo69K-A5TtLFFnd6WFa6ENrWvAV27P7-5I9ZN
 Host: localhost:8080
 
 {
@@ -567,7 +567,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 203
+Content-Length: 299
 
 {
   "groceryBucketId" : 1,
@@ -575,7 +575,9 @@ Content-Length: 203
   "memberNickName" : "닉네임닉네임",
   "groceryName" : "양배추",
   "groceryType" : "VEGETABLES",
-  "groceryDescription" : "필수 식재료"
+  "groceryDescription" : "필수 식재료",
+  "createdAt" : "2024-02-16T02:56:15.8985745",
+  "updatedAt" : "2024-02-16T02:56:15.8985745"
 }</code></pre>
 </div>
 </div>
@@ -624,6 +626,16 @@ Content-Length: 203
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">식료품 설명</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>createdAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">즐겨 찾는 생성 날짜</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>updatedAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">즐겨 찾는 수정 날짜</p></td>
+</tr>
 </tbody>
 </table>
 <div class="listingblock">
@@ -635,7 +647,9 @@ Content-Length: 203
   "memberNickName" : "닉네임닉네임",
   "groceryName" : "양배추",
   "groceryType" : "VEGETABLES",
-  "groceryDescription" : "필수 식재료"
+  "groceryDescription" : "필수 식재료",
+  "createdAt" : "2024-02-16T02:56:15.8985745",
+  "updatedAt" : "2024-02-16T02:56:15.8985745"
 }</code></pre>
 </div>
 </div>
@@ -653,7 +667,7 @@ Content-Length: 203
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/grocery-buckets/1 HTTP/1.1
 Content-Type: application/json
-X-CSRF-TOKEN: 1yJAIZbVD8pVmqsVZJtZf1q_pSB79UfQFwq9O2xrghc4xfuL4RskRaHha_x4q54iAbZtGz6JiEEazSL9dGnbDQldsiBd8Miy
+X-CSRF-TOKEN: f5tzRW3yMk89bg0wmUhaCeXRtLScAZmwcLAY_GfQgAWAoMsLHqkQJgnLVH4QDTpW-2VuPdXimYz6N_2dEol6yQLitD3iwf47
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -690,7 +704,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 203
+Content-Length: 299
 
 {
   "groceryBucketId" : 1,
@@ -698,7 +712,9 @@ Content-Length: 203
   "memberNickName" : "닉네임닉네임",
   "groceryName" : "양배추",
   "groceryType" : "VEGETABLES",
-  "groceryDescription" : "필수 식재료"
+  "groceryDescription" : "필수 식재료",
+  "createdAt" : "2024-02-16T02:56:16.2265741",
+  "updatedAt" : "2024-02-16T02:56:16.2265741"
 }</code></pre>
 </div>
 </div>
@@ -747,6 +763,16 @@ Content-Length: 203
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">식료품 설명</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>createdAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">즐겨 찾는 생성 날짜</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>updatedAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">즐겨 찾는 수정 날짜</p></td>
+</tr>
 </tbody>
 </table>
 <div class="listingblock">
@@ -758,7 +784,9 @@ Content-Length: 203
   "memberNickName" : "닉네임닉네임",
   "groceryName" : "양배추",
   "groceryType" : "VEGETABLES",
-  "groceryDescription" : "필수 식재료"
+  "groceryDescription" : "필수 식재료",
+  "createdAt" : "2024-02-16T02:56:16.2265741",
+  "updatedAt" : "2024-02-16T02:56:16.2265741"
 }</code></pre>
 </div>
 </div>
@@ -777,7 +805,7 @@ Content-Length: 203
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/grocery-buckets HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {ACCESS_TOKEN}
-X-CSRF-TOKEN: JzZDyYcQQdB9MA21CzkYTOlq8MlF8ItTrUvRqAOB-GAK-zc4FwYg_r8nI-JQVGyMOhQseYxb3fB3ybl-nn_inDK1yVVoy1YJ
+X-CSRF-TOKEN: 5UW5BtLp1wpMU4u13ZtYpxRua4At1L9WTeNUjSp0aYX6cOHl3X3dZOqI42hhZu-G5bZslyFYRrka44l7f9ps6BxGXrPIRdbT
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -814,7 +842,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 457
+Content-Length: 679
 
 {
   "groceryBuckets" : [ {
@@ -823,15 +851,20 @@ Content-Length: 457
     "memberNickName" : "닉네임닉네임",
     "groceryName" : "양배추",
     "groceryType" : "VEGETABLES",
-    "groceryDescription" : "필수 식재료"
+    "groceryDescription" : "필수 식재료",
+    "createdAt" : "2024-02-16T02:56:16.0695762",
+    "updatedAt" : "2024-02-16T02:56:16.0695762"
   }, {
     "groceryBucketId" : 2,
     "memberId" : 1,
     "memberNickName" : "닉네임닉네임",
     "groceryName" : "배추",
     "groceryType" : "VEGETABLES",
-    "groceryDescription" : "김장용"
-  } ]
+    "groceryDescription" : "김장용",
+    "createdAt" : "2024-02-16T02:57:16.0695762",
+    "updatedAt" : "2024-02-16T02:57:16.0695762"
+  } ],
+  "hasNext" : false
 }</code></pre>
 </div>
 </div>
@@ -885,6 +918,21 @@ Content-Length: 457
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">즐겨 찾는 식료품 설명</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>groceryBuckets[].createdAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">즐겨 찾는 식료품 생성 날짜</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>groceryBuckets[].updatedAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">즐겨 찾는 식료품 수정 날짜</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hasNext</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">다음 페이지(스크롤) 데이터 존재 유무</p></td>
+</tr>
 </tbody>
 </table>
 <div class="listingblock">
@@ -897,15 +945,20 @@ Content-Length: 457
     "memberNickName" : "닉네임닉네임",
     "groceryName" : "양배추",
     "groceryType" : "VEGETABLES",
-    "groceryDescription" : "필수 식재료"
+    "groceryDescription" : "필수 식재료",
+    "createdAt" : "2024-02-16T02:56:16.0695762",
+    "updatedAt" : "2024-02-16T02:56:16.0695762"
   }, {
     "groceryBucketId" : 2,
     "memberId" : 1,
     "memberNickName" : "닉네임닉네임",
     "groceryName" : "배추",
     "groceryType" : "VEGETABLES",
-    "groceryDescription" : "김장용"
-  } ]
+    "groceryDescription" : "김장용",
+    "createdAt" : "2024-02-16T02:57:16.0695762",
+    "updatedAt" : "2024-02-16T02:57:16.0695762"
+  } ],
+  "hasNext" : false
 }</code></pre>
 </div>
 </div>
@@ -925,7 +978,7 @@ Content-Length: 457
 Content-Type: application/json
 Authorization: Bearer {ACCESS_TOKEN}
 Content-Length: 121
-X-CSRF-TOKEN: kOoIv_kd91w2gfBhBWpMWwsbSFajBtPaaZHTVZuF_T0ht6snptpqj5olljgbuJRSN0d4PzwqZW7BPrH3XKawZqPhxVkT08gX
+X-CSRF-TOKEN: snbUXynSPTYxTaShxqBbThHE1zQlgKRZOWGFkWjoYim0h3T4hxTlaU_mDFIcKZfCpY1veyOi-gwWsJ10AQDgpFGNVhnSs0Kd
 Host: localhost:8080
 
 {
@@ -1010,7 +1063,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 203
+Content-Length: 299
 
 {
   "groceryBucketId" : 1,
@@ -1018,7 +1071,9 @@ Content-Length: 203
   "memberNickName" : "닉네임닉네임",
   "groceryName" : "양배추",
   "groceryType" : "VEGETABLES",
-  "groceryDescription" : "필수 식재료"
+  "groceryDescription" : "필수 식재료",
+  "createdAt" : "2024-02-16T02:56:16.1545784",
+  "updatedAt" : "2024-02-16T02:56:16.1545784"
 }</code></pre>
 </div>
 </div>
@@ -1067,6 +1122,16 @@ Content-Length: 203
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">식료품 설명</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>createdAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">즐겨 찾는 생성 날짜</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>updatedAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">즐겨 찾는 수정 날짜</p></td>
+</tr>
 </tbody>
 </table>
 <div class="listingblock">
@@ -1078,7 +1143,9 @@ Content-Length: 203
   "memberNickName" : "닉네임닉네임",
   "groceryName" : "양배추",
   "groceryType" : "VEGETABLES",
-  "groceryDescription" : "필수 식재료"
+  "groceryDescription" : "필수 식재료",
+  "createdAt" : "2024-02-16T02:56:16.1545784",
+  "updatedAt" : "2024-02-16T02:56:16.1545784"
 }</code></pre>
 </div>
 </div>
@@ -1097,7 +1164,7 @@ Content-Length: 203
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/grocery-buckets/1 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {ACCESS_TOKEN}
-X-CSRF-TOKEN: ciK45Ol27DPYCeo5Wb3F-OIpQpy0W5UE6pI9Oo3OsS0i72ZxEEeN19ES2QL1ONNda5Dxndsbb_7Wb_Apj_QMD-_71BwRjFFH
+X-CSRF-TOKEN: urPFQM31RlmqSzCVJoVmNYXz_nMT8_M2oqUv9xJ1WxK3Mm2K39DydvrHJWmHfAeiQ6hSUeSX0xFxlpcbx5BOwSJMaiWPBVru
 Host: localhost:8080</code></pre>
 </div>
 </div>
