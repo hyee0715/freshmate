@@ -382,14 +382,6 @@ class StorageControllerTest {
 			return ret.toString();
 		}
 
-		if (ret.length() < 26) {
-			while (ret.length() < 26) {
-				ret.append("0");
-			}
-
-			return ret.toString();
-		}
-
 		return ret.substring(0, ret.length() - 2);
 	}
 }
