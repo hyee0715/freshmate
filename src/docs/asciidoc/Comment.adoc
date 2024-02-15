@@ -13,8 +13,6 @@
 include::{snippets}/comment/comment-create/http-request.adoc[]
 .Request Headers
 include::{snippets}/comment/comment-create/request-headers.adoc[]
-.Request Fields
-include::{snippets}/comment/comment-create/request-fields.adoc[]
 .Request Body
 include::{snippets}/comment/comment-create/request-body.adoc[]
 

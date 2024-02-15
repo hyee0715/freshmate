@@ -13,8 +13,6 @@
 include::{snippets}/post/post-create/http-request.adoc[]
 .Request Headers
 include::{snippets}/post/post-create/request-headers.adoc[]
-.Request Fields
-include::{snippets}/post/post-create/request-fields.adoc[]
 .Request Body
 include::{snippets}/post/post-create/request-body.adoc[]
 
