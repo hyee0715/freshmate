@@ -9,6 +9,8 @@ import static com.icebox.freshmate.global.error.ErrorCode.RECIPE_OWNER_MISMATCH_
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,10 +68,10 @@ public class RecipeBucketService {
 	}
 
 	@Transactional(readOnly = true)
-	public RecipeBucketsRes findAllByMemberId(String username) {
+	public RecipeBucketsRes findAllByMemberId(Pageable pageable, String username) {
 		Member member = getMemberByUsername(username);
 
-		List<RecipeBucket> recipeBuckets = recipeBucketRepository.findAllByMemberId(member.getId());
+		Slice<RecipeBucket> recipeBuckets = recipeBucketRepository.findAllByMemberId(member.getId(), pageable);
 
 		return RecipeBucketsRes.from(recipeBuckets);
 	}
