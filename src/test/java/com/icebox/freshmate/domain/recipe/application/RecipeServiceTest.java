@@ -246,7 +246,7 @@ class RecipeServiceTest {
 
 	@DisplayName("사용자의 모든 레시피 조회 테스트")
 	@Test
-	void findAllByWriterId() {
+	void findAllByMemberIdAndRecipeType() {
 		//given
 		int page = 0;
 		int size = 5;
@@ -254,10 +254,10 @@ class RecipeServiceTest {
 		SliceImpl<Recipe> recipes = new SliceImpl<>(List.of(recipe1, recipe2));
 
 		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member1));
-		when(recipeRepository.findAllByWriterIdAndRecipeType(any(), any(), any(), any())).thenReturn(recipes);
+		when(recipeRepository.findAllByMemberIdAndRecipeType(any(), any(), any(), any(), any(), any())).thenReturn(recipes);
 
 		//when
-		RecipesRes recipesRes = recipeService.findAllByWriterIdAndRecipeType("updatedAtAsc", "written", pageRequest, member1.getUsername());
+		RecipesRes recipesRes = recipeService.findAllByMemberIdAndRecipeType("updatedAtAsc", "all", pageRequest, null, null, member1.getUsername());
 
 		//then
 		assertThat(recipesRes.recipes()).hasSize(2);
