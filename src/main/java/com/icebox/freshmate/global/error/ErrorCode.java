@@ -67,6 +67,7 @@ public enum ErrorCode {
 	RECIPE_OWNER_MISMATCH_TO_CREATE_RECIPE_BUCKET("RB001", "레시피 소유자의 정보와 즐겨 찾는 레시피로 등록하려는 사용자의 정보가 일치하지 않습니다."),
 	DUPLICATED_RECIPE_BUCKET("RB002", "해당 레시피는 이미 즐겨 찾는 레시피로 등록되어 있습니다."),
 	NOT_FOUND_RECIPE_BUCKET("RB003", "즐겨 찾는 레시피가 존재하지 않습니다."),
+	INVALID_RECIPE_BUCKET_SORT_TYPE("RB004", "유효하지 않거나 허용되지 않는 즐겨 찾는 레시피 정렬 타입입니다."),
 
 	//게시글
 	NOT_FOUND_POST("P001", "게시글이 존재하지 않습니다."),

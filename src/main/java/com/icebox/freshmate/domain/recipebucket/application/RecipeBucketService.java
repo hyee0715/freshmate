@@ -1,6 +1,7 @@
 package com.icebox.freshmate.domain.recipebucket.application;
 
 import static com.icebox.freshmate.global.error.ErrorCode.DUPLICATED_RECIPE_BUCKET;
+import static com.icebox.freshmate.global.error.ErrorCode.INVALID_RECIPE_BUCKET_SORT_TYPE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_RECIPE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_RECIPE_BUCKET;
@@ -68,10 +69,11 @@ public class RecipeBucketService {
 	}
 
 	@Transactional(readOnly = true)
-	public RecipeBucketsRes findAllByMemberId(Pageable pageable, String username) {
+	public RecipeBucketsRes findAllByMemberId(String sortBy, Pageable pageable, String username) {
 		Member member = getMemberByUsername(username);
 
-		Slice<RecipeBucket> recipeBuckets = recipeBucketRepository.findAllByMemberId(member.getId(), pageable);
+		validateRecipeBucketSortType(sortBy);
+		Slice<RecipeBucket> recipeBuckets = recipeBucketRepository.findAllByMemberId(member.getId(), pageable, sortBy);
 
 		return RecipeBucketsRes.from(recipeBuckets);
 	}
@@ -145,6 +147,14 @@ public class RecipeBucketService {
 			log.warn("DUPLICATED_RECIPE_BUCKET : recipeId = {}, recipeOwnerId = {}", recipe.getId(), recipe.getOwner().getId());
 
 			throw new BusinessException(DUPLICATED_RECIPE_BUCKET);
+		}
+	}
+
+	private void validateRecipeBucketSortType(String sortBy) {
+		if (!sortBy.equalsIgnoreCase("titleAsc") && !sortBy.equalsIgnoreCase("titleDesc") && !sortBy.equalsIgnoreCase("updatedAtAsc") && !sortBy.equalsIgnoreCase("updatedAtDesc")) {
+			log.warn("GET:READ:INVALID_RECIPE_BUCKET_SORT_TYPE : {}", sortBy);
+
+			throw new BusinessException(INVALID_RECIPE_BUCKET_SORT_TYPE);
 		}
 	}
 }

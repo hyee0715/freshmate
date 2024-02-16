@@ -47,13 +47,14 @@ public class RecipeBucketController {
 	}
 
 	@GetMapping
-	public ResponseEntity<RecipeBucketsRes> findAllByMemberId(@RequestParam(required = false, defaultValue = "0") int page,
+	public ResponseEntity<RecipeBucketsRes> findAllByMemberId(@RequestParam(value = "sort-by", required = false, defaultValue = "updatedAtDesc") String sortBy,
+															  @RequestParam(required = false, defaultValue = "0") int page,
 															  @RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) int size,
 															  @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		page = Math.max(page - 1, 0);
 		PageRequest pageable = PageRequest.of(page, size);
 
-		RecipeBucketsRes recipeBucketsRes = recipeBucketService.findAllByMemberId(pageable, principalDetails.getUsername());
+		RecipeBucketsRes recipeBucketsRes = recipeBucketService.findAllByMemberId(sortBy, pageable, principalDetails.getUsername());
 
 		return ResponseEntity.ok(recipeBucketsRes);
 	}
