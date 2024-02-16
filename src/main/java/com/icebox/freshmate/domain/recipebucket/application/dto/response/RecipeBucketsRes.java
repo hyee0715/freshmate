@@ -2,15 +2,18 @@ package com.icebox.freshmate.domain.recipebucket.application.dto.response;
 
 import java.util.List;
 
+import org.springframework.data.domain.Slice;
+
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
 import com.icebox.freshmate.domain.recipebucket.domain.RecipeBucket;
 import com.icebox.freshmate.domain.recipegrocery.application.dto.response.RecipeGroceryRes;
 
 public record RecipeBucketsRes(
-	List<RecipeBucketRes> recipeBuckets
+	List<RecipeBucketRes> recipeBuckets,
+	boolean hasNext
 ) {
 
-	public static RecipeBucketsRes from(List<RecipeBucket> recipeBuckets) {
+	public static RecipeBucketsRes from(Slice<RecipeBucket> recipeBuckets) {
 
 		List<RecipeBucketRes> recipeBucketsRes = recipeBuckets.stream()
 			.map(recipeBucket -> {
@@ -20,7 +23,7 @@ public record RecipeBucketsRes(
 			})
 			.toList();
 
-		return new RecipeBucketsRes(recipeBucketsRes);
+		return new RecipeBucketsRes(recipeBucketsRes, recipeBuckets.hasNext());
 	}
 
 	private static List<RecipeGroceryRes> getRecipeGroceryResList(Recipe recipe) {

@@ -13,6 +13,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.JsonFieldType.BOOLEAN;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -30,7 +31,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -49,12 +49,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icebox.freshmate.domain.auth.application.PrincipalDetails;
 import com.icebox.freshmate.domain.grocery.domain.Grocery;
 import com.icebox.freshmate.domain.grocery.domain.GroceryType;
-import com.icebox.freshmate.domain.grocery.presentation.GroceryController;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.Role;
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
@@ -64,7 +62,6 @@ import com.icebox.freshmate.domain.recipebucket.application.dto.request.RecipeBu
 import com.icebox.freshmate.domain.recipebucket.application.dto.response.RecipeBucketRes;
 import com.icebox.freshmate.domain.recipebucket.application.dto.response.RecipeBucketsRes;
 import com.icebox.freshmate.domain.recipebucket.domain.RecipeBucket;
-import com.icebox.freshmate.domain.recipegrocery.application.dto.request.RecipeGroceryReq;
 import com.icebox.freshmate.domain.recipegrocery.application.dto.response.RecipeGroceryRes;
 import com.icebox.freshmate.domain.recipegrocery.domain.RecipeGrocery;
 import com.icebox.freshmate.domain.refrigerator.domain.Refrigerator;
@@ -231,7 +228,7 @@ class RecipeBucketControllerTest {
 			.andExpect(jsonPath("$.materials[0].groceryQuantity").value(recipeBucketRes.materials().get(0).groceryQuantity()))
 			.andExpect(jsonPath("$.memberId").value(recipeBucketRes.memberId()))
 			.andExpect(jsonPath("$.memberNickName").value(recipeBucketRes.memberNickName()))
-			.andExpect(jsonPath("$.createdAt").value(formatLocalDateTime(recipeBucketRes.createdAt())))
+			.andExpect(jsonPath("$.createdAt").value(substringLocalDateTime(recipeBucketRes.createdAt())))
 			.andDo(print())
 			.andDo(document("recipe-bucket/recipe-bucket-create",
 				preprocessRequest(prettyPrint()),
@@ -311,7 +308,7 @@ class RecipeBucketControllerTest {
 			.andExpect(jsonPath("$.materials[0].groceryQuantity").value(recipeBucketRes.materials().get(0).groceryQuantity()))
 			.andExpect(jsonPath("$.memberId").value(recipeBucketRes.memberId()))
 			.andExpect(jsonPath("$.memberNickName").value(recipeBucketRes.memberNickName()))
-			.andExpect(jsonPath("$.createdAt").value(formatLocalDateTime(recipeBucketRes.createdAt())))
+			.andExpect(jsonPath("$.createdAt").value(substringLocalDateTime(recipeBucketRes.createdAt())))
 			.andDo(print())
 			.andDo(document("recipe-bucket/recipe-bucket-find-by-id",
 				preprocessRequest(prettyPrint()),
@@ -391,9 +388,9 @@ class RecipeBucketControllerTest {
 		RecipeBucketRes recipeBucketRes1 = new RecipeBucketRes(recipeBucket1Id, recipe1Id, writerId, recipe.getWriter().getNickName(), recipe.getRecipeType().name(), originalRecipe1Id, recipe.getTitle(), recipe.getContent(), List.of(recipeGroceryRes1, recipeGroceryRes2), memberId, member.getNickName(), createdAt);
 		RecipeBucketRes recipeBucketRes2 = new RecipeBucketRes(recipeBucket2Id, recipe2Id, writerId, recipe2.getWriter().getNickName(), recipe2.getRecipeType().name(), originalRecipe2Id, recipe2.getTitle(), recipe2.getContent(), List.of(recipeGroceryRes3, recipeGroceryRes4), memberId, member.getNickName(), createdAt);
 
-		RecipeBucketsRes recipeBucketsRes = new RecipeBucketsRes(List.of(recipeBucketRes1, recipeBucketRes2));
+		RecipeBucketsRes recipeBucketsRes = new RecipeBucketsRes(List.of(recipeBucketRes1, recipeBucketRes2), false);
 
-		when(recipeBucketService.findAllByMemberId(anyString())).thenReturn(recipeBucketsRes);
+		when(recipeBucketService.findAllByMemberId(any(), any(), any(), any(), anyString())).thenReturn(recipeBucketsRes);
 
 		//when
 		//then
@@ -420,7 +417,8 @@ class RecipeBucketControllerTest {
 			.andExpect(jsonPath("$.recipeBuckets[0].materials[0].groceryQuantity").value(recipeBucketRes1.materials().get(0).groceryQuantity()))
 			.andExpect(jsonPath("$.recipeBuckets[0].memberId").value(recipeBucketRes1.memberId()))
 			.andExpect(jsonPath("$.recipeBuckets[0].memberNickName").value(recipeBucketRes1.memberNickName()))
-			.andExpect(jsonPath("$.recipeBuckets[0].createdAt").value(formatLocalDateTime(recipeBucketRes1.createdAt())))
+			.andExpect(jsonPath("$.recipeBuckets[0].createdAt").value(substringLocalDateTime(recipeBucketRes1.createdAt())))
+			.andExpect(jsonPath("$.hasNext").value(recipeBucketsRes.hasNext()))
 			.andDo(print())
 			.andDo(document("recipe-bucket/recipe-bucket-find-all-by-member-id",
 				preprocessRequest(prettyPrint()),
@@ -445,7 +443,8 @@ class RecipeBucketControllerTest {
 					fieldWithPath("recipeBuckets[].materials[].groceryQuantity").type(STRING).description("식재료 수량"),
 					fieldWithPath("recipeBuckets[].memberId").type(NUMBER).description("회원 ID"),
 					fieldWithPath("recipeBuckets[].memberNickName").type(STRING).description("회원 닉네임"),
-					fieldWithPath("recipeBuckets[].createdAt").type(STRING).description("즐겨 찾는 레시피 등록 시점")
+					fieldWithPath("recipeBuckets[].createdAt").type(STRING).description("즐겨 찾는 레시피 등록 시점"),
+					fieldWithPath("hasNext").type(BOOLEAN).description("다음 페이지(스크롤) 데이터 존재 유무")
 				)
 			));
 	}
@@ -479,8 +478,19 @@ class RecipeBucketControllerTest {
 			));
 	}
 
-	private String formatLocalDateTime(LocalDateTime localDateTime) {
+	private String substringLocalDateTime(LocalDateTime localDateTime) {
+		StringBuilder ret = new StringBuilder(localDateTime.toString());
 
-		return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").format(localDateTime);
+		if (ret.length() == 26) {
+			if (ret.charAt(ret.length() - 1) == '0') {
+				return ret.substring(0, ret.length() - 1);
+			}
+
+			return ret.toString();
+		}
+
+		ret = new StringBuilder(ret.substring(0, ret.length() - 2));
+
+		return ret.toString();
 	}
 }

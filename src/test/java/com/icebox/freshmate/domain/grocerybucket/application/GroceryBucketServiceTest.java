@@ -27,7 +27,6 @@ import com.icebox.freshmate.domain.grocerybucket.domain.GroceryBucketRepository;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
 import com.icebox.freshmate.domain.member.domain.Role;
-import com.icebox.freshmate.domain.storage.domain.Storage;
 
 @ExtendWith(MockitoExtension.class)
 class GroceryBucketServiceTest {
@@ -113,7 +112,6 @@ class GroceryBucketServiceTest {
 		PageRequest pageRequest = PageRequest.of(page, size);
 
 		SliceImpl<GroceryBucket> groceryBuckets = new SliceImpl<>(List.of(groceryBucket, groceryBucket2));
-
 
 		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member));
 		when(groceryBucketRepository.findAllByMemberId(any(), any(), any(), any(), any())).thenReturn(groceryBuckets);

@@ -477,7 +477,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 Content-Type: application/json
 Authorization: Bearer {ACCESS_TOKEN}
 Content-Length: 22
-X-CSRF-TOKEN: F5w7VYbfIxZXkfu55h0eRTWyJDNiehRS5MtxY0pNMUJzjL8WdK0DZuLsECd68sLdhTAqdgKECVEHGCJ_1P0SW3t0UHAQuI8u
+X-CSRF-TOKEN: -yzvxtVUOnda-677JU0y4OAvddlVpLDlGvg7vNiZXWIvXOxGyB_X9-dmCxV3zMjME2AG1oFJWLs3nNHIe8Bd3e6vPgAdaI0j
 Host: localhost:8080
 
 {
@@ -548,7 +548,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 705
+Content-Length: 716
 
 {
   "recipeBucketId" : 1,
@@ -576,7 +576,7 @@ Content-Length: 705
   } ],
   "memberId" : 1,
   "memberNickName" : "닉네임닉네임",
-  "createdAt" : "2024-02-15 06:25"
+  "createdAt" : "2024-02-16T18:14:08.5248057"
 }</code></pre>
 </div>
 </div>
@@ -711,7 +711,7 @@ Content-Length: 705
   } ],
   "memberId" : 1,
   "memberNickName" : "닉네임닉네임",
-  "createdAt" : "2024-02-15 06:25"
+  "createdAt" : "2024-02-16T18:14:08.5248057"
 }</code></pre>
 </div>
 </div>
@@ -729,7 +729,7 @@ Content-Length: 705
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/recipe-buckets/1 HTTP/1.1
 Content-Type: application/json
-X-CSRF-TOKEN: brgL4S4BIw1YaP2zqqkl6-l2E1tZeJN02ao3sn650U-DYnHVXI4_0BllRTR1DcnQmYQR04hEPjpsS6dZ4c5RhxuM6H3mVUDs
+X-CSRF-TOKEN: MnkzjAYKulZL1O6IA56_Nk1lshJ7u-28BRn7_Jjwr8MGdb1YABsA7jZugmZm4ti-ZbOLVX5QnytPj9uRMS7Lz6qTyvI1E9tu
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -766,7 +766,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 705
+Content-Length: 716
 
 {
   "recipeBucketId" : 1,
@@ -794,7 +794,7 @@ Content-Length: 705
   } ],
   "memberId" : 1,
   "memberNickName" : "닉네임닉네임",
-  "createdAt" : "2024-02-15 06:25"
+  "createdAt" : "2024-02-16T18:14:08.9918247"
 }</code></pre>
 </div>
 </div>
@@ -929,7 +929,7 @@ Content-Length: 705
   } ],
   "memberId" : 1,
   "memberNickName" : "닉네임닉네임",
-  "createdAt" : "2024-02-15 06:25"
+  "createdAt" : "2024-02-16T18:14:08.9918247"
 }</code></pre>
 </div>
 </div>
@@ -948,7 +948,7 @@ Content-Length: 705
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/recipe-buckets HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {ACCESS_TOKEN}
-X-CSRF-TOKEN: ghd7GH61eEPruHqRijDMEono6AxYt7uxxspZGkW3bFS22aN_tC9KfEaMSifGgBug7x34IevbxTQ7h46c86hpKyCADzGO6sBO
+X-CSRF-TOKEN: r_hY63fRpYiPPnP3B0KDRW_6KmRf9l0uBmp2Xl6ewgEpjHyny5lujkXmnLyiX0KTP2-3cQucBwZqkm0DNl1APWr4-jQfvhmR
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -985,7 +985,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 1553
+Content-Length: 1597
 
 {
   "recipeBuckets" : [ {
@@ -1014,7 +1014,7 @@ Content-Length: 1553
     } ],
     "memberId" : 1,
     "memberNickName" : "닉네임닉네임",
-    "createdAt" : "2024-02-15 06:25"
+    "createdAt" : "2024-02-16T18:14:09.0968008"
   }, {
     "recipeBucketId" : 2,
     "recipeId" : 2,
@@ -1041,8 +1041,9 @@ Content-Length: 1553
     } ],
     "memberId" : 1,
     "memberNickName" : "닉네임닉네임",
-    "createdAt" : "2024-02-15 06:25"
-  } ]
+    "createdAt" : "2024-02-16T18:14:09.0968008"
+  } ],
+  "hasNext" : false
 }</code></pre>
 </div>
 </div>
@@ -1146,6 +1147,11 @@ Content-Length: 1553
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">즐겨 찾는 레시피 등록 시점</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hasNext</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">다음 페이지(스크롤) 데이터 존재 유무</p></td>
+</tr>
 </tbody>
 </table>
 <div class="listingblock">
@@ -1178,7 +1184,7 @@ Content-Length: 1553
     } ],
     "memberId" : 1,
     "memberNickName" : "닉네임닉네임",
-    "createdAt" : "2024-02-15 06:25"
+    "createdAt" : "2024-02-16T18:14:09.0968008"
   }, {
     "recipeBucketId" : 2,
     "recipeId" : 2,
@@ -1205,8 +1211,9 @@ Content-Length: 1553
     } ],
     "memberId" : 1,
     "memberNickName" : "닉네임닉네임",
-    "createdAt" : "2024-02-15 06:25"
-  } ]
+    "createdAt" : "2024-02-16T18:14:09.0968008"
+  } ],
+  "hasNext" : false
 }</code></pre>
 </div>
 </div>
@@ -1225,7 +1232,7 @@ Content-Length: 1553
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/recipe-buckets/1 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {ACCESS_TOKEN}
-X-CSRF-TOKEN: 7Ft5GsvRXsXNfTxwfLAKjh-G0jFerSeHRIH9SLbq9s3JL9EN3GpMIvrnZ_XgTlkRTZ0-tyfj_wk4mEGqc7bEf4GMkPz8GLc9
+X-CSRF-TOKEN: ncG3gWSLcyv-dpwEavI-_AzYJ9EVTuI_mu49F3_Q14xy47ztpfWFsgC8Rk_TTv9gWd8Kyz7oCugiKNISqYtbLhvpsr5DhYne
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -1289,7 +1296,7 @@ X-Frame-Options: DENY</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-02-02 17:36:56 +0900
+Last updated 2024-02-15 06:49:42 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

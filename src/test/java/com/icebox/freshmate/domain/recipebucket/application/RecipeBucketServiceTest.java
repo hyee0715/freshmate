@@ -17,6 +17,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.SliceImpl;
 
 import com.icebox.freshmate.domain.grocery.domain.Grocery;
 import com.icebox.freshmate.domain.grocery.domain.GroceryType;
@@ -197,11 +199,17 @@ class RecipeBucketServiceTest {
 		recipe2.addRecipeGrocery(recipeGrocery1);
 		recipe2.addRecipeGrocery(recipeGrocery2);
 
+		int page = 0;
+		int size = 5;
+		PageRequest pageRequest = PageRequest.of(page, size);
+
+		SliceImpl<RecipeBucket> recipeBuckets = new SliceImpl<>(List.of(recipeBucket, recipeBucket2));
+
 		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member));
-		when(recipeBucketRepository.findAllByMemberId(any())).thenReturn(List.of(recipeBucket, recipeBucket2));
+		when(recipeBucketRepository.findAllByMemberId(any(), any(), any(), any(), any())).thenReturn(recipeBuckets);
 
 		//when
-		RecipeBucketsRes recipeBucketsRes = recipeBucketService.findAllByMemberId(member.getUsername());
+		RecipeBucketsRes recipeBucketsRes = recipeBucketService.findAllByMemberId("createdAtAsc", pageRequest, null, null, member.getUsername());
 
 		//then
 		assertThat(recipeBucketsRes.recipeBuckets()).hasSize(2);
