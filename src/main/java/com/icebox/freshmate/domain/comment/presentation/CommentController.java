@@ -2,6 +2,7 @@ package com.icebox.freshmate.domain.comment.presentation;
 
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,6 +35,8 @@ import lombok.RequiredArgsConstructor;
 @RestController
 public class CommentController {
 
+	private static final String DEFAULT_PAGE_SIZE = "5";
+
 	private final CommentService commentService;
 
 	@PostMapping
@@ -56,8 +59,13 @@ public class CommentController {
 	}
 
 	@GetMapping
-	public ResponseEntity<CommentsRes> findAllByPostId(@RequestParam("post-id") Long postId) {
-		CommentsRes commentsRes = commentService.findAllByPostId(postId);
+	public ResponseEntity<CommentsRes> findAllByPostId(@RequestParam(required = false, defaultValue = "0") int page,
+													   @RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) int size,
+													   @RequestParam("post-id") Long postId) {
+		page = Math.max(page - 1, 0);
+		PageRequest pageable = PageRequest.of(page, size);
+
+		CommentsRes commentsRes = commentService.findAllByPostId(pageable, postId);
 
 		return ResponseEntity.ok(commentsRes);
 	}

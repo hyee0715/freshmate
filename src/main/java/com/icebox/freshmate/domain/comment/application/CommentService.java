@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -81,8 +83,8 @@ public class CommentService {
 	}
 
 	@Transactional(readOnly = true)
-	public CommentsRes findAllByPostId(Long postId) {
-		List<Comment> comments = commentRepository.findAllByPostId(postId);
+	public CommentsRes findAllByPostId(Pageable pageable, Long postId) {
+		Slice<Comment> comments = commentRepository.findAllByPostId(postId, pageable);
 
 		return CommentsRes.from(comments);
 	}

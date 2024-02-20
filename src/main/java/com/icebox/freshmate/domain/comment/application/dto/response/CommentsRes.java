@@ -2,15 +2,18 @@ package com.icebox.freshmate.domain.comment.application.dto.response;
 
 import java.util.List;
 
+import org.springframework.data.domain.Slice;
+
 import com.icebox.freshmate.domain.comment.domain.Comment;
 import com.icebox.freshmate.domain.comment.domain.CommentImage;
 import com.icebox.freshmate.domain.image.application.dto.response.ImageRes;
 
 public record CommentsRes(
-	List<CommentRes> comments
+	List<CommentRes> comments,
+	boolean hasNext
 ) {
 
-	public static CommentsRes from(List<Comment> comments) {
+	public static CommentsRes from(Slice<Comment> comments) {
 		List<CommentRes> commentsRes = comments.stream()
 			.map(comment -> {
 				List<ImageRes> commentImagesRes = getCommentImagesRes(comment);
@@ -19,7 +22,7 @@ public record CommentsRes(
 			})
 			.toList();
 
-		return new CommentsRes(commentsRes);
+		return new CommentsRes(commentsRes, comments.hasNext());
 	}
 
 	private static List<ImageRes> getCommentImagesRes(Comment comment) {
