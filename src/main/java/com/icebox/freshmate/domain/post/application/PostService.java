@@ -98,11 +98,11 @@ public class PostService {
 	}
 
 	@Transactional(readOnly = true)
-	public PostsRes findAll(String sortBy, Pageable pageable, Long memberId) {
+	public PostsRes findAll(String sortBy, Pageable pageable, Long memberId, Long lastPageId) {
 		Member member = getMemberById(memberId);
 
 		validatePostSortType(sortBy);
-		Slice<Post> posts = postRepository.findAllByCondition(member, pageable, sortBy);
+		Slice<Post> posts = postRepository.findAllByCondition(member, pageable, sortBy, lastPageId);
 
 		return PostsRes.from(posts);
 	}
@@ -306,7 +306,7 @@ public class PostService {
 	}
 
 	private void validatePostSortType(String sortBy) {
-		if (!sortBy.equalsIgnoreCase("createdAtAsc") && !sortBy.equalsIgnoreCase("createdAtDesc")) {
+		if (!sortBy.equalsIgnoreCase("idAsc") && !sortBy.equalsIgnoreCase("idDesc")) {
 			log.warn("GET:READ:INVALID_POST_SORT_TYPE : {}", sortBy);
 
 			throw new BusinessException(INVALID_POST_SORT_TYPE);

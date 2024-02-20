@@ -1,6 +1,6 @@
 package com.icebox.freshmate.domain.post.domain;
 
-import static com.icebox.freshmate.global.util.SortTypeUtils.CREATED_AT_ASC;
+import static com.icebox.freshmate.global.util.SortTypeUtils.ID_ASC;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,8 +26,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
 	private final QMember member = QMember.member;
 
 	@Override
-	public Slice<Post> findAllByCondition(Member writer, Pageable pageable, String sortBy) {
-		BooleanExpression[] booleanExpressions = createBooleanExpressions(writer);
+	public Slice<Post> findAllByCondition(Member writer, Pageable pageable, String sortBy, Long lastPageId) {
+		BooleanExpression[] booleanExpressions = getBooleanExpressionByMember(writer, sortBy, lastPageId);
 		OrderSpecifier<?>[] orderSpecifier = getOrderSpecifier(sortBy);
 
 		List<Post> posts = queryFactory.select(post)
@@ -35,24 +35,33 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
 			.join(post.member, member).fetchJoin()
 			.where(booleanExpressions)
 			.orderBy(orderSpecifier)
-			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
 
 		return checkLastPage(pageable, posts);
 	}
 
-	private BooleanExpression[] createBooleanExpressions(Member writer) {
+	private BooleanExpression[] getBooleanExpressionByMember(Member member, String sortBy, Long lastPageId) {
+		SortTypeUtils sortType = SortTypeUtils.findSortType(sortBy);
+
+		if (sortType.equals(ID_ASC)) {
+			return createBooleanExpressions(member, gtPostId(lastPageId));
+		}
+
+		return createBooleanExpressions(member, ltPostId(lastPageId));
+	}
+
+	private BooleanExpression[] createBooleanExpressions(Member writer, BooleanExpression booleanExpression) {
 
 		return Optional.ofNullable(writer)
-			.map(member -> new BooleanExpression[]{post.member.id.eq(member.getId())})
-			.orElse(new BooleanExpression[]{null});
+			.map(member -> new BooleanExpression[]{post.member.id.eq(member.getId()), booleanExpression})
+			.orElse(new BooleanExpression[]{booleanExpression});
 	}
 
 	private OrderSpecifier<?>[] getOrderSpecifier(String sortBy) {
 		SortTypeUtils sortType = SortTypeUtils.findSortType(sortBy);
 
-		if (sortType.equals(CREATED_AT_ASC)) {
+		if (sortType.equals(ID_ASC)) {
 			return createOrderSpecifier(post.id.asc());
 		}
 
@@ -73,5 +82,19 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
 		}
 
 		return new SliceImpl<>(posts, pageable, hasNext);
+	}
+
+	private BooleanExpression gtPostId(Long postId) {
+
+		return Optional.ofNullable(postId)
+			.map(post.id::gt)
+			.orElse(null);
+	}
+
+	private BooleanExpression ltPostId(Long postId) {
+
+		return Optional.ofNullable(postId)
+			.map(post.id::lt)
+			.orElse(null);
 	}
 }

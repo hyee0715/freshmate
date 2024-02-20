@@ -1,8 +1,12 @@
 package com.icebox.freshmate.domain.post.application.dto.response;
 
+import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.icebox.freshmate.domain.image.application.dto.response.ImageRes;
 import com.icebox.freshmate.domain.post.domain.Post;
 import com.icebox.freshmate.domain.recipe.domain.Recipe;
@@ -13,12 +17,18 @@ public record PostRes(
 	Long memberId,
 	String postTitle,
 	String postContent,
+
+	@JsonFormat(shape = STRING, pattern = "YYYY-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+	LocalDateTime postCreatedAt,
+
+	@JsonFormat(shape = STRING, pattern = "YYYY-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+	LocalDateTime postUpdatedAt,
+
 	Long recipeId,
 	Long recipeWriterId,
 	String recipeWriterNickName,
 	String recipeTitle,
 	String recipeContent,
-
 	List<RecipeGroceryRes> recipeMaterials,
 	List<ImageRes> images
 ) {
@@ -35,6 +45,8 @@ public record PostRes(
 			post.getMember().getId(),
 			post.getTitle(),
 			post.getContent(),
+			post.getCreatedAt(),
+			post.getUpdatedAt(),
 			recipeId,
 			recipeWriterId,
 			recipeWriterNickname,

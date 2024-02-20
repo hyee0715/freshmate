@@ -21,7 +21,9 @@ public enum SortTypeUtils {
 	TITLE_ASC("titleAsc"),
 	TITLE_DESC("titleDesc"),
 	CREATED_AT_ASC("createdAtAsc"),
-	CREATED_AT_DESC("createdAtDesc");
+	CREATED_AT_DESC("createdAtDesc"),
+	ID_ASC("idAsc"),
+	ID_DESC("idDesc");
 
 	String sortType;
 

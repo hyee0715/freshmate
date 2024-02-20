@@ -7,5 +7,5 @@ import com.icebox.freshmate.domain.member.domain.Member;
 
 public interface PostRepositoryCustom {
 
-	Slice<Post> findAllByCondition(Member member, Pageable pageable, String sortBy);
+	Slice<Post> findAllByCondition(Member member, Pageable pageable, String sortBy, Long lastPageId);
 }
