@@ -5,5 +5,5 @@ import org.springframework.data.domain.Slice;
 
 public interface CommentRepositoryCustom {
 
-	Slice<Comment> findAllByPostId(Long postId, Pageable pageable);
+	Slice<Comment> findAllByPostId(Long postId, Pageable pageable, Long lastPageId);
 }

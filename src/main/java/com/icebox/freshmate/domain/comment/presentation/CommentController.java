@@ -59,13 +59,14 @@ public class CommentController {
 	}
 
 	@GetMapping
-	public ResponseEntity<CommentsRes> findAllByPostId(@RequestParam(required = false, defaultValue = "0") int page,
+	public ResponseEntity<CommentsRes> findAllByPostId(@RequestParam(value = "last-page-id", required = false) Long lastPageId,
+													   @RequestParam(required = false, defaultValue = "0") int page,
 													   @RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) int size,
 													   @RequestParam("post-id") Long postId) {
 		page = Math.max(page - 1, 0);
 		PageRequest pageable = PageRequest.of(page, size);
 
-		CommentsRes commentsRes = commentService.findAllByPostId(pageable, postId);
+		CommentsRes commentsRes = commentService.findAllByPostId(pageable, postId, lastPageId);
 
 		return ResponseEntity.ok(commentsRes);
 	}

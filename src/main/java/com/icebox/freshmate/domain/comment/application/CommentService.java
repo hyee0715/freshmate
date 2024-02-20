@@ -83,8 +83,8 @@ public class CommentService {
 	}
 
 	@Transactional(readOnly = true)
-	public CommentsRes findAllByPostId(Pageable pageable, Long postId) {
-		Slice<Comment> comments = commentRepository.findAllByPostId(postId, pageable);
+	public CommentsRes findAllByPostId(Pageable pageable, Long postId, Long lastPageId) {
+		Slice<Comment> comments = commentRepository.findAllByPostId(postId, pageable, lastPageId);
 
 		return CommentsRes.from(comments);
 	}
