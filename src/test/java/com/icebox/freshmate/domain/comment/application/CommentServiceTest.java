@@ -16,6 +16,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.mock.web.MockMultipartFile;
 
 import com.icebox.freshmate.domain.comment.application.dto.request.CommentCreateReq;
@@ -139,10 +141,16 @@ class CommentServiceTest {
 			.content("댓글 내용2")
 			.build();
 
-		when(commentRepository.findAllByPostId(anyLong())).thenReturn(List.of(comment, comment2));
+		int page = 0;
+		int size = 5;
+		PageRequest pageRequest = PageRequest.of(page, size);
+
+		SliceImpl<Comment> comments = new SliceImpl<>(List.of(comment, comment2));
+
+		when(commentRepository.findAllByPostId(anyLong(), any(), any())).thenReturn(comments);
 
 		//when
-		CommentsRes commentsRes = commentService.findAllByPostId(postId);
+		CommentsRes commentsRes = commentService.findAllByPostId(pageRequest, postId, null);
 
 		//then
 		assertThat(commentsRes.comments().get(0).memberNickName()).isEqualTo(comment.getMember().getNickName());

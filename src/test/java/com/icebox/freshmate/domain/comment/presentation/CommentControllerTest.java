@@ -14,6 +14,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
+import static org.springframework.restdocs.payload.JsonFieldType.BOOLEAN;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -245,9 +246,9 @@ class CommentControllerTest {
 		CommentRes commentRes1 = new CommentRes(1L, postId, memberId, member.getNickName(), comment.getContent(), localDateTime, localDateTime, List.of(imageRes1, imageRes2));
 		CommentRes commentRes2 = new CommentRes(2L, postId, memberId, member.getNickName(), comment2.getContent(), localDateTime, localDateTime, List.of(imageRes1, imageRes2));
 
-		CommentsRes commentsRes = new CommentsRes(List.of(commentRes1, commentRes2));
+		CommentsRes commentsRes = new CommentsRes(List.of(commentRes1, commentRes2), false);
 
-		when(commentService.findAllByPostId(anyLong())).thenReturn(commentsRes);
+		when(commentService.findAllByPostId(any(), any(), any())).thenReturn(commentsRes);
 
 		//when
 		//then
@@ -267,6 +268,7 @@ class CommentControllerTest {
 			.andExpect(jsonPath("$.comments[0].updatedAt").value(formatLocalDateTime(commentRes1.updatedAt())))
 			.andExpect(jsonPath("$.comments[0].images[0].fileName").value(commentRes1.images().get(0).fileName()))
 			.andExpect(jsonPath("$.comments[0].images[0].path").value(commentRes1.images().get(0).path()))
+			.andExpect(jsonPath("$.hasNext").value(commentsRes.hasNext()))
 			.andDo(print())
 			.andDo(print())
 			.andDo(document("comment/comment-find-all-by-post-id",
@@ -285,7 +287,8 @@ class CommentControllerTest {
 					fieldWithPath("comments[].createdAt").type(STRING).description("댓글 생성 날짜"),
 					fieldWithPath("comments[].updatedAt").type(STRING).description("댓글 수정 날짜"),
 					fieldWithPath("comments[].images[].fileName").type(STRING).description("댓글 이미지 파일 이름"),
-					fieldWithPath("comments[].images[].path").type(STRING).description("댓글 이미지 파일 경로")
+					fieldWithPath("comments[].images[].path").type(STRING).description("댓글 이미지 파일 경로"),
+					fieldWithPath("hasNext").type(BOOLEAN).description("다음 페이지(스크롤) 데이터 존재 유무")
 				)
 			));
 	}
