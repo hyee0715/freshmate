@@ -3,6 +3,7 @@ package com.icebox.freshmate.domain.post.application;
 import static com.icebox.freshmate.global.error.ErrorCode.EMPTY_IMAGE;
 import static com.icebox.freshmate.global.error.ErrorCode.EXCESSIVE_DELETE_IMAGE_COUNT;
 import static com.icebox.freshmate.global.error.ErrorCode.INVALID_ATTEMPT_TO_POST_RECIPE;
+import static com.icebox.freshmate.global.error.ErrorCode.INVALID_POST_SORT_TYPE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_IMAGE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_POST;
@@ -11,6 +12,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -95,9 +98,11 @@ public class PostService {
 	}
 
 	@Transactional(readOnly = true)
-	public PostsRes findAllByMemberId(Long memberId) {
+	public PostsRes findAll(String sortBy, Pageable pageable, Long memberId, Long lastPageId) {
 		Member member = getMemberById(memberId);
-		List<Post> posts = postRepository.findAllByMemberId(member.getId());
+
+		validatePostSortType(sortBy);
+		Slice<Post> posts = postRepository.findAllByCondition(member, pageable, sortBy, lastPageId);
 
 		return PostsRes.from(posts);
 	}
@@ -167,12 +172,14 @@ public class PostService {
 
 	private Member getMemberById(Long memberId) {
 
-		return memberRepository.findById(memberId)
-			.orElseThrow(() -> {
-				log.warn("GET:READ:NOT_FOUND_MEMBER_BY_ID : {}", memberId);
+		return Optional.ofNullable(memberId)
+			.map(id -> memberRepository.findById(id)
+				.orElseThrow(() -> {
+					log.warn("GET:READ:NOT_FOUND_MEMBER_BY_ID : {}", id);
 
-				return new EntityNotFoundException(NOT_FOUND_MEMBER);
-			});
+					return new EntityNotFoundException(NOT_FOUND_MEMBER);
+				}))
+			.orElse(null);
 	}
 
 	private Post getPostByIdAndMemberId(Long postId, Long memberId) {
@@ -295,6 +302,14 @@ public class PostService {
 			log.warn("PATCH:WRITE:EMPTY_IMAGE");
 
 			throw new BusinessException(EMPTY_IMAGE);
+		}
+	}
+
+	private void validatePostSortType(String sortBy) {
+		if (!sortBy.equalsIgnoreCase("idAsc") && !sortBy.equalsIgnoreCase("idDesc")) {
+			log.warn("GET:READ:INVALID_POST_SORT_TYPE : {}", sortBy);
+
+			throw new BusinessException(INVALID_POST_SORT_TYPE);
 		}
 	}
 }

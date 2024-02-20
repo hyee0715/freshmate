@@ -72,6 +72,7 @@ public enum ErrorCode {
 
 	//게시글
 	NOT_FOUND_POST("P001", "게시글이 존재하지 않습니다."),
+	INVALID_POST_SORT_TYPE("P002", "유효하지 않거나 허용되지 않는 게시글 정렬 타입입니다."),
 
 	//댓글
 	NOT_FOUND_COMMENT("CM001", "댓글이 존재하지 않습니다."),

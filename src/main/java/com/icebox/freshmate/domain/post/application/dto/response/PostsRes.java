@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Slice;
+
 import com.icebox.freshmate.domain.image.application.dto.response.ImageRes;
 import com.icebox.freshmate.domain.post.domain.Post;
 import com.icebox.freshmate.domain.post.domain.PostImage;
@@ -12,10 +14,11 @@ import com.icebox.freshmate.domain.recipe.domain.Recipe;
 import com.icebox.freshmate.domain.recipegrocery.application.dto.response.RecipeGroceryRes;
 
 public record PostsRes(
-	List<PostRes> posts
+	List<PostRes> posts,
+	boolean hasNext
 ) {
 
-	public static PostsRes from(List<Post> posts) {
+	public static PostsRes from(Slice<Post> posts) {
 		List<PostRes> postsRes = posts.stream()
 			.map(post -> {
 				List<RecipeGroceryRes> recipeGroceryRes = getRecipeGroceryResList(post.getRecipe());
@@ -25,7 +28,7 @@ public record PostsRes(
 			})
 			.toList();
 
-		return new PostsRes(postsRes);
+		return new PostsRes(postsRes, posts.hasNext());
 	}
 
 	private static List<RecipeGroceryRes> getRecipeGroceryResList(Recipe recipe) {

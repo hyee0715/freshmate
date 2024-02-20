@@ -17,6 +17,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.mock.web.MockMultipartFile;
 
 import com.icebox.freshmate.domain.grocery.domain.Grocery;
@@ -221,7 +223,7 @@ class PostServiceTest {
 		assertThat(postRes.recipeMaterials().get(0).groceryName()).isEqualTo(grocery1.getName());
 	}
 
-	@DisplayName("작성자별 모든 게시글 조회 테스트")
+	@DisplayName("게시글 목록 조회 테스트")
 	@Test
 	void findAllByMemberId() {
 		//given
@@ -234,11 +236,17 @@ class PostServiceTest {
 			.recipe(recipe)
 			.build();
 
+		int page = 0;
+		int size = 10;
+		PageRequest pageRequest = PageRequest.of(page, size);
+
+		SliceImpl<Post> posts = new SliceImpl<>(List.of(post, post2));
+
 		when(memberRepository.findById(anyLong())).thenReturn(Optional.of(member));
-		when(postRepository.findAllByMemberId(any())).thenReturn(List.of(post, post2));
+		when(postRepository.findAllByCondition(any(), any(), any(), any())).thenReturn(posts);
 
 		//when
-		PostsRes postsRes = postService.findAllByMemberId(memberId);
+		PostsRes postsRes = postService.findAll("idDesc", pageRequest, memberId, null);
 
 		//then
 		assertThat(postsRes.posts()).hasSize(2);
