@@ -477,7 +477,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 Content-Type: application/json; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
 Authorization: Bearer {ACCESS_TOKEN}
 Content-Length: 52
-X-CSRF-TOKEN: uCXYKbt0MCEdbFMgNHF7JgslGYteNwNVolf0pKonhyQJDeMLixzsGYxAVBUwDzUWDFxPHjIcNOk6BzN4kmORk5gVv0YxPtFo
+X-CSRF-TOKEN: kSp2sCZOWztoEvPPaKegpIsEizaEkVQO-SHilvwWElLXPxYPqBJAgkJ7bl9FK8L_XIqUwb4ypg62pWEjzxDSpM4iKmDnWSU6
 Host: localhost:8080
 
 {
@@ -536,8 +536,8 @@ Content-Length: 416
   "memberId" : 1,
   "memberNickName" : "닉네임닉네임",
   "content" : "내용",
-  "createdAt" : "2024-02-15 06:25:04",
-  "updatedAt" : "2024-02-15 06:25:04",
+  "createdAt" : "2024-02-21 03:29:52",
+  "updatedAt" : "2024-02-21 03:29:52",
   "images" : [ {
     "fileName" : "image1.jpg",
     "path" : "https://test-image-urls.com/image1.jpg"
@@ -619,8 +619,8 @@ Content-Length: 416
   "memberId" : 1,
   "memberNickName" : "닉네임닉네임",
   "content" : "내용",
-  "createdAt" : "2024-02-15 06:25:04",
-  "updatedAt" : "2024-02-15 06:25:04",
+  "createdAt" : "2024-02-21 03:29:52",
+  "updatedAt" : "2024-02-21 03:29:52",
   "images" : [ {
     "fileName" : "image1.jpg",
     "path" : "https://test-image-urls.com/image1.jpg"
@@ -645,7 +645,7 @@ Content-Length: 416
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/comments?post-id=1 HTTP/1.1
 Content-Type: application/json
-X-CSRF-TOKEN: xFwkh8O-vTm6_PGzcHHg1bn39rG8BsHC341CAxyLTzok8g0wpmpCs_TfjQmXyJKGRVzU5tiV24jfM_Tvveh0N3m5eAtFkD8G
+X-CSRF-TOKEN: JXD20AET_pIJ0ZG8kJbW2EmDuJhQrhD6le_wZNaVvp_aebybRhXD4jIgnKIktffao7vivHnllfkxmiDXotrDArOgjvvrTIn_
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -682,7 +682,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 934
+Content-Length: 956
 
 {
   "comments" : [ {
@@ -691,8 +691,8 @@ Content-Length: 934
     "memberId" : 1,
     "memberNickName" : "닉네임닉네임",
     "content" : "댓글 내용",
-    "createdAt" : "2024-02-15 06:25:04",
-    "updatedAt" : "2024-02-15 06:25:04",
+    "createdAt" : "2024-02-21 03:29:52",
+    "updatedAt" : "2024-02-21 03:29:52",
     "images" : [ {
       "fileName" : "image1.jpg",
       "path" : "https://test-image-urls.com/image1.jpg"
@@ -706,8 +706,8 @@ Content-Length: 934
     "memberId" : 1,
     "memberNickName" : "닉네임닉네임",
     "content" : "댓글 내용2",
-    "createdAt" : "2024-02-15 06:25:04",
-    "updatedAt" : "2024-02-15 06:25:04",
+    "createdAt" : "2024-02-21 03:29:52",
+    "updatedAt" : "2024-02-21 03:29:52",
     "images" : [ {
       "fileName" : "image1.jpg",
       "path" : "https://test-image-urls.com/image1.jpg"
@@ -715,7 +715,8 @@ Content-Length: 934
       "fileName" : "image2.jpg",
       "path" : "https://test-image-urls.com/image2.jpg"
     } ]
-  } ]
+  } ],
+  "hasNext" : false
 }</code></pre>
 </div>
 </div>
@@ -784,6 +785,11 @@ Content-Length: 934
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">댓글 이미지 파일 경로</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hasNext</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">다음 페이지(스크롤) 데이터 존재 유무</p></td>
+</tr>
 </tbody>
 </table>
 <div class="listingblock">
@@ -796,8 +802,8 @@ Content-Length: 934
     "memberId" : 1,
     "memberNickName" : "닉네임닉네임",
     "content" : "댓글 내용",
-    "createdAt" : "2024-02-15 06:25:04",
-    "updatedAt" : "2024-02-15 06:25:04",
+    "createdAt" : "2024-02-21 03:29:52",
+    "updatedAt" : "2024-02-21 03:29:52",
     "images" : [ {
       "fileName" : "image1.jpg",
       "path" : "https://test-image-urls.com/image1.jpg"
@@ -811,8 +817,8 @@ Content-Length: 934
     "memberId" : 1,
     "memberNickName" : "닉네임닉네임",
     "content" : "댓글 내용2",
-    "createdAt" : "2024-02-15 06:25:04",
-    "updatedAt" : "2024-02-15 06:25:04",
+    "createdAt" : "2024-02-21 03:29:52",
+    "updatedAt" : "2024-02-21 03:29:52",
     "images" : [ {
       "fileName" : "image1.jpg",
       "path" : "https://test-image-urls.com/image1.jpg"
@@ -820,7 +826,8 @@ Content-Length: 934
       "fileName" : "image2.jpg",
       "path" : "https://test-image-urls.com/image2.jpg"
     } ]
-  } ]
+  } ],
+  "hasNext" : false
 }</code></pre>
 </div>
 </div>
@@ -840,7 +847,7 @@ Content-Length: 934
 Content-Type: application/json
 Authorization: Bearer {ACCESS_TOKEN}
 Content-Length: 42
-X-CSRF-TOKEN: lnLc1qHaQyh1VLAgn-WI0ICnA_ZGvZyiyT5B5WAYdz9IPk5m9xfv4ZHichxYYdIZrMi8seHELs5_if2P-wkj0AN8FgYrBi1V
+X-CSRF-TOKEN: 6iVQAhHVROkXVJZYg9UrQWGyyMDBCk1tKYMyTRRLHOrQS2wtiEQzZyS3cN46YfI55fgfcAPR5fj0PChATbVUdSIqed7nfl4Y
 Host: localhost:8080
 
 {
@@ -938,8 +945,8 @@ Content-Length: 430
   "memberId" : 1,
   "memberNickName" : "닉네임닉네임",
   "content" : "댓글 내용 수정",
-  "createdAt" : "2024-02-15 06:25:05",
-  "updatedAt" : "2024-02-15 06:25:05",
+  "createdAt" : "2024-02-21 03:29:52",
+  "updatedAt" : "2024-02-21 03:29:52",
   "images" : [ {
     "fileName" : "image1.jpg",
     "path" : "https://test-image-urls.com/image1.jpg"
@@ -1021,8 +1028,8 @@ Content-Length: 430
   "memberId" : 1,
   "memberNickName" : "닉네임닉네임",
   "content" : "댓글 내용 수정",
-  "createdAt" : "2024-02-15 06:25:05",
-  "updatedAt" : "2024-02-15 06:25:05",
+  "createdAt" : "2024-02-21 03:29:52",
+  "updatedAt" : "2024-02-21 03:29:52",
   "images" : [ {
     "fileName" : "image1.jpg",
     "path" : "https://test-image-urls.com/image1.jpg"
@@ -1048,7 +1055,7 @@ Content-Length: 430
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/comments/1 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {ACCESS_TOKEN}
-X-CSRF-TOKEN: WtmT5N4BElrTmPTTR3FS4PbM0ux81Qu5iPmABYDwpDDOCm-7OOyq3Lw2IG_-_pWxdlxmgc_-_9RMszKUsJvhNOGSwgeoMlfa
+X-CSRF-TOKEN: -Ks6356By2_xEC5OmWtGJaBsig914BOcZO4ksVgyMiqTKMXknZgP5_i4rlzcc01-rEZyQcZZpzZD1HGxAt8W1GgDB0uhSvLR
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -1112,7 +1119,7 @@ X-Frame-Options: DENY</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-02-15 06:24:28 +0900
+Last updated 2024-02-15 19:22:59 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -81,8 +83,8 @@ public class CommentService {
 	}
 
 	@Transactional(readOnly = true)
-	public CommentsRes findAllByPostId(Long postId) {
-		List<Comment> comments = commentRepository.findAllByPostId(postId);
+	public CommentsRes findAllByPostId(Pageable pageable, Long postId, Long lastPageId) {
+		Slice<Comment> comments = commentRepository.findAllByPostId(postId, pageable, lastPageId);
 
 		return CommentsRes.from(comments);
 	}
@@ -189,16 +191,15 @@ public class CommentService {
 	}
 
 	private ImagesRes saveImages(Comment comment, ImageUploadReq imageUploadReq) {
+		if (imageUploadReq.files().size() == 1 && imageUploadReq.files().get(0).isEmpty()) {
+			return null;
+		}
 
-		return Optional.ofNullable(imageUploadReq.files())
-			.map(files -> imageService.store(imageUploadReq))
-			.map(imagesRes -> {
-				List<CommentImage> commentImages = saveImages(comment, imagesRes);
-				comment.addCommentImages(commentImages);
+		ImagesRes imagesRes = imageService.store(imageUploadReq);
+		List<CommentImage> commentImages = saveImages(comment, imagesRes);
+		comment.addCommentImages(commentImages);
 
-				return imagesRes;
-			})
-			.orElse(null);
+		return imagesRes;
 	}
 
 	private List<CommentImage> saveImages(Comment comment, ImagesRes imagesRes) {
