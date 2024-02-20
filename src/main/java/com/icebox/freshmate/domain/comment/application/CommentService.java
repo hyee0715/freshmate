@@ -191,16 +191,15 @@ public class CommentService {
 	}
 
 	private ImagesRes saveImages(Comment comment, ImageUploadReq imageUploadReq) {
+		if (imageUploadReq.files().size() == 1 && imageUploadReq.files().get(0).isEmpty()) {
+			return null;
+		}
 
-		return Optional.ofNullable(imageUploadReq.files())
-			.map(files -> imageService.store(imageUploadReq))
-			.map(imagesRes -> {
-				List<CommentImage> commentImages = saveImages(comment, imagesRes);
-				comment.addCommentImages(commentImages);
+		ImagesRes imagesRes = imageService.store(imageUploadReq);
+		List<CommentImage> commentImages = saveImages(comment, imagesRes);
+		comment.addCommentImages(commentImages);
 
-				return imagesRes;
-			})
-			.orElse(null);
+		return imagesRes;
 	}
 
 	private List<CommentImage> saveImages(Comment comment, ImagesRes imagesRes) {
