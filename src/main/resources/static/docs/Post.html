@@ -451,7 +451,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_성공_2">성공</a></li>
 </ul>
 </li>
-<li><a href="#_get_작성자별_모든_게시글_조회">GET: 작성자별 모든 게시글 조회</a>
+<li><a href="#_get_게시글_목록_조회">GET: 게시글 목록 조회</a>
 <ul class="sectlevel2">
 <li><a href="#_성공_3">성공</a></li>
 </ul>
@@ -482,7 +482,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 Content-Type: multipart/form-data; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
 Authorization: Bearer {ACCESS_TOKEN}
 Accept: application/json
-X-CSRF-TOKEN: rA1jcVAhAAq16Qdu0NfVUrF5bE0ZZwwA28Fs6y4UrZY_UoBmlT1UE2IWNjmY0GJXtPrhNodAQS8qBWgt7qMI2E0in6EMNuRQ
+X-CSRF-TOKEN: yr0oDbEm3UHrm8DZ2cnua9vvsX-EuNX2rw6k5WZezOf_-KB6-YpJbNdC7HDGq_O96OTaUr3WnEbggODbnDbF3VNmroOeyZMb
 Host: localhost:8080
 
 --6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
@@ -549,8 +549,8 @@ Content-Length: 930
   "memberId" : 1,
   "postTitle" : "제목",
   "postContent" : "내용",
-  "postCreatedAt" : "2024-02-21 01:46:51",
-  "postUpdatedAt" : "2024-02-21 01:46:51",
+  "postCreatedAt" : "2024-02-21 03:30:16",
+  "postUpdatedAt" : "2024-02-21 03:30:16",
   "recipeId" : 1,
   "recipeWriterId" : 1,
   "recipeWriterNickName" : "닉네임닉네임",
@@ -706,8 +706,8 @@ Content-Length: 930
   "memberId" : 1,
   "postTitle" : "제목",
   "postContent" : "내용",
-  "postCreatedAt" : "2024-02-21 01:46:51",
-  "postUpdatedAt" : "2024-02-21 01:46:51",
+  "postCreatedAt" : "2024-02-21 03:30:16",
+  "postUpdatedAt" : "2024-02-21 03:30:16",
   "recipeId" : 1,
   "recipeWriterId" : 1,
   "recipeWriterNickName" : "닉네임닉네임",
@@ -752,7 +752,7 @@ Content-Length: 930
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/posts/1 HTTP/1.1
 Content-Type: application/json
-X-CSRF-TOKEN: fGRwsmbbwu7u4mCRXIOG1KkETWjsIPv8s_K92i2AqXBFIaKITFdEhlO-94rDh1fwbK6y7JgyYAmIQcnRhJHZuR21kUEnEpfq
+X-CSRF-TOKEN: Q89DzHfi0hGemHwCZkj5M1ZECunbx2CT4Vd0oiij20OrAUTQe_Z2_hTXsSGzoE5gVGXNB29zJ4u48wa-0mEXxhuXvieYOXbh
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -796,8 +796,8 @@ Content-Length: 930
   "memberId" : 1,
   "postTitle" : "제목",
   "postContent" : "내용",
-  "postCreatedAt" : "2024-02-21 01:46:51",
-  "postUpdatedAt" : "2024-02-21 01:46:51",
+  "postCreatedAt" : "2024-02-21 03:30:16",
+  "postUpdatedAt" : "2024-02-21 03:30:16",
   "recipeId" : 1,
   "recipeWriterId" : 1,
   "recipeWriterNickName" : "닉네임닉네임",
@@ -953,8 +953,8 @@ Content-Length: 930
   "memberId" : 1,
   "postTitle" : "제목",
   "postContent" : "내용",
-  "postCreatedAt" : "2024-02-21 01:46:51",
-  "postUpdatedAt" : "2024-02-21 01:46:51",
+  "postCreatedAt" : "2024-02-21 03:30:16",
+  "postUpdatedAt" : "2024-02-21 03:30:16",
   "recipeId" : 1,
   "recipeWriterId" : 1,
   "recipeWriterNickName" : "닉네임닉네임",
@@ -990,7 +990,7 @@ Content-Length: 930
 </div>
 </div>
 <div class="sect1">
-<h2 id="_get_작성자별_모든_게시글_조회">GET: 작성자별 모든 게시글 조회</h2>
+<h2 id="_get_게시글_목록_조회">GET: 게시글 목록 조회</h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_성공_3">성공</h3>
@@ -999,7 +999,7 @@ Content-Length: 930
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/posts?member-id=1 HTTP/1.1
 Content-Type: application/json
-X-CSRF-TOKEN: NbShV0op7gmxOU2XzEdgag-tiYaypc3VaC3k-vtzTY27XrXyA9LDMitM1m-cCXql_mpUCD6YpL6LxvT4Cx7RmM9Ge7uIP4PF
+X-CSRF-TOKEN: cT8rYbSpTjWWpOByuqRcfXBQrtehCCG6MsedGNMtVb_AXvCvQQhJA4XMfQK7lIVD24loGElpg-_FOBOXUPSsLbIVYI6laJWc
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -1044,8 +1044,8 @@ Content-Length: 2044
     "memberId" : 1,
     "postTitle" : "제목",
     "postContent" : "내용",
-    "postCreatedAt" : "2024-02-21 01:46:51",
-    "postUpdatedAt" : "2024-02-21 01:46:51",
+    "postCreatedAt" : "2024-02-21 03:30:16",
+    "postUpdatedAt" : "2024-02-21 03:30:16",
     "recipeId" : 1,
     "recipeWriterId" : 1,
     "recipeWriterNickName" : "닉네임닉네임",
@@ -1078,8 +1078,8 @@ Content-Length: 2044
     "memberId" : 1,
     "postTitle" : "제목2",
     "postContent" : "내용2",
-    "postCreatedAt" : "2024-02-21 01:47:51",
-    "postUpdatedAt" : "2024-02-21 01:47:51",
+    "postCreatedAt" : "2024-02-21 03:31:16",
+    "postUpdatedAt" : "2024-02-21 03:31:16",
     "recipeId" : 1,
     "recipeWriterId" : 1,
     "recipeWriterNickName" : "닉네임닉네임",
@@ -1248,8 +1248,8 @@ Content-Length: 2044
     "memberId" : 1,
     "postTitle" : "제목",
     "postContent" : "내용",
-    "postCreatedAt" : "2024-02-21 01:46:51",
-    "postUpdatedAt" : "2024-02-21 01:46:51",
+    "postCreatedAt" : "2024-02-21 03:30:16",
+    "postUpdatedAt" : "2024-02-21 03:30:16",
     "recipeId" : 1,
     "recipeWriterId" : 1,
     "recipeWriterNickName" : "닉네임닉네임",
@@ -1282,8 +1282,8 @@ Content-Length: 2044
     "memberId" : 1,
     "postTitle" : "제목2",
     "postContent" : "내용2",
-    "postCreatedAt" : "2024-02-21 01:47:51",
-    "postUpdatedAt" : "2024-02-21 01:47:51",
+    "postCreatedAt" : "2024-02-21 03:31:16",
+    "postUpdatedAt" : "2024-02-21 03:31:16",
     "recipeId" : 1,
     "recipeWriterId" : 1,
     "recipeWriterNickName" : "닉네임닉네임",
@@ -1332,7 +1332,7 @@ Content-Length: 2044
 Content-Type: application/json
 Authorization: Bearer {ACCESS_TOKEN}
 Content-Length: 84
-X-CSRF-TOKEN: g5xOZdl28D2f9aY01vA1IM_UfSVouaLqZ0hi1_h7jCeYlpJX5_14UbxHwF-yzMdQ4N0BRv7kUBxRipHHVHEBs50auhaspvRm
+X-CSRF-TOKEN: x395qtLkW_xQ_0xHJwMJO7cs34ca_YwyMGooLhyqs0GW7wEY_hsfmeWAb8p9mnt1Hy49WNYU8uV-xLgfBw5JGy6S1Xag2zF-
 Host: localhost:8080
 
 {
@@ -1443,8 +1443,8 @@ Content-Length: 944
   "memberId" : 1,
   "postTitle" : "제목 수정",
   "postContent" : "내용 수정",
-  "postCreatedAt" : "2024-02-21 01:46:51",
-  "postUpdatedAt" : "2024-02-21 01:46:51",
+  "postCreatedAt" : "2024-02-21 03:30:16",
+  "postUpdatedAt" : "2024-02-21 03:30:16",
   "recipeId" : 1,
   "recipeWriterId" : 1,
   "recipeWriterNickName" : "닉네임닉네임",
@@ -1600,8 +1600,8 @@ Content-Length: 944
   "memberId" : 1,
   "postTitle" : "제목 수정",
   "postContent" : "내용 수정",
-  "postCreatedAt" : "2024-02-21 01:46:51",
-  "postUpdatedAt" : "2024-02-21 01:46:51",
+  "postCreatedAt" : "2024-02-21 03:30:16",
+  "postUpdatedAt" : "2024-02-21 03:30:16",
   "recipeId" : 1,
   "recipeWriterId" : 1,
   "recipeWriterNickName" : "닉네임닉네임",
@@ -1647,7 +1647,7 @@ Content-Length: 944
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/posts/1 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {ACCESS_TOKEN}
-X-CSRF-TOKEN: R0bh-IuktXzFOJqzjzn90TMOv_5LpkUVy29AcfIMc8TOEqKcdCTSwL2dgk7oXaKBvhTJ4Ac8kpxzknw4_l4jScY1Ef33c5Cu
+X-CSRF-TOKEN: thSYPrCtBkM4sjE6qXffbbVML5DrARZx3gpSUvXgeP608oB-hCKoXISZPnYVigUOkVrrX4N4AqjfYndc6DtqM5eFSc3VxbJI
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -1711,7 +1711,7 @@ X-Frame-Options: DENY</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-02-15 19:22:59 +0900
+Last updated 2024-02-21 03:33:31 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
