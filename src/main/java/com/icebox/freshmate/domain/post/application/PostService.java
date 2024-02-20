@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -95,9 +97,9 @@ public class PostService {
 	}
 
 	@Transactional(readOnly = true)
-	public PostsRes findAllByMemberId(Long memberId) {
+	public PostsRes findAll(Pageable pageable, Long memberId) {
 		Member member = getMemberById(memberId);
-		List<Post> posts = postRepository.findAllByMemberId(member.getId());
+		Slice<Post> posts = postRepository.findAllByMemberId(member.getId(), pageable);
 
 		return PostsRes.from(posts);
 	}
