@@ -17,6 +17,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.mock.web.MockMultipartFile;
 
 import com.icebox.freshmate.domain.grocery.domain.Grocery;
@@ -221,36 +223,42 @@ class PostServiceTest {
 		assertThat(postRes.recipeMaterials().get(0).groceryName()).isEqualTo(grocery1.getName());
 	}
 
-//	@DisplayName("작성자별 모든 게시글 조회 테스트")
-//	@Test
-//	void findAllByMemberId() {
-//		//given
-//		Long memberId = 1L;
-//
-//		Post post2 = Post.builder()
-//			.title("제목2")
-//			.content("내용2")
-//			.member(member)
-//			.recipe(recipe)
-//			.build();
-//
-//		when(memberRepository.findById(anyLong())).thenReturn(Optional.of(member));
-//		when(postRepository.findAllByMemberId(any())).thenReturn(List.of(post, post2));
-//
-//		//when
-//		PostsRes postsRes = postService.findAll(memberId);
-//
-//		//then
-//		assertThat(postsRes.posts()).hasSize(2);
-//		assertThat(postsRes.posts().get(0).postTitle()).isEqualTo(post.getTitle());
-//		assertThat(postsRes.posts().get(0).postContent()).isEqualTo(post.getContent());
-//		assertThat(postsRes.posts().get(0).recipeWriterNickName()).isEqualTo(post.getRecipe().getWriter().getNickName());
-//		assertThat(postsRes.posts().get(0).recipeTitle()).isEqualTo(post.getRecipe().getTitle());
-//		assertThat(postsRes.posts().get(0).recipeContent()).isEqualTo(post.getRecipe().getContent());
-//		assertThat(postsRes.posts().get(0).recipeMaterials()).hasSize(2);
-//		assertThat(postsRes.posts().get(0).recipeMaterials().get(0).recipeTitle()).isEqualTo(recipe.getTitle());
-//		assertThat(postsRes.posts().get(0).recipeMaterials().get(0).groceryName()).isEqualTo(grocery1.getName());
-//	}
+	@DisplayName("게시글 목록 조회 테스트")
+	@Test
+	void findAllByMemberId() {
+		//given
+		Long memberId = 1L;
+
+		Post post2 = Post.builder()
+			.title("제목2")
+			.content("내용2")
+			.member(member)
+			.recipe(recipe)
+			.build();
+
+		int page = 0;
+		int size = 10;
+		PageRequest pageRequest = PageRequest.of(page, size);
+
+		SliceImpl<Post> posts = new SliceImpl<>(List.of(post, post2));
+
+		when(memberRepository.findById(anyLong())).thenReturn(Optional.of(member));
+		when(postRepository.findAllByCondition(any(), any(), any(), any())).thenReturn(posts);
+
+		//when
+		PostsRes postsRes = postService.findAll("idDesc", pageRequest, memberId, null);
+
+		//then
+		assertThat(postsRes.posts()).hasSize(2);
+		assertThat(postsRes.posts().get(0).postTitle()).isEqualTo(post.getTitle());
+		assertThat(postsRes.posts().get(0).postContent()).isEqualTo(post.getContent());
+		assertThat(postsRes.posts().get(0).recipeWriterNickName()).isEqualTo(post.getRecipe().getWriter().getNickName());
+		assertThat(postsRes.posts().get(0).recipeTitle()).isEqualTo(post.getRecipe().getTitle());
+		assertThat(postsRes.posts().get(0).recipeContent()).isEqualTo(post.getRecipe().getContent());
+		assertThat(postsRes.posts().get(0).recipeMaterials()).hasSize(2);
+		assertThat(postsRes.posts().get(0).recipeMaterials().get(0).recipeTitle()).isEqualTo(recipe.getTitle());
+		assertThat(postsRes.posts().get(0).recipeMaterials().get(0).groceryName()).isEqualTo(grocery1.getName());
+	}
 
 	@DisplayName("게시글 수정 테스트")
 	@Test
