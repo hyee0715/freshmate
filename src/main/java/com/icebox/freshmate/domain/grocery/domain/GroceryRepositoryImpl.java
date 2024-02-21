@@ -29,9 +29,9 @@ public class GroceryRepositoryImpl implements GroceryRepositoryCustom {
 	private final QMember member = QMember.member;
 
 	@Override
-	public Slice<Grocery> findAllByWhereConditionsAndOrderBySortConditions(Long storageId, Long memberId, GroceryType groceryType, GroceryExpirationType groceryExpirationType, Pageable pageable, String sortBy, String lastPageName, LocalDate lastPageExpirationDate, LocalDateTime lastPageUpdatedAt) {
+	public Slice<Grocery> findAllByWhereConditionsAndOrderBySortConditions(Long storageId, Long memberId, String keyword, GroceryType groceryType, GroceryExpirationType groceryExpirationType, Pageable pageable, String sortBy, String lastPageName, LocalDate lastPageExpirationDate, LocalDateTime lastPageUpdatedAt) {
 		OrderSpecifier<?>[] orderSpecifier = getOrderSpecifier(sortBy);
-		BooleanExpression[] booleanExpressions = getBooleanExpressionsByConditions(storageId, memberId, groceryType, groceryExpirationType, lastPageName, lastPageExpirationDate, lastPageUpdatedAt, sortBy);
+		BooleanExpression[] booleanExpressions = getBooleanExpressionsByConditions(storageId, memberId, keyword, groceryType, groceryExpirationType, lastPageName, lastPageExpirationDate, lastPageUpdatedAt, sortBy);
 
 		List<Grocery> groceries = queryFactory.select(grocery)
 			.from(grocery)
@@ -57,29 +57,29 @@ public class GroceryRepositoryImpl implements GroceryRepositoryCustom {
 		return new SliceImpl<>(groceries, pageable, hasNext);
 	}
 
-	private BooleanExpression[] getBooleanExpressionsByConditions(Long storageId, Long memberId, GroceryType groceryType, GroceryExpirationType groceryExpirationType, String lastPageName, LocalDate lastPageExpirationDate, LocalDateTime lastPageUpdatedAt, String sortBy) {
+	private BooleanExpression[] getBooleanExpressionsByConditions(Long storageId, Long memberId, String keyword, GroceryType groceryType, GroceryExpirationType groceryExpirationType, String lastPageName, LocalDate lastPageExpirationDate, LocalDateTime lastPageUpdatedAt, String sortBy) {
 		SortTypeUtils sortType = SortTypeUtils.findSortType(sortBy);
 
 		return switch (sortType) {
-			case NAME_ASC -> createBooleanExpressions(storageId, memberId, groceryType, groceryExpirationType, gtGroceryNameAndLtUpdatedAt(lastPageName, lastPageUpdatedAt));
-			case NAME_DESC -> createBooleanExpressions(storageId, memberId, groceryType, groceryExpirationType, ltGroceryNameAndLtUpdatedAt(lastPageName, lastPageUpdatedAt));
-			case UPDATED_AT_ASC -> createBooleanExpressions(storageId, memberId, groceryType, groceryExpirationType, gtGroceryUpdatedAt(lastPageUpdatedAt));
-			case UPDATED_AT_DESC -> createBooleanExpressions(storageId, memberId, groceryType, groceryExpirationType, ltGroceryUpdatedAt(lastPageUpdatedAt));
-			case EXPIRATION_DATE_ASC -> createBooleanExpressions(storageId, memberId, groceryType, groceryExpirationType, gtGroceryExpirationDateAndLtUpdatedAt(lastPageExpirationDate, lastPageUpdatedAt));
-			default -> createBooleanExpressions(storageId, memberId, groceryType, groceryExpirationType, ltGroceryExpirationDateAndLtUpdatedAt(lastPageExpirationDate, lastPageUpdatedAt));
+			case NAME_ASC -> createBooleanExpressions(storageId, memberId, keyword, groceryType, groceryExpirationType, gtGroceryNameAndLtUpdatedAt(lastPageName, lastPageUpdatedAt));
+			case NAME_DESC -> createBooleanExpressions(storageId, memberId, keyword, groceryType, groceryExpirationType, ltGroceryNameAndLtUpdatedAt(lastPageName, lastPageUpdatedAt));
+			case UPDATED_AT_ASC -> createBooleanExpressions(storageId, memberId, keyword, groceryType, groceryExpirationType, gtGroceryUpdatedAt(lastPageUpdatedAt));
+			case UPDATED_AT_DESC -> createBooleanExpressions(storageId, memberId, keyword, groceryType, groceryExpirationType, ltGroceryUpdatedAt(lastPageUpdatedAt));
+			case EXPIRATION_DATE_ASC -> createBooleanExpressions(storageId, memberId, keyword, groceryType, groceryExpirationType, gtGroceryExpirationDateAndLtUpdatedAt(lastPageExpirationDate, lastPageUpdatedAt));
+			default -> createBooleanExpressions(storageId, memberId, keyword, groceryType, groceryExpirationType, ltGroceryExpirationDateAndLtUpdatedAt(lastPageExpirationDate, lastPageUpdatedAt));
 		};
 	}
 
-	private BooleanExpression[] createBooleanExpressions(Long storageId, Long memberId, GroceryType groceryType, GroceryExpirationType groceryExpirationType, BooleanExpression booleanExpression) {
+	private BooleanExpression[] createBooleanExpressions(Long storageId, Long memberId, String keyword, GroceryType groceryType, GroceryExpirationType groceryExpirationType, BooleanExpression cursorBooleanExpression) {
 
 		return Optional.ofNullable(groceryType)
 			.map(type -> Optional.ofNullable(groceryExpirationType)
-				.map(expirationType -> new BooleanExpression[]{storage.id.eq(storageId), member.id.eq(memberId), grocery.groceryType.eq(type), grocery.groceryExpirationType.eq(expirationType), booleanExpression })
-				.orElse(new BooleanExpression[]{storage.id.eq(storageId), member.id.eq(memberId), grocery.groceryType.eq(type), booleanExpression})
+				.map(expirationType -> new BooleanExpression[]{storage.id.eq(storageId), member.id.eq(memberId), grocery.groceryType.eq(type), grocery.groceryExpirationType.eq(expirationType), grocery.name.contains(keyword), cursorBooleanExpression })
+				.orElse(new BooleanExpression[]{storage.id.eq(storageId), member.id.eq(memberId), grocery.groceryType.eq(type), grocery.name.contains(keyword), cursorBooleanExpression})
 			)
 			.orElseGet(() -> Optional.ofNullable(groceryExpirationType)
-				.map(expirationType -> new BooleanExpression[]{storage.id.eq(storageId), member.id.eq(memberId), grocery.groceryExpirationType.eq(expirationType), booleanExpression})
-				.orElse(new BooleanExpression[]{storage.id.eq(storageId), member.id.eq(memberId), booleanExpression})
+				.map(expirationType -> new BooleanExpression[]{storage.id.eq(storageId), member.id.eq(memberId), grocery.groceryExpirationType.eq(expirationType), grocery.name.contains(keyword), cursorBooleanExpression})
+				.orElse(new BooleanExpression[]{storage.id.eq(storageId), member.id.eq(memberId), grocery.name.contains(keyword), cursorBooleanExpression})
 			);
 	}
 
