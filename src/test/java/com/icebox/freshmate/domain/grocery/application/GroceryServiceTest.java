@@ -186,10 +186,10 @@ class GroceryServiceTest {
 
 		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member));
 		when(storageRepository.findByIdAndMemberId(any(), any())).thenReturn(Optional.of(storage));
-		when(groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(any(), any(), any(), any(), eq(PageRequest.of(page, size)), any(), any(), any(), any())).thenReturn(groceries);
+		when(groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(any(), any(), any(), any(), any(), eq(PageRequest.of(page, size)), any(), any(), any(), any())).thenReturn(groceries);
 
 		//when
-		GroceriesRes groceriesRes = groceryService.findAllByStorageId(storageId, "nameAsc", null, "notExpired", pageRequest, null, null, null, member.getUsername());
+		GroceriesRes groceriesRes = groceryService.findAllByStorageId(storageId, "", "nameAsc", null, "notExpired", pageRequest, null, null, null, member.getUsername());
 
 		//then
 		assertThat(groceriesRes.groceries()).hasSize(2);

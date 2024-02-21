@@ -5,7 +5,6 @@ import static com.icebox.freshmate.global.error.ErrorCode.EXCESSIVE_DELETE_IMAGE
 import static com.icebox.freshmate.global.error.ErrorCode.INVALID_GROCERY_SORT_TYPE;
 import static com.icebox.freshmate.global.error.ErrorCode.INVALID_LAST_PAGE_EXPIRATION_DATE_FORMAT;
 import static com.icebox.freshmate.global.error.ErrorCode.INVALID_LAST_PAGE_UPDATED_AT_FORMAT;
-import static com.icebox.freshmate.global.error.ErrorCode.INVALID_STORAGE_SORT_TYPE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_GROCERY;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_IMAGE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
@@ -102,7 +101,7 @@ public class GroceryService {
 	}
 
 	@Transactional(readOnly = true)
-	public GroceriesRes findAllByStorageId(Long storageId, String sortBy, String groceryType, String groceryExpirationType, Pageable pageable, String lastPageName, String lastPageExpirationDate, String lastPageUpdatedAt, String username) {
+	public GroceriesRes findAllByStorageId(Long storageId, String keyword, String sortBy, String groceryType, String groceryExpirationType, Pageable pageable, String lastPageName, String lastPageExpirationDate, String lastPageUpdatedAt, String username) {
 		Member member = getMemberByUsername(username);
 		Storage storage = getStorageByIdAndMemberId(storageId, member.getId());
 
@@ -112,7 +111,7 @@ public class GroceryService {
 		LocalDateTime lastUpdatedAt = getLastPageUpdatedAt(lastPageUpdatedAt);
 		LocalDate lastExpirationDate = getLastPageExpirationDate(lastPageExpirationDate);
 
-		Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storage.getId(), member.getId(), type, expirationType, pageable, sortBy, lastPageName, lastExpirationDate, lastUpdatedAt);
+		Slice<Grocery> groceries = groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(storage.getId(), member.getId(), keyword, type, expirationType, pageable, sortBy, lastPageName, lastExpirationDate, lastUpdatedAt);
 
 		return GroceriesRes.from(groceries);
 	}
@@ -203,16 +202,15 @@ public class GroceryService {
 	}
 
 	private ImagesRes saveImages(Grocery grocery, ImageUploadReq imageUploadReq) {
+		if (imageUploadReq.files().size() == 1 && imageUploadReq.files().get(0).isEmpty()) {
+			return null;
+		}
 
-		return Optional.ofNullable(imageUploadReq.files())
-			.map(files -> imageService.store(imageUploadReq))
-			.map(imagesRes -> {
-				List<GroceryImage> groceryImages = saveImages(grocery, imagesRes);
-				grocery.addGroceryImages(groceryImages);
+		ImagesRes imagesRes = imageService.store(imageUploadReq);
+		List<GroceryImage> groceryImages = saveImages(grocery, imagesRes);
+		grocery.addGroceryImages(groceryImages);
 
-				return imagesRes;
-			})
-			.orElse(null);
+		return imagesRes;
 	}
 
 	private List<GroceryImage> saveImages(Grocery grocery, ImagesRes imagesRes) {
@@ -301,12 +299,12 @@ public class GroceryService {
 	private LocalDate getLastPageExpirationDate(String lastPageExpirationDate) {
 
 		return Optional.ofNullable(lastPageExpirationDate)
-				.map(expirationDate -> {
-					validateLastPageExpirationDateFormat(lastPageExpirationDate);
+			.map(expirationDate -> {
+				validateLastPageExpirationDateFormat(lastPageExpirationDate);
 
-					return LocalDate.parse(lastPageExpirationDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-				})
-					.orElse(null);
+				return LocalDate.parse(lastPageExpirationDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+			})
+			.orElse(null);
 	}
 
 	private LocalDateTime getLastPageUpdatedAt(String lastPageUpdatedAt) {
