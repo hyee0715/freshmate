@@ -202,16 +202,15 @@ public class GroceryService {
 	}
 
 	private ImagesRes saveImages(Grocery grocery, ImageUploadReq imageUploadReq) {
+		if (imageUploadReq.files().size() == 1 && imageUploadReq.files().get(0).isEmpty()) {
+			return null;
+		}
 
-		return Optional.ofNullable(imageUploadReq.files())
-			.map(files -> imageService.store(imageUploadReq))
-			.map(imagesRes -> {
-				List<GroceryImage> groceryImages = saveImages(grocery, imagesRes);
-				grocery.addGroceryImages(groceryImages);
+		ImagesRes imagesRes = imageService.store(imageUploadReq);
+		List<GroceryImage> groceryImages = saveImages(grocery, imagesRes);
+		grocery.addGroceryImages(groceryImages);
 
-				return imagesRes;
-			})
-			.orElse(null);
+		return imagesRes;
 	}
 
 	private List<GroceryImage> saveImages(Grocery grocery, ImagesRes imagesRes) {
@@ -300,12 +299,12 @@ public class GroceryService {
 	private LocalDate getLastPageExpirationDate(String lastPageExpirationDate) {
 
 		return Optional.ofNullable(lastPageExpirationDate)
-				.map(expirationDate -> {
-					validateLastPageExpirationDateFormat(lastPageExpirationDate);
+			.map(expirationDate -> {
+				validateLastPageExpirationDateFormat(lastPageExpirationDate);
 
-					return LocalDate.parse(lastPageExpirationDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-				})
-					.orElse(null);
+				return LocalDate.parse(lastPageExpirationDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+			})
+			.orElse(null);
 	}
 
 	private LocalDateTime getLastPageUpdatedAt(String lastPageUpdatedAt) {
