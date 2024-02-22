@@ -3,6 +3,7 @@ package com.icebox.freshmate.domain.post.application;
 import static com.icebox.freshmate.global.error.ErrorCode.EMPTY_IMAGE;
 import static com.icebox.freshmate.global.error.ErrorCode.EXCESSIVE_DELETE_IMAGE_COUNT;
 import static com.icebox.freshmate.global.error.ErrorCode.INVALID_ATTEMPT_TO_POST_RECIPE;
+import static com.icebox.freshmate.global.error.ErrorCode.INVALID_POST_SEARCH_TYPE;
 import static com.icebox.freshmate.global.error.ErrorCode.INVALID_POST_SORT_TYPE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_IMAGE;
 import static com.icebox.freshmate.global.error.ErrorCode.NOT_FOUND_MEMBER;
@@ -98,11 +99,12 @@ public class PostService {
 	}
 
 	@Transactional(readOnly = true)
-	public PostsRes findAll(String sortBy, Pageable pageable, Long memberId, Long lastPageId) {
+	public PostsRes findAll(String searchType, String keyword, String sortBy, Pageable pageable, Long memberId, Long lastPageId) {
 		Member member = getMemberById(memberId);
 
+		validatePostSearchType(searchType);
 		validatePostSortType(sortBy);
-		Slice<Post> posts = postRepository.findAllByCondition(member, pageable, sortBy, lastPageId);
+		Slice<Post> posts = postRepository.findAllByCondition(member, searchType, keyword, pageable, sortBy, lastPageId);
 
 		return PostsRes.from(posts);
 	}
@@ -262,16 +264,15 @@ public class PostService {
 	}
 
 	private ImagesRes saveImages(Post post, ImageUploadReq imageUploadReq) {
+		if (imageUploadReq.files().size() == 1 && imageUploadReq.files().get(0).isEmpty()) {
+			return null;
+		}
 
-		return Optional.ofNullable(imageUploadReq.files())
-			.map(files -> imageService.store(imageUploadReq))
-			.map(imagesRes -> {
-				List<PostImage> postImages = saveImages(post, imagesRes);
-				post.addPostImages(postImages);
+		ImagesRes imagesRes = imageService.store(imageUploadReq);
+		List<PostImage> postImages = saveImages(post, imagesRes);
+		post.addPostImages(postImages);
 
-				return imagesRes;
-			})
-			.orElse(null);
+		return imagesRes;
 	}
 
 	private List<PostImage> saveImages(Post post, ImagesRes imagesRes) {
@@ -310,6 +311,14 @@ public class PostService {
 			log.warn("GET:READ:INVALID_POST_SORT_TYPE : {}", sortBy);
 
 			throw new BusinessException(INVALID_POST_SORT_TYPE);
+		}
+	}
+
+	private void validatePostSearchType(String searchType) {
+		if (!searchType.equalsIgnoreCase("all") && !searchType.equalsIgnoreCase("title") && !searchType.equalsIgnoreCase("content") && !searchType.equalsIgnoreCase("writer")) {
+			log.warn("GET:READ:INVALID_POST_SEARCH_TYPE : {}", searchType);
+
+			throw new BusinessException(INVALID_POST_SEARCH_TYPE);
 		}
 	}
 }

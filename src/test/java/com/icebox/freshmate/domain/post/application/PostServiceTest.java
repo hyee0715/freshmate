@@ -243,10 +243,10 @@ class PostServiceTest {
 		SliceImpl<Post> posts = new SliceImpl<>(List.of(post, post2));
 
 		when(memberRepository.findById(anyLong())).thenReturn(Optional.of(member));
-		when(postRepository.findAllByCondition(any(), any(), any(), any())).thenReturn(posts);
+		when(postRepository.findAllByCondition(any(), any(), any(), any(), any(), any())).thenReturn(posts);
 
 		//when
-		PostsRes postsRes = postService.findAll("idDesc", pageRequest, memberId, null);
+		PostsRes postsRes = postService.findAll("all", "", "idDesc", pageRequest, memberId, null);
 
 		//then
 		assertThat(postsRes.posts()).hasSize(2);

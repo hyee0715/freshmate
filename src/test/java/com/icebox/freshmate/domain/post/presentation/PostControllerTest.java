@@ -436,7 +436,7 @@ class PostControllerTest {
 
 		PostsRes postsRes = new PostsRes(List.of(postRes1, postRes2), false);
 
-		when(postService.findAll(any(), any(), any(), any())).thenReturn(postsRes);
+		when(postService.findAll(any(), any(), any(), any(), any(), any())).thenReturn(postsRes);
 
 		//when
 		//then
