@@ -58,6 +58,7 @@ public enum ErrorCode {
 	INVALID_ATTEMPT_TO_POST_RECIPE("RC004", "본인이 작성하지 않은 레시피는 게시글로 공유할 수 없습니다."),
 	INVALID_RECIPE_TYPE("RC005", "유효하지 않은 레시피 타입입니다."),
 	INVALID_RECIPE_SORT_TYPE("RC006", "유효하지 않거나 허용되지 않는 레시피 정렬 타입입니다."),
+	INVALID_RECIPE_SEARCH_TYPE("RC007", "유효하지 않거나 허용되지 않는 레시피 검색 타입입니다."),
 
 	//레시피의 식재료
 	INVALID_RECIPE_GROCERY_NAME("RG001", "레시피에 추가하려는 식재료 ID와 이름의 정보가 일치하지 않습니다."),

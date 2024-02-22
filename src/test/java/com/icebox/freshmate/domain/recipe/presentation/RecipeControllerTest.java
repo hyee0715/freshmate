@@ -3,7 +3,6 @@ package com.icebox.freshmate.domain.recipe.presentation;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -570,7 +569,7 @@ class RecipeControllerTest {
 
 		RecipesRes recipesRes = new RecipesRes(List.of(recipeRes1, recipeRes2), false);
 
-		when(recipeService.findAllByMemberIdAndRecipeType(any(), any(), any(), any(), any(), any())).thenReturn(recipesRes);
+		when(recipeService.findAllByMemberIdAndRecipeType(any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(recipesRes);
 
 		//when
 		//then

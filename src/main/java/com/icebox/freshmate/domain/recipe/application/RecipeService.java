@@ -113,15 +113,16 @@ public class RecipeService {
 	}
 
 	@Transactional(readOnly = true)
-	public RecipesRes findAllByMemberIdAndRecipeType(String sortBy, String recipeType, Pageable pageable, String lastPageTitle, String lastPageUpdatedAt, String username) {
+	public RecipesRes findAllByMemberIdAndRecipeType(String searchType, String keyword, String sortBy, String recipeType, Pageable pageable, String lastPageTitle, String lastPageUpdatedAt, String username) {
 		Member member = getMemberByUsername(username);
 
 		LocalDateTime lastUpdatedAt = getLastPageUpdatedAt(lastPageUpdatedAt);
 
+		validateRecipeSearchType(searchType);
 		validateRecipeSortType(sortBy);
 		RecipeType type = findRecipeType(recipeType);
 
-		Slice<Recipe> recipes = recipeRepository.findAllByMemberIdAndRecipeType(member.getId(), pageable, sortBy, type, lastPageTitle, lastUpdatedAt);
+		Slice<Recipe> recipes = recipeRepository.findAllByMemberIdAndRecipeType(member.getId(), searchType, keyword, pageable, sortBy, type, lastPageTitle, lastUpdatedAt);
 
 		return RecipesRes.from(recipes);
 	}
@@ -414,16 +415,15 @@ public class RecipeService {
 	}
 
 	private ImagesRes saveImages(Recipe recipe, ImageUploadReq imageUploadReq) {
+		if (imageUploadReq.files().size() == 1 && imageUploadReq.files().get(0).isEmpty()) {
+			return null;
+		}
 
-		return Optional.ofNullable(imageUploadReq.files())
-			.map(files -> imageService.store(imageUploadReq))
-			.map(imagesRes -> {
-				List<RecipeImage> recipeImages = saveImages(recipe, imagesRes);
-				recipe.addRecipeImages(recipeImages);
+		ImagesRes imagesRes = imageService.store(imageUploadReq);
+		List<RecipeImage> recipeImages = saveImages(recipe, imagesRes);
+		recipe.addRecipeImages(recipeImages);
 
-				return imagesRes;
-			})
-			.orElse(null);
+		return imagesRes;
 	}
 
 	private List<RecipeImage> saveImages(Recipe recipe, ImagesRes imagesRes) {
@@ -472,6 +472,14 @@ public class RecipeService {
 			log.warn("PATCH:WRITE:EMPTY_IMAGE");
 
 			throw new BusinessException(EMPTY_IMAGE);
+		}
+	}
+
+	private void validateRecipeSearchType(String searchType) {
+		if (!searchType.equalsIgnoreCase("all") && !searchType.equalsIgnoreCase("title") && !searchType.equalsIgnoreCase("content") && !searchType.equalsIgnoreCase("grocery")) {
+			log.warn("GET:READ:INVALID_RECIPE_SEARCH_TYPE : {}", searchType);
+
+			throw new BusinessException(INVALID_RECIPE_SEARCH_TYPE);
 		}
 	}
 
