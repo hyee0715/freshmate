@@ -254,10 +254,10 @@ class RecipeServiceTest {
 		SliceImpl<Recipe> recipes = new SliceImpl<>(List.of(recipe1, recipe2));
 
 		when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member1));
-		when(recipeRepository.findAllByMemberIdAndRecipeType(any(), any(), any(), any(), any(), any())).thenReturn(recipes);
+		when(recipeRepository.findAllByMemberIdAndRecipeType(any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(recipes);
 
 		//when
-		RecipesRes recipesRes = recipeService.findAllByMemberIdAndRecipeType("updatedAtAsc", "all", pageRequest, null, null, member1.getUsername());
+		RecipesRes recipesRes = recipeService.findAllByMemberIdAndRecipeType("all", "", "updatedAtAsc", "all", pageRequest, null, null, member1.getUsername());
 
 		//then
 		assertThat(recipesRes.recipes()).hasSize(2);
