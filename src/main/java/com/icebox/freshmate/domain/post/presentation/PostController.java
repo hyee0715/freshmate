@@ -65,7 +65,9 @@ public class PostController {
 	}
 
 	@GetMapping
-	public ResponseEntity<PostsRes> findAll(@RequestParam(value = "sort-by", required = false, defaultValue = "idDesc") String sortBy,
+	public ResponseEntity<PostsRes> findAll(@RequestParam(value = "search-type", required = false, defaultValue = "all") String searchType,
+											@RequestParam(required = false, defaultValue = "") String keyword,
+											@RequestParam(value = "sort-by", required = false, defaultValue = "idDesc") String sortBy,
 											@RequestParam(value = "last-page-id", required = false) Long lastPageId,
 											@RequestParam(required = false, defaultValue = "0") int page,
 											@RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) int size,
@@ -73,7 +75,7 @@ public class PostController {
 		page = Math.max(page - 1, 0);
 		PageRequest pageable = PageRequest.of(page, size);
 
-		PostsRes postsRes = postService.findAll(sortBy, pageable, memberId, lastPageId);
+		PostsRes postsRes = postService.findAll(searchType, keyword, sortBy, pageable, memberId, lastPageId);
 
 		return ResponseEntity.ok(postsRes);
 	}

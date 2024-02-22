@@ -26,8 +26,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
 	private final QMember member = QMember.member;
 
 	@Override
-	public Slice<Post> findAllByCondition(Member writer, Pageable pageable, String sortBy, Long lastPageId) {
-		BooleanExpression[] booleanExpressions = getBooleanExpressionByMember(writer, sortBy, lastPageId);
+	public Slice<Post> findAllByCondition(Member writer, String searchType, String keyword, Pageable pageable, String sortBy, Long lastPageId) {
+		BooleanExpression[] booleanExpressions = getBooleanExpressionByMember(writer, searchType, keyword, sortBy, lastPageId);
 		OrderSpecifier<?>[] orderSpecifier = getOrderSpecifier(sortBy);
 
 		List<Post> posts = queryFactory.select(post)
@@ -41,21 +41,21 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
 		return checkLastPage(pageable, posts);
 	}
 
-	private BooleanExpression[] getBooleanExpressionByMember(Member member, String sortBy, Long lastPageId) {
+	private BooleanExpression[] getBooleanExpressionByMember(Member member, String searchType, String keyword, String sortBy, Long lastPageId) {
 		SortTypeUtils sortType = SortTypeUtils.findSortType(sortBy);
 
 		if (sortType.equals(ID_ASC)) {
-			return createBooleanExpressions(member, gtPostId(lastPageId));
+			return createBooleanExpressions(member, getSearchBooleanExpression(searchType, keyword), gtPostId(lastPageId));
 		}
 
-		return createBooleanExpressions(member, ltPostId(lastPageId));
+		return createBooleanExpressions(member, getSearchBooleanExpression(searchType, keyword), ltPostId(lastPageId));
 	}
 
-	private BooleanExpression[] createBooleanExpressions(Member writer, BooleanExpression booleanExpression) {
+	private BooleanExpression[] createBooleanExpressions(Member writer, BooleanExpression searchBooleanExpression, BooleanExpression cursorBooleanExpression) {
 
 		return Optional.ofNullable(writer)
-			.map(member -> new BooleanExpression[]{post.member.id.eq(member.getId()), booleanExpression})
-			.orElse(new BooleanExpression[]{booleanExpression});
+			.map(member -> new BooleanExpression[]{post.member.id.eq(member.getId()), searchBooleanExpression, cursorBooleanExpression})
+			.orElse(new BooleanExpression[]{searchBooleanExpression, cursorBooleanExpression});
 	}
 
 	private OrderSpecifier<?>[] getOrderSpecifier(String sortBy) {
@@ -82,6 +82,19 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
 		}
 
 		return new SliceImpl<>(posts, pageable, hasNext);
+	}
+
+	private BooleanExpression getSearchBooleanExpression(String searchType, String keyword) {
+
+		return switch (searchType) {
+			case "title" -> post.title.contains(keyword);
+			case "content" -> post.content.contains(keyword);
+			case "writer" -> post.member.nickName.contains(keyword);
+			default -> post.title.contains(keyword)
+				.or(post.content.contains(keyword)
+					.or(post.member.nickName.contains(keyword))
+				);
+		};
 	}
 
 	private BooleanExpression gtPostId(Long postId) {
