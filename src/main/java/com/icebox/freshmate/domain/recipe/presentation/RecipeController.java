@@ -74,8 +74,10 @@ public class RecipeController {
 	}
 
 	@GetMapping
-	public ResponseEntity<RecipesRes> findAllByMemberIdAndRecipeType(@RequestParam(value = "sort-by", required = false, defaultValue = "updatedAtDesc") String sortBy,
-																	 @RequestParam(value = "type", required = false, defaultValue = "all") String recipeType,
+	public ResponseEntity<RecipesRes> findAllByMemberIdAndRecipeType(@RequestParam(value = "search-type", required = false, defaultValue = "all") String searchType,
+																	 @RequestParam(required = false, defaultValue = "") String keyword,
+																	 @RequestParam(value = "sort-by", required = false, defaultValue = "updatedAtDesc") String sortBy,
+																	 @RequestParam(value = "recipe-type", required = false, defaultValue = "all") String recipeType,
 																	 @RequestParam(value = "last-page-title", required = false) String lastPageTitle,
 																	 @RequestParam(value = "last-page-updated-at", required = false) String lastPageUpdatedAt,
 																	 @RequestParam(required = false, defaultValue = "0") int page,
@@ -84,7 +86,7 @@ public class RecipeController {
 		page = Math.max(page - 1, 0);
 		PageRequest pageable = PageRequest.of(page, size);
 
-		RecipesRes recipesRes = recipeService.findAllByMemberIdAndRecipeType(sortBy, recipeType, pageable, lastPageTitle, lastPageUpdatedAt, principalDetails.getUsername());
+		RecipesRes recipesRes = recipeService.findAllByMemberIdAndRecipeType(searchType, keyword, sortBy, recipeType, pageable, lastPageTitle, lastPageUpdatedAt, principalDetails.getUsername());
 
 		return ResponseEntity.ok(recipesRes);
 	}

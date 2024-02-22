@@ -7,5 +7,5 @@ import org.springframework.data.domain.Slice;
 
 public interface RecipeRepositoryCustom {
 
-	Slice<Recipe> findAllByMemberIdAndRecipeType(Long writerId, Pageable pageable, String sortBy, RecipeType recipeType, String lastPageTitle, LocalDateTime lastPageUpdatedAt);
+	Slice<Recipe> findAllByMemberIdAndRecipeType(Long writerId, String searchType, String keyword, Pageable pageable, String sortBy, RecipeType recipeType, String lastPageTitle, LocalDateTime lastPageUpdatedAt);
 }
