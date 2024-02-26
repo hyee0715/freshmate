@@ -479,9 +479,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/auth/sign-up HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Content-Length: 127
-X-CSRF-TOKEN: WMKsIwq8JdwJOPYjdnRH-ymuCOxYEpd9bebX3zhXTY5lsjgwbKTPEj-MFOkkDJQQE1lzyBGWJdRsKqBQC9Tn7Flve-pdgFkA
+X-CSRF-TOKEN: -G0Z1f0hny6qgdLl1Q26WLp6jKhsbjXuDhn8npN_Y52ofwm0yAsh4cgZrEuHs7eD4yCObtxIockNCAHDainO-PUcU_vMSjyF
 Host: localhost:8080
 
 {
@@ -535,8 +535,8 @@ Host: localhost:8080
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "username" : "aaaa1111",
   "password" : "aaaa1111!",
-  "realName" : "�꽦�씠由�",
-  "nickName" : "�땳�꽕�엫�땳�꽕�엫"
+  "realName" : "성이름",
+  "nickName" : "닉네임닉네임"
 }</code></pre>
 </div>
 </div>
@@ -547,7 +547,7 @@ Host: localhost:8080
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -613,8 +613,8 @@ Content-Length: 137
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "memberId" : 1,
   "username" : "aaaa1111",
-  "realName" : "�꽦�씠由�",
-  "nickName" : "�땳�꽕�엫�땳�꽕�엫",
+  "realName" : "성이름",
+  "nickName" : "닉네임닉네임",
   "role" : "USER"
 }</code></pre>
 </div>
@@ -632,9 +632,9 @@ Content-Length: 137
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/auth/login HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Content-Length: 60
-X-CSRF-TOKEN: e6aNrva2zlkYsb5nH27RnVNdkJ8iz6OjcYPqlEBGU8fDn0YCTsLsyM_Tq2E1iIsEJkPl_mZtvacUq5eOEuLTpCJ_ZaXx_HYx
+X-CSRF-TOKEN: GRt12JiUmiIeJjMoK1pjModcYCp8KqnnZAEXkcAGsQ8XxLUzK3lHvq-irBQzEgAaE3dXBbdrTRJMT5nKBjRxpaRn0m5284AB
 Host: localhost:8080
 
 {
@@ -686,7 +686,7 @@ Host: localhost:8080
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -750,10 +750,10 @@ Content-Length: 164
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/auth/withdraw HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
 Content-Length: 36
-X-CSRF-TOKEN: -vYlBpJKK7439-pgzTdPMWIwZCHKF5jWMI9cn6Xxd0xdeEQHycMdPvFyTY4awNgGrxp7CFAESUOuLvv7Bb1l_pTHRHtoS3Q2
+X-CSRF-TOKEN: b8giWDXrs_bKbrmQvH69OEpnKD3AWx-l_3SWRbcR8iRtUmpgWqpDbAzdgs_nV9yp2FOJWntWBQT5aSaIyxGjJoVwwhNaZAsD
 Host: localhost:8080
 
 {
@@ -838,9 +838,9 @@ X-Frame-Options: DENY</code></pre>
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/auth/reissue HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization-refresh: Bearer dfsdklasddkaerklerlk3#$%^$fdsklsdfksdffasddkdsksjkfakjfgkjds
-X-CSRF-TOKEN: 9cJ1xhRbtA-4snxabZjYp-clx6vnr017mbkQ4vVwnwmKGu0JzfJG9Cc4jDmV0RlsDLXsxYEc6snSmn5WoIwj18dHrTGzeI4x
+X-CSRF-TOKEN: 5WjpCm-6DBoTQcxh-CwILahYSeUWGgoYryqYxhMXUYsQHRHbhF_cM1yOPSw-JPQAmgE8TppuZIQvKz81mUuo8ismYLklfifq
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -870,7 +870,7 @@ Host: localhost:8080</code></pre>
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -934,9 +934,9 @@ Content-Length: 164
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PATCH /api/auth/logout HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
-X-CSRF-TOKEN: sDAhaERUI0IDq9k5ezt9CKXA0MYn2tt4CA09YWX7A243oJM9hAIVUSZlQHEuyLoITRZJbpz2_adB6r1VP2leBVbNMQ8BxvdY
+X-CSRF-TOKEN: jYddKYU0DjejutE9qHyqT7Ektag63oTdO-K0rcl74cyjdK4q7uE_GeMMNgOOiLQLmVGeKYlFmJEN6LXwD4aBmK8fh_yVRZpM
 Host: localhost:8080</code></pre>
 </div>
 </div>

@@ -483,7 +483,7 @@ Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWA
 Accept: application/json
 Authorization: Bearer {ACCESS_TOKEN}
 Content-Length: 183
-X-CSRF-TOKEN: -kdQJK-sSgU4o633Qex3XjnhNApxdPgMfztFRxdwCW25nqFUzXQ0HJmZeDIVlJ6UI8FDb1zXGWsQEcohHA5yciNAbA6Mqcdn
+X-CSRF-TOKEN: qMdyjmWQ6ggiFERkby5x6h_ZL1A5MgeWihgSgZ0FutEfMO2pnvdE6AD0iz4PIHIAWQNF3y-4AjEAV2O76Hp0tKQ1ieB9AY7M
 Host: localhost:8080
 
 {
@@ -491,7 +491,7 @@ Host: localhost:8080
   "groceryType" : "VEGETABLES",
   "quantity" : "1개",
   "description" : "필수 식재료",
-  "expirationDate" : "2024-03-04",
+  "expirationDate" : "2024-03-05",
   "storageId" : null
 }</code></pre>
 </div>
@@ -592,7 +592,7 @@ Host: localhost:8080
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -607,12 +607,12 @@ Content-Length: 587
   "groceryType" : "VEGETABLES",
   "quantity" : "1개",
   "description" : "필수 식재료",
-  "expirationDate" : "2024-03-04",
+  "expirationDate" : "2024-03-05",
   "storageId" : 1,
   "storageName" : "냉장실",
   "groceryExpirationType" : "NOT_EXPIRED",
-  "createdAt" : "2024-02-26T23:29:31.3510857",
-  "updatedAt" : "2024-02-26T23:29:31.3510857",
+  "createdAt" : "2024-02-27T01:42:35.9720196",
+  "updatedAt" : "2024-02-27T01:42:35.9720196",
   "images" : [ {
     "fileName" : "image1.jpg",
     "path" : "https://test-image-urls.com/image1.jpg"
@@ -718,8 +718,8 @@ Content-Length: 587
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/groceries/1 HTTP/1.1
-Content-Type: application/json
-X-CSRF-TOKEN: Kg0uM9nL6oZBLEzFqz00n-udTDxqLHjqVyTYf0A80oaiPGGeH2lNV-Cvj7JsTnzzzhAA-YqsYQVdGBnHbhS7HCQN57OTC1aq
+Content-Type: application/json;charset=UTF-8
+X-CSRF-TOKEN: omxa59pG218VAE-nMZiV-xWQFYyAbzi7DxfF38w9oVzjuddymg9qhOMi62k4ZiqSArWhzCD1OLS3WgiWbXL85_oOmWvXjeFH
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -749,7 +749,7 @@ Host: localhost:8080</code></pre>
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -764,12 +764,12 @@ Content-Length: 587
   "groceryType" : "VEGETABLES",
   "quantity" : "1개",
   "description" : "필수 식재료",
-  "expirationDate" : "2024-03-04",
+  "expirationDate" : "2024-03-05",
   "storageId" : 1,
   "storageName" : "냉장실",
   "groceryExpirationType" : "NOT_EXPIRED",
-  "createdAt" : "2024-02-26T23:29:31.6441177",
-  "updatedAt" : "2024-02-26T23:29:31.6441177",
+  "createdAt" : "2024-02-27T01:42:36.3090184",
+  "updatedAt" : "2024-02-27T01:42:36.3090184",
   "images" : [ {
     "fileName" : "image1.jpg",
     "path" : "https://test-image-urls.com/image1.jpg"
@@ -867,16 +867,16 @@ Content-Length: 587
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "groceryId" : 1,
-  "groceryName" : "�뼇諛곗텛",
+  "groceryName" : "양배추",
   "groceryType" : "VEGETABLES",
-  "quantity" : "1媛�",
-  "description" : "�븘�닔 �떇�옱猷�",
-  "expirationDate" : "2024-03-04",
+  "quantity" : "1개",
+  "description" : "필수 식재료",
+  "expirationDate" : "2024-03-05",
   "storageId" : 1,
-  "storageName" : "�깋�옣�떎",
+  "storageName" : "냉장실",
   "groceryExpirationType" : "NOT_EXPIRED",
-  "createdAt" : "2024-02-26T23:29:31.6441177",
-  "updatedAt" : "2024-02-26T23:29:31.6441177",
+  "createdAt" : "2024-02-27T01:42:36.3090184",
+  "updatedAt" : "2024-02-27T01:42:36.3090184",
   "images" : [ {
     "fileName" : "image1.jpg",
     "path" : "https://test-image-urls.com/image1.jpg"
@@ -900,9 +900,9 @@ Content-Length: 587
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/groceries/storages/1 HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
-X-CSRF-TOKEN: lUv1l29m-5PpPDEp5JxI-1ZxyssoUSdJvdcx_7H1qyj8J96_83yWoFxRn_HEDglI1LF8zW4Q5_IZaBZk2eBXzNXMyh-YEumK
+X-CSRF-TOKEN: _BO_8I_FVhKw-U-j2O42h1NFocLl5Px9zPj405bSCM8AwUmXzSaOlL_0MiWdwHyS6sMC5WF3jKDdhshQrpyct6DnOP45pXml
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -951,7 +951,7 @@ Host: localhost:8080</code></pre>
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -967,12 +967,12 @@ Content-Length: 1285
     "groceryType" : "VEGETABLES",
     "quantity" : "1개",
     "description" : "필수 식재료",
-    "expirationDate" : "2024-03-04",
+    "expirationDate" : "2024-03-05",
     "storageId" : 1,
     "storageName" : "냉장실",
     "groceryExpirationType" : "NOT_EXPIRED",
-    "createdAt" : "2024-02-26T23:29:31.7181205",
-    "updatedAt" : "2024-02-26T23:29:31.7181205",
+    "createdAt" : "2024-02-27T01:42:36.3870239",
+    "updatedAt" : "2024-02-27T01:42:36.3870239",
     "images" : [ {
       "fileName" : "image1.jpg",
       "path" : "https://test-image-urls.com/image1.jpg"
@@ -986,12 +986,12 @@ Content-Length: 1285
     "groceryType" : "MEAT",
     "quantity" : "2개",
     "description" : "김밥 재료",
-    "expirationDate" : "2024-03-04",
+    "expirationDate" : "2024-03-05",
     "storageId" : 1,
     "storageName" : "냉장실",
     "groceryExpirationType" : "NOT_EXPIRED",
-    "createdAt" : "2024-02-26T23:29:31.7181205",
-    "updatedAt" : "2024-02-26T23:29:31.7181205",
+    "createdAt" : "2024-02-27T01:42:36.3870239",
+    "updatedAt" : "2024-02-27T01:42:36.3870239",
     "images" : [ {
       "fileName" : "image1.jpg",
       "path" : "https://test-image-urls.com/image1.jpg"
@@ -1102,16 +1102,16 @@ Content-Length: 1285
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "groceries" : [ {
     "groceryId" : 1,
-    "groceryName" : "�뼇諛곗텛",
+    "groceryName" : "양배추",
     "groceryType" : "VEGETABLES",
-    "quantity" : "1媛�",
-    "description" : "�븘�닔 �떇�옱猷�",
-    "expirationDate" : "2024-03-04",
+    "quantity" : "1개",
+    "description" : "필수 식재료",
+    "expirationDate" : "2024-03-05",
     "storageId" : 1,
-    "storageName" : "�깋�옣�떎",
+    "storageName" : "냉장실",
     "groceryExpirationType" : "NOT_EXPIRED",
-    "createdAt" : "2024-02-26T23:29:31.7181205",
-    "updatedAt" : "2024-02-26T23:29:31.7181205",
+    "createdAt" : "2024-02-27T01:42:36.3870239",
+    "updatedAt" : "2024-02-27T01:42:36.3870239",
     "images" : [ {
       "fileName" : "image1.jpg",
       "path" : "https://test-image-urls.com/image1.jpg"
@@ -1121,16 +1121,16 @@ Content-Length: 1285
     } ]
   }, {
     "groceryId" : 2,
-    "groceryName" : "�뻹",
+    "groceryName" : "햄",
     "groceryType" : "MEAT",
-    "quantity" : "2媛�",
-    "description" : "源�諛� �옱猷�",
-    "expirationDate" : "2024-03-04",
+    "quantity" : "2개",
+    "description" : "김밥 재료",
+    "expirationDate" : "2024-03-05",
     "storageId" : 1,
-    "storageName" : "�깋�옣�떎",
+    "storageName" : "냉장실",
     "groceryExpirationType" : "NOT_EXPIRED",
-    "createdAt" : "2024-02-26T23:29:31.7181205",
-    "updatedAt" : "2024-02-26T23:29:31.7181205",
+    "createdAt" : "2024-02-27T01:42:36.3870239",
+    "updatedAt" : "2024-02-27T01:42:36.3870239",
     "images" : [ {
       "fileName" : "image1.jpg",
       "path" : "https://test-image-urls.com/image1.jpg"
@@ -1156,10 +1156,10 @@ Content-Length: 1285
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PATCH /api/groceries/1 HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
 Content-Length: 174
-X-CSRF-TOKEN: 0vqwXxA4pv-cJd9n2R_jnQAPd4XHdhCMIKcAXOnxc08cGXghsJmDbyRdx8-xQLkB4TLXrzc-Wr2jEiShGZ8xOt3EFXcpL08U
+X-CSRF-TOKEN: vdtPhJQwJnvaYPSGE6_cDNWuU47VEulBvBrjc6EDFK11mwqbiu8u5fVSEk33WcPgd4LoaLGffrfidNBs3n_RRZVgJJUX_2-j
 Host: localhost:8080
 
 {
@@ -1167,7 +1167,7 @@ Host: localhost:8080
   "groceryType" : "SNACKS",
   "quantity" : "10개",
   "description" : "수정",
-  "expirationDate" : "2024-02-28",
+  "expirationDate" : "2024-02-29",
   "storageId" : 1
 }</code></pre>
 </div>
@@ -1261,11 +1261,11 @@ Host: localhost:8080
 <div class="title">Request Body</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
-  "name" : "�떇猷뚰뭹 �닔�젙",
+  "name" : "식료품 수정",
   "groceryType" : "SNACKS",
-  "quantity" : "10媛�",
-  "description" : "�닔�젙",
-  "expirationDate" : "2024-02-28",
+  "quantity" : "10개",
+  "description" : "수정",
+  "expirationDate" : "2024-02-29",
   "storageId" : 1
 }</code></pre>
 </div>
@@ -1277,7 +1277,7 @@ Host: localhost:8080
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -1292,12 +1292,12 @@ Content-Length: 581
   "groceryType" : "SNACKS",
   "quantity" : "10개",
   "description" : "수정",
-  "expirationDate" : "2024-02-28",
+  "expirationDate" : "2024-02-29",
   "storageId" : 1,
   "storageName" : "냉장실",
   "groceryExpirationType" : "NOT_EXPIRED",
-  "createdAt" : "2024-02-26T23:29:31.5485932",
-  "updatedAt" : "2024-02-26T23:29:31.5485932",
+  "createdAt" : "2024-02-27T01:42:36.2100231",
+  "updatedAt" : "2024-02-27T01:42:36.2100231",
   "images" : [ {
     "fileName" : "image1.jpg",
     "path" : "https://test-image-urls.com/image1.jpg"
@@ -1395,16 +1395,16 @@ Content-Length: 581
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "groceryId" : 1,
-  "groceryName" : "�떇猷뚰뭹 �닔�젙",
+  "groceryName" : "식료품 수정",
   "groceryType" : "SNACKS",
-  "quantity" : "10媛�",
-  "description" : "�닔�젙",
-  "expirationDate" : "2024-02-28",
+  "quantity" : "10개",
+  "description" : "수정",
+  "expirationDate" : "2024-02-29",
   "storageId" : 1,
-  "storageName" : "�깋�옣�떎",
+  "storageName" : "냉장실",
   "groceryExpirationType" : "NOT_EXPIRED",
-  "createdAt" : "2024-02-26T23:29:31.5485932",
-  "updatedAt" : "2024-02-26T23:29:31.5485932",
+  "createdAt" : "2024-02-27T01:42:36.2100231",
+  "updatedAt" : "2024-02-27T01:42:36.2100231",
   "images" : [ {
     "fileName" : "image1.jpg",
     "path" : "https://test-image-urls.com/image1.jpg"
@@ -1428,9 +1428,9 @@ Content-Length: 581
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/groceries/1 HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
-X-CSRF-TOKEN: AeVhd0XpbQ-Z-nZIEip4MjZcFnRNPOjxI-JIxY4W74FiQGGVNYNWTiSMVDa0mUJ8JQdMUwA9OxV0BdzcE4Nw9LdyjLdQdQTx
+X-CSRF-TOKEN: TsRTvltBZVYmTEm5iySULDhdhd7_jMWEC5PklwjCagj1ouPHKPVi3Dp4Vm4LKC2J6gmgHQk_qLyZtfOpOaqF8jGkUzrDlNWh
 Host: localhost:8080</code></pre>
 </div>
 </div>

@@ -479,10 +479,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/storages HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
 Content-Length: 82
-X-CSRF-TOKEN: CvYtiPfQGGmwuNOFWGgce2F9zWnetSUkgPe0ASyR8qXnB74FP85PvcTmL12di7WyPkUoSAVF4FG_1BcJsc-EZEj1kZPfMo02
+X-CSRF-TOKEN: Ye0IEOtSolP1zWkaWQ8HIKrpuTfdIG2EYCCdwPmBTvLkKdJVB9g5KY5ll2PY-lEjbCIzFs7alFa7FF6pWRP58srlfcXcELNg
 Host: localhost:8080
 
 {
@@ -547,7 +547,7 @@ Host: localhost:8080
 <div class="title">Request Body</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
-  "name" : "�깋�옣�떎",
+  "name" : "냉장실",
   "storageType" : "FRIDGE",
   "refrigeratorId" : 1
 }</code></pre>
@@ -560,7 +560,7 @@ Host: localhost:8080
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -575,8 +575,8 @@ Content-Length: 253
   "storageType" : "FRIDGE",
   "refrigeratorId" : 1,
   "refrigeratorName" : "우리 집 냉장고",
-  "createdAt" : "2024-02-26T23:29:43.8777939",
-  "updatedAt" : "2024-02-26T23:29:43.8777939"
+  "createdAt" : "2024-02-27T01:42:48.6312355",
+  "updatedAt" : "2024-02-27T01:42:48.6312355"
 }</code></pre>
 </div>
 </div>
@@ -637,12 +637,12 @@ Content-Length: 253
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "storageId" : 1,
-  "storageName" : "�깋�옣�떎",
+  "storageName" : "냉장실",
   "storageType" : "FRIDGE",
   "refrigeratorId" : 1,
-  "refrigeratorName" : "�슦由� 吏� �깋�옣怨�",
-  "createdAt" : "2024-02-26T23:29:43.8777939",
-  "updatedAt" : "2024-02-26T23:29:43.8777939"
+  "refrigeratorName" : "우리 집 냉장고",
+  "createdAt" : "2024-02-27T01:42:48.6312355",
+  "updatedAt" : "2024-02-27T01:42:48.6312355"
 }</code></pre>
 </div>
 </div>
@@ -659,8 +659,8 @@ Content-Length: 253
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/storages/1 HTTP/1.1
-Content-Type: application/json
-X-CSRF-TOKEN: gQjIJCqnoS2FlJehSGmxYozUWJO4U4S8dQAKdP8nXfv3Q1rB5zrxRxyfx0io9_GYK0SFV77kdauPZOWRRmVrTZkQaMzCITik
+Content-Type: application/json;charset=UTF-8
+X-CSRF-TOKEN: z_78dwSKv66np08Q0tAGHN_clC8kuS-5JE6Ug6TYu_catmlpqsbJFTXs2siKkikht_0yf7y-uU4R3BaUHC334MXhjJUshQpf
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -690,7 +690,7 @@ Host: localhost:8080</code></pre>
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -705,8 +705,8 @@ Content-Length: 253
   "storageType" : "FRIDGE",
   "refrigeratorId" : 1,
   "refrigeratorName" : "우리 집 냉장고",
-  "createdAt" : "2024-02-26T23:29:44.0937907",
-  "updatedAt" : "2024-02-26T23:29:44.0937907"
+  "createdAt" : "2024-02-27T01:42:48.8572347",
+  "updatedAt" : "2024-02-27T01:42:48.8572347"
 }</code></pre>
 </div>
 </div>
@@ -767,12 +767,12 @@ Content-Length: 253
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "storageId" : 1,
-  "storageName" : "�깋�옣�떎",
+  "storageName" : "냉장실",
   "storageType" : "FRIDGE",
   "refrigeratorId" : 1,
-  "refrigeratorName" : "�슦由� 吏� �깋�옣怨�",
-  "createdAt" : "2024-02-26T23:29:44.0937907",
-  "updatedAt" : "2024-02-26T23:29:44.0937907"
+  "refrigeratorName" : "우리 집 냉장고",
+  "createdAt" : "2024-02-27T01:42:48.8572347",
+  "updatedAt" : "2024-02-27T01:42:48.8572347"
 }</code></pre>
 </div>
 </div>
@@ -789,9 +789,9 @@ Content-Length: 253
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/storages/refrigerators/1 HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
-X-CSRF-TOKEN: OlsAsm_IvJp82NUe4MeCTu6a6XvrgeR5SQU2u0KXRJbiZS8_CWNh1F772v5R7uUn0Oq2etv4xBnYsddULWYEiyejdaSBVhde
+X-CSRF-TOKEN: o7zcYPfI5BAOAA0Qkwuotsi4YzHLYuQG0kyx8aKgOqbqxdQCm9-5UM-uhSEjMTVz9iac16zZTlOvBIEr6i6IxJDCDJGM8e06
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -840,7 +840,7 @@ Host: localhost:8080</code></pre>
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -856,16 +856,16 @@ Content-Length: 588
     "storageType" : "FRIDGE",
     "refrigeratorId" : 1,
     "refrigeratorName" : "우리 집 냉장고",
-    "createdAt" : "2024-02-26T23:29:44.1497928",
-    "updatedAt" : "2024-02-26T23:29:44.1497928"
+    "createdAt" : "2024-02-27T01:42:48.9152382",
+    "updatedAt" : "2024-02-27T01:42:48.9152382"
   }, {
     "storageId" : 2,
     "storageName" : "냉동실",
     "storageType" : "FREEZER",
     "refrigeratorId" : 1,
     "refrigeratorName" : "우리 집 냉장고",
-    "createdAt" : "2024-02-26T23:30:44.1497928",
-    "updatedAt" : "2024-02-26T23:30:44.1497928"
+    "createdAt" : "2024-02-27T01:43:48.9152382",
+    "updatedAt" : "2024-02-27T01:43:48.9152382"
   } ],
   "hasNext" : false
 }</code></pre>
@@ -939,20 +939,20 @@ Content-Length: 588
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "storages" : [ {
     "storageId" : 1,
-    "storageName" : "�깋�옣�떎",
+    "storageName" : "냉장실",
     "storageType" : "FRIDGE",
     "refrigeratorId" : 1,
-    "refrigeratorName" : "�슦由� 吏� �깋�옣怨�",
-    "createdAt" : "2024-02-26T23:29:44.1497928",
-    "updatedAt" : "2024-02-26T23:29:44.1497928"
+    "refrigeratorName" : "우리 집 냉장고",
+    "createdAt" : "2024-02-27T01:42:48.9152382",
+    "updatedAt" : "2024-02-27T01:42:48.9152382"
   }, {
     "storageId" : 2,
-    "storageName" : "�깋�룞�떎",
+    "storageName" : "냉동실",
     "storageType" : "FREEZER",
     "refrigeratorId" : 1,
-    "refrigeratorName" : "�슦由� 吏� �깋�옣怨�",
-    "createdAt" : "2024-02-26T23:30:44.1497928",
-    "updatedAt" : "2024-02-26T23:30:44.1497928"
+    "refrigeratorName" : "우리 집 냉장고",
+    "createdAt" : "2024-02-27T01:43:48.9152382",
+    "updatedAt" : "2024-02-27T01:43:48.9152382"
   } ],
   "hasNext" : false
 }</code></pre>
@@ -971,10 +971,10 @@ Content-Length: 588
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PATCH /api/storages/1 HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
 Content-Length: 65
-X-CSRF-TOKEN: DdmuUM1KNcPqkF2PokkA-Whj5DYw_c8X6cMSt33-L0ac8lgRO-_LM_9yAvTHp2S3xGQ0y19QyQ8Hmas6i_MggR6YSXWlkzwk
+X-CSRF-TOKEN: vbyCHckakYqFTWD8_AX2fqX__yQY2kSuZybVYPKmHHg5A21Gidq6Kfp_8LOoLAHFyCjCHZ3O0hwtu3SDUUThBMSQLEEINloi
 Host: localhost:8080
 
 {
@@ -1052,7 +1052,7 @@ Host: localhost:8080
 <div class="title">Request Body</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
-  "name" : "�깋�룞�떎 �닔�젙",
+  "name" : "냉동실 수정",
   "storageType" : "FREEZER"
 }</code></pre>
 </div>
@@ -1064,7 +1064,7 @@ Host: localhost:8080
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -1079,8 +1079,8 @@ Content-Length: 261
   "storageType" : "FREEZER",
   "refrigeratorId" : 1,
   "refrigeratorName" : "우리 집 냉장고",
-  "createdAt" : "2024-02-26T23:29:44.0187902",
-  "updatedAt" : "2024-02-26T23:29:44.0187902"
+  "createdAt" : "2024-02-27T01:42:48.7802342",
+  "updatedAt" : "2024-02-27T01:42:48.7802342"
 }</code></pre>
 </div>
 </div>
@@ -1141,12 +1141,12 @@ Content-Length: 261
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "storageId" : 1,
-  "storageName" : "�깋�룞�떎 �닔�젙",
+  "storageName" : "냉동실 수정",
   "storageType" : "FREEZER",
   "refrigeratorId" : 1,
-  "refrigeratorName" : "�슦由� 吏� �깋�옣怨�",
-  "createdAt" : "2024-02-26T23:29:44.0187902",
-  "updatedAt" : "2024-02-26T23:29:44.0187902"
+  "refrigeratorName" : "우리 집 냉장고",
+  "createdAt" : "2024-02-27T01:42:48.7802342",
+  "updatedAt" : "2024-02-27T01:42:48.7802342"
 }</code></pre>
 </div>
 </div>
@@ -1163,9 +1163,9 @@ Content-Length: 261
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/storages/1 HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
-X-CSRF-TOKEN: -XAk4XRJKgI-ns_ZDnWVjzQz6rreal-zvFiwu8zae5Xb2Qqfy0MS00d-GjoT-vu7O1iht1IEx4O7Umeei2CIg__oSqzq7m6s
+X-CSRF-TOKEN: 8Q2xO5Cojkc4m4rPgqd3pF-38D5U8psyGyN6RXc8mHVQdTvhwT2AWqTLuXQV-uz9sYpDnG7S3V83k64fehZIIEJYqhNnQgrT
 Host: localhost:8080</code></pre>
 </div>
 </div>

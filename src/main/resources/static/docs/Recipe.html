@@ -489,7 +489,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
 Authorization: Bearer {ACCESS_TOKEN}
 Accept: application/json
-X-CSRF-TOKEN: FpPhiLnQ3qVYy4ocLCpHXSCqCk3O5ajN5rKiPt3PtUWAtusfcPDWvozn6sN1rbJ5FAdzPxecJyz23JnghIXDX-T60HSzh44o
+X-CSRF-TOKEN: KYtVDLWxwnfH7PTW-XXZSABpW8qXJ3HSqVEEPdDpJT1OVC4bT743bYaGo07qiJDinVjtejdedvOvEkH_yDJmX-LaR1ktNU16
 Host: localhost:8080
 
 --6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
@@ -601,14 +601,14 @@ Content-Type: application/json
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 757
+Content-Length: 759
 
 {
   "recipeId" : 1,
@@ -620,8 +620,8 @@ Content-Length: 757
   "originalRecipeId" : 1,
   "title" : "레시피1",
   "content" : "내용",
-  "createdAt" : "2024-02-26T23:29:38.755793",
-  "updatedAt" : "2024-02-26T23:29:38.755793",
+  "createdAt" : "2024-02-27T01:42:43.3756002",
+  "updatedAt" : "2024-02-27T01:42:43.3756002",
   "materials" : [ {
     "recipeGroceryId" : 1,
     "recipeId" : 1,
@@ -765,9 +765,9 @@ Content-Length: 757
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/recipes/scrap?recipe-id=2 HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
-X-CSRF-TOKEN: W1PbXzPNLflaLaYgndioNG8ITh8tP2SIufedCBRki8W6TaeEbTa-PlH6H8l3GZ4U-PWcA1o_Y34UXlel2s6ubSZXu_3bKcG9
+X-CSRF-TOKEN: dHRxZgwJ0PrHPvQAbBMRKrQmDHwkUAGprwhF4xyRsYSrISKoTEYTXm0-s5vqXcBmCT4lHoQXIR0RNjeEmDFx0y6iiL3IEkDN
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -816,7 +816,7 @@ Host: localhost:8080</code></pre>
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -835,8 +835,8 @@ Content-Length: 760
   "originalRecipeId" : 2,
   "title" : "레시피1",
   "content" : "내용",
-  "createdAt" : "2024-02-26T23:29:39.2327922",
-  "updatedAt" : "2024-02-26T23:29:39.2327922",
+  "createdAt" : "2024-02-27T01:42:43.8295943",
+  "updatedAt" : "2024-02-27T01:42:43.8295943",
   "materials" : [ {
     "recipeGroceryId" : 1,
     "recipeId" : 1,
@@ -973,22 +973,22 @@ Content-Length: 760
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "recipeId" : 3,
   "writerId" : 2,
-  "writerNickName" : "�땳�꽕�엫�땳�꽕�엫2",
+  "writerNickName" : "닉네임닉네임2",
   "ownerId" : 1,
-  "ownerNickName" : "�땳�꽕�엫�땳�꽕�엫",
+  "ownerNickName" : "닉네임닉네임",
   "recipeType" : "SCRAPED",
   "originalRecipeId" : 2,
-  "title" : "�젅�떆�뵾1",
-  "content" : "�궡�슜",
-  "createdAt" : "2024-02-26T23:29:39.2327922",
-  "updatedAt" : "2024-02-26T23:29:39.2327922",
+  "title" : "레시피1",
+  "content" : "내용",
+  "createdAt" : "2024-02-27T01:42:43.8295943",
+  "updatedAt" : "2024-02-27T01:42:43.8295943",
   "materials" : [ {
     "recipeGroceryId" : 1,
     "recipeId" : 1,
-    "recipeTitle" : "�젅�떆�뵾1",
+    "recipeTitle" : "레시피1",
     "groceryId" : 1,
-    "groceryName" : "�뼇諛곗텛",
-    "groceryQuantity" : "1媛�"
+    "groceryName" : "양배추",
+    "groceryQuantity" : "1개"
   } ],
   "images" : [ {
     "fileName" : "image1.jpg",
@@ -1008,9 +1008,9 @@ Content-Length: 760
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/recipes/scrap?recipe-id=2 HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
-X-CSRF-TOKEN: f_i2b9hKTfXmP1uuPsFBIEcEBBHQjul7GdWav85WB0nkIN9RHJzUVu4re8HLD2vMXex1RCUyKSjouttWKuSt3f9lNH_WRrli
+X-CSRF-TOKEN: eAWBZ-3T44KzKAEU-n6HqRHQR23A0yHiK8BF5i47IcAhpYR0Tze0A4u1gOCeSTN2mFOzyCjoagyk6kTPTaMkgE9fGaMUnLFG
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -1059,7 +1059,7 @@ Host: localhost:8080</code></pre>
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -1069,7 +1069,7 @@ X-Frame-Options: DENY
 Content-Length: 165
 
 {
-  "timestamp" : "2024-02-26 23:29:39",
+  "timestamp" : "2024-02-27 01:42:43",
   "code" : "RC002",
   "errors" : [ ],
   "message" : "본인이 작성한 레시피는 스크랩할 수 없습니다."
@@ -1117,10 +1117,10 @@ Content-Length: 165
 <div class="title">Response body</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
-  "timestamp" : "2024-02-26 23:29:39",
+  "timestamp" : "2024-02-27 01:42:43",
   "code" : "RC002",
   "errors" : [ ],
-  "message" : "蹂몄씤�씠 �옉�꽦�븳 �젅�떆�뵾�뒗 �뒪�겕�옪�븷 �닔 �뾾�뒿�땲�떎."
+  "message" : "본인이 작성한 레시피는 스크랩할 수 없습니다."
 }</code></pre>
 </div>
 </div>
@@ -1137,9 +1137,9 @@ Content-Length: 165
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/recipes/1 HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
-X-CSRF-TOKEN: -J5D6Ey-y1naHp1_hUvBxpnWefnuyyNTKnEHZNbLe1Jx3XCIyq5zii7f82n3KqQctGb1paHhVMDW-Bd-HUYxBbf6TTFH5ULr
+X-CSRF-TOKEN: n1eSlhGkQGOg9LiqMBPDiyxZAvafI1qQfkQ3PUXzBzRLO66S_jbwoiGVeFGNkIiTBz736hltL86sEDu9TCcCXn2QNgctWc2k
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -1188,7 +1188,7 @@ Host: localhost:8080</code></pre>
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -1207,8 +1207,8 @@ Content-Length: 759
   "originalRecipeId" : 1,
   "title" : "레시피1",
   "content" : "내용",
-  "createdAt" : "2024-02-26T23:29:39.0087922",
-  "updatedAt" : "2024-02-26T23:29:39.0087922",
+  "createdAt" : "2024-02-27T01:42:43.6095946",
+  "updatedAt" : "2024-02-27T01:42:43.6095946",
   "materials" : [ {
     "recipeGroceryId" : 1,
     "recipeId" : 1,
@@ -1345,22 +1345,22 @@ Content-Length: 759
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "recipeId" : 1,
   "writerId" : 1,
-  "writerNickName" : "�땳�꽕�엫�땳�꽕�엫",
+  "writerNickName" : "닉네임닉네임",
   "ownerId" : 1,
-  "ownerNickName" : "�땳�꽕�엫�땳�꽕�엫",
+  "ownerNickName" : "닉네임닉네임",
   "recipeType" : "WRITTEN",
   "originalRecipeId" : 1,
-  "title" : "�젅�떆�뵾1",
-  "content" : "�궡�슜",
-  "createdAt" : "2024-02-26T23:29:39.0087922",
-  "updatedAt" : "2024-02-26T23:29:39.0087922",
+  "title" : "레시피1",
+  "content" : "내용",
+  "createdAt" : "2024-02-27T01:42:43.6095946",
+  "updatedAt" : "2024-02-27T01:42:43.6095946",
   "materials" : [ {
     "recipeGroceryId" : 1,
     "recipeId" : 1,
-    "recipeTitle" : "�젅�떆�뵾1",
+    "recipeTitle" : "레시피1",
     "groceryId" : 1,
-    "groceryName" : "�뼇諛곗텛",
-    "groceryQuantity" : "1媛�"
+    "groceryName" : "양배추",
+    "groceryQuantity" : "1개"
   } ],
   "images" : [ {
     "fileName" : "image1.jpg",
@@ -1385,9 +1385,9 @@ Content-Length: 759
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/recipes HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
-X-CSRF-TOKEN: PNQEJ6zI0UiUxEhZCasNhuTF-eU6yC3ogOcKJlKrzMVhkNjpC-dlF87_5X-5onphOoY54ofx1IcC8EzF4YM-FWvJ_vFU8-mP
+X-CSRF-TOKEN: gg-76X_MAMx5WMp2Vtg3WtMV10od25N6ns7exRAlHq2VXVdquzqJihqtNf1UPKxOM_UDb7d2-nIouatXqvvt_SAQKs_2bGUL
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -1417,7 +1417,7 @@ Host: localhost:8080</code></pre>
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -1437,8 +1437,8 @@ Content-Length: 1672
     "originalRecipeId" : 1,
     "title" : "레시피1",
     "content" : "내용",
-    "createdAt" : "2024-02-26T23:29:39.0817914",
-    "updatedAt" : "2024-02-26T23:29:39.0817914",
+    "createdAt" : "2024-02-27T01:42:43.6856072",
+    "updatedAt" : "2024-02-27T01:42:43.6856072",
     "materials" : [ {
       "recipeGroceryId" : 1,
       "recipeId" : 1,
@@ -1464,8 +1464,8 @@ Content-Length: 1672
     "originalRecipeId" : 3,
     "title" : "레시피3",
     "content" : "내용",
-    "createdAt" : "2024-02-26T23:29:39.0817914",
-    "updatedAt" : "2024-02-26T23:29:39.0817914",
+    "createdAt" : "2024-02-27T01:42:43.6856072",
+    "updatedAt" : "2024-02-27T01:42:43.6856072",
     "materials" : [ {
       "recipeGroceryId" : 1,
       "recipeId" : 3,
@@ -1615,22 +1615,22 @@ Content-Length: 1672
   "recipes" : [ {
     "recipeId" : 1,
     "writerId" : 1,
-    "writerNickName" : "�땳�꽕�엫�땳�꽕�엫",
+    "writerNickName" : "닉네임닉네임",
     "ownerId" : 1,
-    "ownerNickName" : "�땳�꽕�엫�땳�꽕�엫",
+    "ownerNickName" : "닉네임닉네임",
     "recipeType" : "WRITTEN",
     "originalRecipeId" : 1,
-    "title" : "�젅�떆�뵾1",
-    "content" : "�궡�슜",
-    "createdAt" : "2024-02-26T23:29:39.0817914",
-    "updatedAt" : "2024-02-26T23:29:39.0817914",
+    "title" : "레시피1",
+    "content" : "내용",
+    "createdAt" : "2024-02-27T01:42:43.6856072",
+    "updatedAt" : "2024-02-27T01:42:43.6856072",
     "materials" : [ {
       "recipeGroceryId" : 1,
       "recipeId" : 1,
-      "recipeTitle" : "�젅�떆�뵾1",
+      "recipeTitle" : "레시피1",
       "groceryId" : 1,
-      "groceryName" : "�뼇諛곗텛",
-      "groceryQuantity" : "1媛�"
+      "groceryName" : "양배추",
+      "groceryQuantity" : "1개"
     } ],
     "images" : [ {
       "fileName" : "image1.jpg",
@@ -1642,22 +1642,22 @@ Content-Length: 1672
   }, {
     "recipeId" : 3,
     "writerId" : 1,
-    "writerNickName" : "�땳�꽕�엫�땳�꽕�엫",
+    "writerNickName" : "닉네임닉네임",
     "ownerId" : 2,
-    "ownerNickName" : "�땳�꽕�엫�땳�꽕�엫2",
+    "ownerNickName" : "닉네임닉네임2",
     "recipeType" : "SCRAPED",
     "originalRecipeId" : 3,
-    "title" : "�젅�떆�뵾3",
-    "content" : "�궡�슜",
-    "createdAt" : "2024-02-26T23:29:39.0817914",
-    "updatedAt" : "2024-02-26T23:29:39.0817914",
+    "title" : "레시피3",
+    "content" : "내용",
+    "createdAt" : "2024-02-27T01:42:43.6856072",
+    "updatedAt" : "2024-02-27T01:42:43.6856072",
     "materials" : [ {
       "recipeGroceryId" : 1,
       "recipeId" : 3,
-      "recipeTitle" : "�젅�떆�뵾3",
+      "recipeTitle" : "레시피3",
       "groceryId" : 2,
-      "groceryName" : "諛곗텛",
-      "groceryQuantity" : "1媛�"
+      "groceryName" : "배추",
+      "groceryQuantity" : "1개"
     } ],
     "images" : [ {
       "fileName" : "image1.jpg",
@@ -1684,10 +1684,10 @@ Content-Length: 1672
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PATCH /api/recipes/1 HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
 Content-Length: 63
-X-CSRF-TOKEN: agmSHTf4a53u-RNJMfV3_fsTSP0q7xDYOv26_087jcbNLyGBW22nKAedWK3DyiN9BNhDmMp3ZZxIiiX1XM3ZzXsO7qX9HEPg
+X-CSRF-TOKEN: JDO9eI7kpvP8e3DD_CaW1Ph2I22zQY51dy8plmQv4heaosZSEwSISuiHn8XRGknzxQui58lPDlWHJOtYFUse91MXhieux6Vm
 Host: localhost:8080
 
 {
@@ -1765,8 +1765,8 @@ Host: localhost:8080
 <div class="title">Request Body</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
-  "title" : "�젣紐⑹닔�젙",
-  "content" : "�궡�슜�닔�젙"
+  "title" : "제목수정",
+  "content" : "내용수정"
 }</code></pre>
 </div>
 </div>
@@ -1777,14 +1777,14 @@ Host: localhost:8080
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 767
+Content-Length: 765
 
 {
   "recipeId" : 1,
@@ -1796,8 +1796,8 @@ Content-Length: 767
   "originalRecipeId" : 1,
   "title" : "제목수정",
   "content" : "내용수정",
-  "createdAt" : "2024-02-26T23:29:38.9237919",
-  "updatedAt" : "2024-02-26T23:29:38.9237919",
+  "createdAt" : "2024-02-27T01:42:43.530597",
+  "updatedAt" : "2024-02-27T01:42:43.530597",
   "materials" : [ {
     "recipeGroceryId" : 1,
     "recipeId" : 1,
@@ -1934,22 +1934,22 @@ Content-Length: 767
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "recipeId" : 1,
   "writerId" : 1,
-  "writerNickName" : "�땳�꽕�엫�땳�꽕�엫",
+  "writerNickName" : "닉네임닉네임",
   "ownerId" : 1,
-  "ownerNickName" : "�땳�꽕�엫�땳�꽕�엫",
+  "ownerNickName" : "닉네임닉네임",
   "recipeType" : "WRITTEN",
   "originalRecipeId" : 1,
-  "title" : "�젣紐⑹닔�젙",
-  "content" : "�궡�슜�닔�젙",
-  "createdAt" : "2024-02-26T23:29:38.9237919",
-  "updatedAt" : "2024-02-26T23:29:38.9237919",
+  "title" : "제목수정",
+  "content" : "내용수정",
+  "createdAt" : "2024-02-27T01:42:43.530597",
+  "updatedAt" : "2024-02-27T01:42:43.530597",
   "materials" : [ {
     "recipeGroceryId" : 1,
     "recipeId" : 1,
-    "recipeTitle" : "�젅�떆�뵾1",
+    "recipeTitle" : "레시피1",
     "groceryId" : 1,
-    "groceryName" : "�뼇諛곗텛",
-    "groceryQuantity" : "1媛�"
+    "groceryName" : "양배추",
+    "groceryQuantity" : "1개"
   } ],
   "images" : [ {
     "fileName" : "image1.jpg",
@@ -1969,10 +1969,10 @@ Content-Length: 767
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PATCH /api/recipes/1 HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
 Content-Length: 63
-X-CSRF-TOKEN: fATW832PudwuZC3V2guwBemWeTuguswZv6nFnJ44Ydfvmhk0SmLhxknpjOQDARri6SaEM4jyVALBjKg0isug_fsJWbTdrn8N
+X-CSRF-TOKEN: pngJIQDyeKt-_q-k4c7-ygMr5hOYzsnb0DdKtWNDOKyIIZjDwBw8QzPBTJlTypaX0uPK_mcey3H6-q32tgMp11V6CZ3tFvr1
 Host: localhost:8080
 
 {
@@ -2050,8 +2050,8 @@ Host: localhost:8080
 <div class="title">Request Body</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
-  "title" : "�젣紐⑹닔�젙",
-  "content" : "�궡�슜�닔�젙"
+  "title" : "제목수정",
+  "content" : "내용수정"
 }</code></pre>
 </div>
 </div>
@@ -2062,7 +2062,7 @@ Host: localhost:8080
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -2072,7 +2072,7 @@ X-Frame-Options: DENY
 Content-Length: 155
 
 {
-  "timestamp" : "2024-02-26 23:29:38",
+  "timestamp" : "2024-02-27 01:42:43",
   "code" : "RC003",
   "errors" : [ ],
   "message" : "스크랩한 레시피는 수정할 수 없습니다."
@@ -2120,10 +2120,10 @@ Content-Length: 155
 <div class="title">Response body</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
-  "timestamp" : "2024-02-26 23:29:38",
+  "timestamp" : "2024-02-27 01:42:43",
   "code" : "RC003",
   "errors" : [ ],
-  "message" : "�뒪�겕�옪�븳 �젅�떆�뵾�뒗 �닔�젙�븷 �닔 �뾾�뒿�땲�떎."
+  "message" : "스크랩한 레시피는 수정할 수 없습니다."
 }</code></pre>
 </div>
 </div>
@@ -2140,9 +2140,9 @@ Content-Length: 155
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/recipes/1 HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
-X-CSRF-TOKEN: eW39DZrmuZQbtPB1X5cLuuoTewPRGe9RglpGyBpHDgjED4SwSgiePKrWgfA2hMUXbLo_iNMiVjroINl8tGMg_HklOGv0bLOE
+X-CSRF-TOKEN: MLFe-rfjBRw21lI2cu3RgdFMN8sGbPWUoKGdx-fgd6QfchuUBYU7z4OHMHgb4DAGS8DlsLN8GqllWMy5ksKp_oHYQZYuRi6h
 Host: localhost:8080</code></pre>
 </div>
 </div>

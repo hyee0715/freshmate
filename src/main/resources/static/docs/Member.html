@@ -475,8 +475,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/member/1 HTTP/1.1
-Content-Type: application/json
-X-CSRF-TOKEN: ZUUwknTjgqKqaRFaGIBQlEs_rQIfx3FYRrxJ2OffdDwfAbn8B3EGoUCGtsGHW3RsKq1kp31agDp6pUh1c4wo4YG8TV4pZIqZ
+Content-Type: application/json;charset=UTF-8
+X-CSRF-TOKEN: FTDD43EB1_exqCyU8ApLjGUES4RTpgQHeNALdSZLeuhKRkptI1HwhUJitcackUqgkSd_6QZhZrxrw2cqHrVoQB96Sd8vc3MM
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -506,7 +506,7 @@ Host: localhost:8080</code></pre>
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -572,8 +572,8 @@ Content-Length: 137
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "memberId" : 1,
   "username" : "aaaa1111",
-  "realName" : "�꽦�씠由�",
-  "nickName" : "�땳�꽕�엫�땳�꽕�엫",
+  "realName" : "성이름",
+  "nickName" : "닉네임닉네임",
   "role" : "USER"
 }</code></pre>
 </div>
@@ -591,9 +591,9 @@ Content-Length: 137
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/member HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
-X-CSRF-TOKEN: LHNHZaQu-djZYQKrt1cssH3rSB_UBmS5nz0HCjvzBzvQ5Th4TRUmVJQfzr30BTKbgXoY1UrTZX3jZQeUrF81awjDMQPmgQ1B
+X-CSRF-TOKEN: Nh7r-nja3vfosp-tVa_0mMeTa41_fOA4vijOTe8FwKmF5eSEAyfan0vv5sfFhvqcN4LAoKKqRrQaTdcV3x_-LNphpJ-2hNyz
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -623,7 +623,7 @@ Host: localhost:8080</code></pre>
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -689,8 +689,8 @@ Content-Length: 137
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "memberId" : 1,
   "username" : "aaaa1111",
-  "realName" : "�꽦�씠由�",
-  "nickName" : "�땳�꽕�엫�땳�꽕�엫",
+  "realName" : "성이름",
+  "nickName" : "닉네임닉네임",
   "role" : "USER"
 }</code></pre>
 </div>
@@ -708,10 +708,10 @@ Content-Length: 137
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PATCH /api/member HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
 Content-Length: 70
-X-CSRF-TOKEN: ysYB_QKuo8leAp05Nwr5CiS2wMhGglJcoRrZNd-sh2PHeIqN_PY4yWecx6xzO6wNDifNPEeP7aok42ZxwiK6V-eYtACiHbru
+X-CSRF-TOKEN: R-p2XTXVr0TnyPpBo5jlcif1Jz0Yd6G5RamtNLYz6v4_9s29ddsTb1a2znXK8M11mrXRREKTCl98RsCUIcifBYcC38cNw__b
 Host: localhost:8080
 
 {
@@ -770,8 +770,8 @@ Host: localhost:8080
 <div class="title">Request Body</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
-  "realName" : "�씠由꾩닔�젙",
-  "nickName" : "�땳�꽕�엫�닔�젙"
+  "realName" : "이름수정",
+  "nickName" : "닉네임수정"
 }</code></pre>
 </div>
 </div>
@@ -782,7 +782,7 @@ Host: localhost:8080
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -848,8 +848,8 @@ Content-Length: 137
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "memberId" : 1,
   "username" : "aaaa1111",
-  "realName" : "�씠由꾩닔�젙",
-  "nickName" : "�땳�꽕�엫�닔�젙",
+  "realName" : "이름수정",
+  "nickName" : "닉네임수정",
   "role" : "USER"
 }</code></pre>
 </div>
@@ -867,10 +867,10 @@ Content-Length: 137
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PATCH /api/member/password HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
 Content-Length: 82
-X-CSRF-TOKEN: 4T85JTeiovfCfuLWTJhs5pjgPsZkttAoQpMywz6NMhJ1nwQP1QsNQ1KUlZHvRtTiLbVY0vzWE6cBg7IFdPAA9grrCydB-jI7
+X-CSRF-TOKEN: _I7X7vZ4TVQ8xXTc78X4CuGZw08BXn18Ah7jOMlthISvmMfBneyzisdBLGwRoEG43ejMP9P67ncwaktRN3vXW_xVseXMr_Ok
 Host: localhost:8080
 
 {
@@ -941,7 +941,7 @@ Host: localhost:8080
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -1007,8 +1007,8 @@ Content-Length: 137
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "memberId" : 1,
   "username" : "aaaa1111",
-  "realName" : "�꽦�씠由�",
-  "nickName" : "�땳�꽕�엫�땳�꽕�엫",
+  "realName" : "성이름",
+  "nickName" : "닉네임닉네임",
   "role" : "USER"
 }</code></pre>
 </div>
@@ -1020,10 +1020,10 @@ Content-Length: 137
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PATCH /api/member/password HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
 Content-Length: 82
-X-CSRF-TOKEN: 49DpTemiLS_iES9DCO9l7UGWe9Qbk6Xr2EFaO5tuR8PSI9OMhrXfL9nEGhfPIUt2MMJRjyXyVux4pZfG6nZqDvlZcfbhRbXo
+X-CSRF-TOKEN: UuMYrOyDevDFkcVC1aXTv5Xclx6qMqGiaIq_f869hTxgAhFFM4d5nNuxSsTo9fV7tojnhqG6unzPV5SPWbyOR6zetARWYSkk
 Host: localhost:8080
 
 {
@@ -1094,7 +1094,7 @@ Host: localhost:8080
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -1104,7 +1104,7 @@ X-Frame-Options: DENY
 Content-Length: 143
 
 {
-  "timestamp" : "2024-02-26 23:29:34",
+  "timestamp" : "2024-02-27 01:42:39",
   "code" : "M004",
   "errors" : [ ],
   "message" : "비밀번호가 일치하지 않습니다."
@@ -1152,10 +1152,10 @@ Content-Length: 143
 <div class="title">Response body</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
-  "timestamp" : "2024-02-26 23:29:34",
+  "timestamp" : "2024-02-27 01:42:39",
   "code" : "M004",
   "errors" : [ ],
-  "message" : "鍮꾨�踰덊샇媛� �씪移섑븯吏� �븡�뒿�땲�떎."
+  "message" : "비밀번호가 일치하지 않습니다."
 }</code></pre>
 </div>
 </div>

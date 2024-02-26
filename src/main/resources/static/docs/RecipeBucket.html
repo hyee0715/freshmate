@@ -474,10 +474,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/recipe-buckets HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
 Content-Length: 22
-X-CSRF-TOKEN: p1hlPs2102zyxFGApJrtGFqtVu45rz6H0RqVDCEYUa3JuCRUxTtRXP-A4Fzf8mLixbfZKD-fe9YAygeq4yKgOBUhYZWoihAw
+X-CSRF-TOKEN: s30NnRun06qlNq49ROAOhRwWkimgn4-zYznG33z7j-gtKNFpgxxp-X-T68mID54FfM065iV0v0vC_b2eVAGk70vCudwcEbQP
 Host: localhost:8080
 
 {
@@ -541,7 +541,7 @@ Host: localhost:8080
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -576,7 +576,7 @@ Content-Length: 716
   } ],
   "memberId" : 1,
   "memberNickName" : "닉네임닉네임",
-  "createdAt" : "2024-02-26T23:29:40.6167918"
+  "createdAt" : "2024-02-27T01:42:45.3185967"
 }</code></pre>
 </div>
 </div>
@@ -689,29 +689,29 @@ Content-Length: 716
   "recipeBucketId" : 1,
   "recipeId" : 1,
   "writerId" : 1,
-  "writerNickName" : "�땳�꽕�엫�땳�꽕�엫",
+  "writerNickName" : "닉네임닉네임",
   "recipeType" : "WRITTEN",
   "originalRecipeId" : 1,
-  "recipeTitle" : "�젅�떆�뵾",
-  "recipeContent" : "�궡�슜",
+  "recipeTitle" : "레시피",
+  "recipeContent" : "내용",
   "materials" : [ {
     "recipeGroceryId" : 1,
     "recipeId" : 1,
-    "recipeTitle" : "�젅�떆�뵾",
+    "recipeTitle" : "레시피",
     "groceryId" : 1,
-    "groceryName" : "�뼇諛곗텛",
-    "groceryQuantity" : "1媛�"
+    "groceryName" : "양배추",
+    "groceryQuantity" : "1개"
   }, {
     "recipeGroceryId" : 2,
     "recipeId" : 1,
-    "recipeTitle" : "�젅�떆�뵾",
+    "recipeTitle" : "레시피",
     "groceryId" : 2,
-    "groceryName" : "諛곗텛",
-    "groceryQuantity" : "1媛�"
+    "groceryName" : "배추",
+    "groceryQuantity" : "1개"
   } ],
   "memberId" : 1,
-  "memberNickName" : "�땳�꽕�엫�땳�꽕�엫",
-  "createdAt" : "2024-02-26T23:29:40.6167918"
+  "memberNickName" : "닉네임닉네임",
+  "createdAt" : "2024-02-27T01:42:45.3185967"
 }</code></pre>
 </div>
 </div>
@@ -728,8 +728,8 @@ Content-Length: 716
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/recipe-buckets/1 HTTP/1.1
-Content-Type: application/json
-X-CSRF-TOKEN: UDwIlTuObG64bjnjTzQYtqy_iYGOCDJTkx2MHqQm1I7bPJTINg4-oAq6CAqVCwnRKRksjpvdpOO2agB-8n-9escf7e_pDvD8
+Content-Type: application/json;charset=UTF-8
+X-CSRF-TOKEN: W3Z-pH2m-KqGrHTOFlCI1SJq2jxmc6EUUsHVS9KC1x2J7gcEaEZNwEyTycurlUz_d3284RtY915UQpg5Zvaxfue05njs2jJg
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -759,7 +759,7 @@ Host: localhost:8080</code></pre>
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -794,7 +794,7 @@ Content-Length: 716
   } ],
   "memberId" : 1,
   "memberNickName" : "닉네임닉네임",
-  "createdAt" : "2024-02-26T23:29:40.7817928"
+  "createdAt" : "2024-02-27T01:42:45.4857131"
 }</code></pre>
 </div>
 </div>
@@ -907,29 +907,29 @@ Content-Length: 716
   "recipeBucketId" : 1,
   "recipeId" : 1,
   "writerId" : 1,
-  "writerNickName" : "�땳�꽕�엫�땳�꽕�엫",
+  "writerNickName" : "닉네임닉네임",
   "recipeType" : "WRITTEN",
   "originalRecipeId" : 1,
-  "recipeTitle" : "�젅�떆�뵾",
-  "recipeContent" : "�궡�슜",
+  "recipeTitle" : "레시피",
+  "recipeContent" : "내용",
   "materials" : [ {
     "recipeGroceryId" : 1,
     "recipeId" : 1,
-    "recipeTitle" : "�젅�떆�뵾",
+    "recipeTitle" : "레시피",
     "groceryId" : 1,
-    "groceryName" : "�뼇諛곗텛",
-    "groceryQuantity" : "1媛�"
+    "groceryName" : "양배추",
+    "groceryQuantity" : "1개"
   }, {
     "recipeGroceryId" : 2,
     "recipeId" : 1,
-    "recipeTitle" : "�젅�떆�뵾",
+    "recipeTitle" : "레시피",
     "groceryId" : 2,
-    "groceryName" : "諛곗텛",
-    "groceryQuantity" : "1媛�"
+    "groceryName" : "배추",
+    "groceryQuantity" : "1개"
   } ],
   "memberId" : 1,
-  "memberNickName" : "�땳�꽕�엫�땳�꽕�엫",
-  "createdAt" : "2024-02-26T23:29:40.7817928"
+  "memberNickName" : "닉네임닉네임",
+  "createdAt" : "2024-02-27T01:42:45.4857131"
 }</code></pre>
 </div>
 </div>
@@ -946,9 +946,9 @@ Content-Length: 716
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/recipe-buckets HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
-X-CSRF-TOKEN: 1o6sOY8AmMGGmSwdHgDBaXAnkA2uOUsDG6HJMjbYzpRt3N0vsrfKC7kwrvSrqxQvey31UBZDvW-ZC3gufsLxAFDu-aMOv7sc
+X-CSRF-TOKEN: hDFamm8xXgjo0krOk00NSEHMNX-3fKX1Gt25ylJmbpmH_9IR5gBvqQ4JOjnF6yv-9mA5enT9GEfTH5zYfumM82AHCK21zetw
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -978,7 +978,7 @@ Host: localhost:8080</code></pre>
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -1014,7 +1014,7 @@ Content-Length: 1597
     } ],
     "memberId" : 1,
     "memberNickName" : "닉네임닉네임",
-    "createdAt" : "2024-02-26T23:29:40.8507939"
+    "createdAt" : "2024-02-27T01:42:45.5567127"
   }, {
     "recipeBucketId" : 2,
     "recipeId" : 2,
@@ -1041,7 +1041,7 @@ Content-Length: 1597
     } ],
     "memberId" : 1,
     "memberNickName" : "닉네임닉네임",
-    "createdAt" : "2024-02-26T23:29:40.8507939"
+    "createdAt" : "2024-02-27T01:42:45.5567127"
   } ],
   "hasNext" : false
 }</code></pre>
@@ -1162,56 +1162,56 @@ Content-Length: 1597
     "recipeBucketId" : 1,
     "recipeId" : 1,
     "writerId" : 1,
-    "writerNickName" : "�땳�꽕�엫�땳�꽕�엫",
+    "writerNickName" : "닉네임닉네임",
     "recipeType" : "WRITTEN",
     "originalRecipeId" : 1,
-    "recipeTitle" : "�젅�떆�뵾",
-    "recipeContent" : "�궡�슜",
+    "recipeTitle" : "레시피",
+    "recipeContent" : "내용",
     "materials" : [ {
       "recipeGroceryId" : 1,
       "recipeId" : 1,
-      "recipeTitle" : "�젅�떆�뵾",
+      "recipeTitle" : "레시피",
       "groceryId" : 1,
-      "groceryName" : "�뼇諛곗텛",
-      "groceryQuantity" : "1媛�"
+      "groceryName" : "양배추",
+      "groceryQuantity" : "1개"
     }, {
       "recipeGroceryId" : 2,
       "recipeId" : 1,
-      "recipeTitle" : "�젅�떆�뵾",
+      "recipeTitle" : "레시피",
       "groceryId" : 2,
-      "groceryName" : "諛곗텛",
-      "groceryQuantity" : "1媛�"
+      "groceryName" : "배추",
+      "groceryQuantity" : "1개"
     } ],
     "memberId" : 1,
-    "memberNickName" : "�땳�꽕�엫�땳�꽕�엫",
-    "createdAt" : "2024-02-26T23:29:40.8507939"
+    "memberNickName" : "닉네임닉네임",
+    "createdAt" : "2024-02-27T01:42:45.5567127"
   }, {
     "recipeBucketId" : 2,
     "recipeId" : 2,
     "writerId" : 1,
-    "writerNickName" : "�땳�꽕�엫�땳�꽕�엫",
+    "writerNickName" : "닉네임닉네임",
     "recipeType" : "WRITTEN",
     "originalRecipeId" : 2,
-    "recipeTitle" : "�젅�떆�뵾2",
-    "recipeContent" : "�궡�슜",
+    "recipeTitle" : "레시피2",
+    "recipeContent" : "내용",
     "materials" : [ {
       "recipeGroceryId" : 3,
       "recipeId" : 2,
-      "recipeTitle" : "�젅�떆�뵾2",
+      "recipeTitle" : "레시피2",
       "groceryId" : 1,
-      "groceryName" : "�뼇諛곗텛",
-      "groceryQuantity" : "1媛�"
+      "groceryName" : "양배추",
+      "groceryQuantity" : "1개"
     }, {
       "recipeGroceryId" : 4,
       "recipeId" : 2,
-      "recipeTitle" : "�젅�떆�뵾2",
+      "recipeTitle" : "레시피2",
       "groceryId" : 2,
-      "groceryName" : "諛곗텛",
-      "groceryQuantity" : "1媛�"
+      "groceryName" : "배추",
+      "groceryQuantity" : "1개"
     } ],
     "memberId" : 1,
-    "memberNickName" : "�땳�꽕�엫�땳�꽕�엫",
-    "createdAt" : "2024-02-26T23:29:40.8507939"
+    "memberNickName" : "닉네임닉네임",
+    "createdAt" : "2024-02-27T01:42:45.5567127"
   } ],
   "hasNext" : false
 }</code></pre>
@@ -1230,9 +1230,9 @@ Content-Length: 1597
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/recipe-buckets/1 HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
-X-CSRF-TOKEN: tqzjUfE7_cNuRyOayIfd-HwydwRQP4UHFK33lTosdcRWfNMSg86AZcdayfRDIkCtrarpy05QWmY1WrIqcczG8A4VR_03Gep2
+X-CSRF-TOKEN: OTFL8hZt0RrM85wCxAhUKKcfgaiycwRQP4f87dSDUu_xezGnCAEtlHJe5i3hkfk38CVgGpUmrMmBEDN9Cb-ZiOG7Zd7AGFDD
 Host: localhost:8080</code></pre>
 </div>
 </div>

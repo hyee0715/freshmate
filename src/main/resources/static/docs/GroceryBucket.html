@@ -479,10 +479,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/grocery-buckets HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
 Content-Length: 114
-X-CSRF-TOKEN: 4G2zdBIOMLdyTzfzeu3o4w7o8O5SnvP4H4H7uPgsDWD2Mpmm0FiCFittCIBfLFSWH8Dc12_Y3Yxqr8LVKbnCjs0cNVXAVP_D
+X-CSRF-TOKEN: SRKD44cKAsANU798HV6Lm3Pyr7j65kbRib74IY6mMhoaaJfWK3Pn1-VvNPkgYt0YKHO_o0PEgoDN33b87IidE-yUVnkpDPO1
 Host: localhost:8080
 
 {
@@ -547,9 +547,9 @@ Host: localhost:8080
 <div class="title">Request Body</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
-  "groceryName" : "�뼇諛곗텛",
+  "groceryName" : "양배추",
   "groceryType" : "VEGETABLES",
-  "groceryDescription" : "�븘�닔 �떇�옱猷�"
+  "groceryDescription" : "필수 식재료"
 }</code></pre>
 </div>
 </div>
@@ -560,7 +560,7 @@ Host: localhost:8080
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -576,8 +576,8 @@ Content-Length: 299
   "groceryName" : "양배추",
   "groceryType" : "VEGETABLES",
   "groceryDescription" : "필수 식재료",
-  "createdAt" : "2024-02-26T23:29:33.1881614",
-  "updatedAt" : "2024-02-26T23:29:33.1881614"
+  "createdAt" : "2024-02-27T01:42:37.8430182",
+  "updatedAt" : "2024-02-27T01:42:37.8430182"
 }</code></pre>
 </div>
 </div>
@@ -644,12 +644,12 @@ Content-Length: 299
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "groceryBucketId" : 1,
   "memberId" : 1,
-  "memberNickName" : "�땳�꽕�엫�땳�꽕�엫",
-  "groceryName" : "�뼇諛곗텛",
+  "memberNickName" : "닉네임닉네임",
+  "groceryName" : "양배추",
   "groceryType" : "VEGETABLES",
-  "groceryDescription" : "�븘�닔 �떇�옱猷�",
-  "createdAt" : "2024-02-26T23:29:33.1881614",
-  "updatedAt" : "2024-02-26T23:29:33.1881614"
+  "groceryDescription" : "필수 식재료",
+  "createdAt" : "2024-02-27T01:42:37.8430182",
+  "updatedAt" : "2024-02-27T01:42:37.8430182"
 }</code></pre>
 </div>
 </div>
@@ -666,8 +666,8 @@ Content-Length: 299
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/grocery-buckets/1 HTTP/1.1
-Content-Type: application/json
-X-CSRF-TOKEN: KTTgmF0jtex00IluAqt02-JMj-K71xABHqNFn5NybnOVbUbJSFbW_TsQg9hZte0NZIZA6oF1otuP73UsLpZ1-qcQC0LwWX79
+Content-Type: application/json;charset=UTF-8
+X-CSRF-TOKEN: dvmdSpIzKauyzumzlQuSlPsiFByZXzMcnB0T66_sFGHQnbihRpysLqVWGs-frN-ArSamrJgaOX2rPgUxrnwliZfbdwK0ro7H
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -697,7 +697,7 @@ Host: localhost:8080</code></pre>
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -713,8 +713,8 @@ Content-Length: 299
   "groceryName" : "양배추",
   "groceryType" : "VEGETABLES",
   "groceryDescription" : "필수 식재료",
-  "createdAt" : "2024-02-26T23:29:33.5136873",
-  "updatedAt" : "2024-02-26T23:29:33.5136873"
+  "createdAt" : "2024-02-27T01:42:38.1680194",
+  "updatedAt" : "2024-02-27T01:42:38.1680194"
 }</code></pre>
 </div>
 </div>
@@ -781,12 +781,12 @@ Content-Length: 299
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "groceryBucketId" : 1,
   "memberId" : 1,
-  "memberNickName" : "�땳�꽕�엫�땳�꽕�엫",
-  "groceryName" : "�뼇諛곗텛",
+  "memberNickName" : "닉네임닉네임",
+  "groceryName" : "양배추",
   "groceryType" : "VEGETABLES",
-  "groceryDescription" : "�븘�닔 �떇�옱猷�",
-  "createdAt" : "2024-02-26T23:29:33.5136873",
-  "updatedAt" : "2024-02-26T23:29:33.5136873"
+  "groceryDescription" : "필수 식재료",
+  "createdAt" : "2024-02-27T01:42:38.1680194",
+  "updatedAt" : "2024-02-27T01:42:38.1680194"
 }</code></pre>
 </div>
 </div>
@@ -803,9 +803,9 @@ Content-Length: 299
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/grocery-buckets HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
-X-CSRF-TOKEN: AQAneSZJD9LTVgTMZpIXt6KmB6LPDJd5UpaXZKHUa6wnpGBtY2NDQBZ_N7b-YWKpAr8j1MGRKpuraqBUa6bxVJbjCphFxgMM
+X-CSRF-TOKEN: DibT6xTGj9HEMj-sw7KTvuywiGnuP6iIDp7Yc2eme8fUcZ1JPxC3j3D3u-TpBgiU95-nid_UpQiKDs2lavzuFwKUS_LtQP4v
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -835,7 +835,7 @@ Host: localhost:8080</code></pre>
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -852,8 +852,8 @@ Content-Length: 679
     "groceryName" : "양배추",
     "groceryType" : "VEGETABLES",
     "groceryDescription" : "필수 식재료",
-    "createdAt" : "2024-02-26T23:29:33.3556917",
-    "updatedAt" : "2024-02-26T23:29:33.3556917"
+    "createdAt" : "2024-02-27T01:42:38.0050196",
+    "updatedAt" : "2024-02-27T01:42:38.0050196"
   }, {
     "groceryBucketId" : 2,
     "memberId" : 1,
@@ -861,8 +861,8 @@ Content-Length: 679
     "groceryName" : "배추",
     "groceryType" : "VEGETABLES",
     "groceryDescription" : "김장용",
-    "createdAt" : "2024-02-26T23:30:33.3556917",
-    "updatedAt" : "2024-02-26T23:30:33.3556917"
+    "createdAt" : "2024-02-27T01:43:38.0050196",
+    "updatedAt" : "2024-02-27T01:43:38.0050196"
   } ],
   "hasNext" : false
 }</code></pre>
@@ -942,21 +942,21 @@ Content-Length: 679
   "groceryBuckets" : [ {
     "groceryBucketId" : 1,
     "memberId" : 1,
-    "memberNickName" : "�땳�꽕�엫�땳�꽕�엫",
-    "groceryName" : "�뼇諛곗텛",
+    "memberNickName" : "닉네임닉네임",
+    "groceryName" : "양배추",
     "groceryType" : "VEGETABLES",
-    "groceryDescription" : "�븘�닔 �떇�옱猷�",
-    "createdAt" : "2024-02-26T23:29:33.3556917",
-    "updatedAt" : "2024-02-26T23:29:33.3556917"
+    "groceryDescription" : "필수 식재료",
+    "createdAt" : "2024-02-27T01:42:38.0050196",
+    "updatedAt" : "2024-02-27T01:42:38.0050196"
   }, {
     "groceryBucketId" : 2,
     "memberId" : 1,
-    "memberNickName" : "�땳�꽕�엫�땳�꽕�엫",
-    "groceryName" : "諛곗텛",
+    "memberNickName" : "닉네임닉네임",
+    "groceryName" : "배추",
     "groceryType" : "VEGETABLES",
-    "groceryDescription" : "源��옣�슜",
-    "createdAt" : "2024-02-26T23:30:33.3556917",
-    "updatedAt" : "2024-02-26T23:30:33.3556917"
+    "groceryDescription" : "김장용",
+    "createdAt" : "2024-02-27T01:43:38.0050196",
+    "updatedAt" : "2024-02-27T01:43:38.0050196"
   } ],
   "hasNext" : false
 }</code></pre>
@@ -975,10 +975,10 @@ Content-Length: 679
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PATCH /api/grocery-buckets/1 HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
 Content-Length: 121
-X-CSRF-TOKEN: yOPbBkf0yX-OhS07LNDBt98vpJRQVfQkjowcs5QeXffkl6IV-ta9YH_Mqx6jvB1aTv310u9Jia1obZcJ6O4v0qF9ZZPdpsYh
+X-CSRF-TOKEN: LhqYn6xcxDPAETrtjW-AQoXbwZspJ6dH_wG1ie7PQf30YuDQTXusrZtl9AftKA7fv0K0c7fj7PlPQpZqyDTXvtz4dJzABIGy
 Host: localhost:8080
 
 {
@@ -1043,9 +1043,9 @@ Host: localhost:8080
 <div class="title">Request Body</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
-  "groceryName" : "�떇猷뚰뭹 �씠由� �닔�젙",
+  "groceryName" : "식료품 이름 수정",
   "groceryType" : "SNACKS",
-  "groceryDescription" : "�꽕紐� �닔�젙"
+  "groceryDescription" : "설명 수정"
 }</code></pre>
 </div>
 </div>
@@ -1056,14 +1056,14 @@ Host: localhost:8080
 Vary: Origin
 Vary: Access-Control-Request-Method
 Vary: Access-Control-Request-Headers
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 299
+Content-Length: 297
 
 {
   "groceryBucketId" : 1,
@@ -1072,8 +1072,8 @@ Content-Length: 299
   "groceryName" : "양배추",
   "groceryType" : "VEGETABLES",
   "groceryDescription" : "필수 식재료",
-  "createdAt" : "2024-02-26T23:29:33.4346851",
-  "updatedAt" : "2024-02-26T23:29:33.4346851"
+  "createdAt" : "2024-02-27T01:42:38.083018",
+  "updatedAt" : "2024-02-27T01:42:38.083018"
 }</code></pre>
 </div>
 </div>
@@ -1140,12 +1140,12 @@ Content-Length: 299
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "groceryBucketId" : 1,
   "memberId" : 1,
-  "memberNickName" : "�땳�꽕�엫�땳�꽕�엫",
-  "groceryName" : "�뼇諛곗텛",
+  "memberNickName" : "닉네임닉네임",
+  "groceryName" : "양배추",
   "groceryType" : "VEGETABLES",
-  "groceryDescription" : "�븘�닔 �떇�옱猷�",
-  "createdAt" : "2024-02-26T23:29:33.4346851",
-  "updatedAt" : "2024-02-26T23:29:33.4346851"
+  "groceryDescription" : "필수 식재료",
+  "createdAt" : "2024-02-27T01:42:38.083018",
+  "updatedAt" : "2024-02-27T01:42:38.083018"
 }</code></pre>
 </div>
 </div>
@@ -1162,9 +1162,9 @@ Content-Length: 299
 <div class="title">Request</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/grocery-buckets/1 HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
-X-CSRF-TOKEN: HAyxmisU11d9ln7sIChrQGlcIeNT4XB4CaG7IM5p1DS7zk4rfm2HrR8i4W9QoEzZEgVfeA9vDNo2hUJVbMLaEqxetlaKq3wd
+X-CSRF-TOKEN: clJ0veLwT2OZiLwNSWSzOqGn3n9bcGCqERmmrlxMNbeHl_w3QmJHi9SVdlq07d06ekmHDpeU80drRFSHJSGSzWx7Bo629Z5S
 Host: localhost:8080</code></pre>
 </div>
 </div>
