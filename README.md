@@ -35,25 +35,25 @@
 <details>
 <summary>도메인 별 API 명세</summary>
   
-  - Auth (인증/인가) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/3b3a205a89b40962de5afb006982820f9a216eec/src/main/resources/static/docs/Auth.html)
+  - Auth (인증/인가) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/6c2f3577f0856643602d08789a480548bd596984/src/main/resources/static/docs/Auth.html)
 
-  - Member (회원) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/3b3a205a89b40962de5afb006982820f9a216eec/src/main/resources/static/docs/Member.html)
+  - Member (회원) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/6c2f3577f0856643602d08789a480548bd596984/src/main/resources/static/docs/Member.html)
   
-  - Refrigerator (냉장고) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/3b3a205a89b40962de5afb006982820f9a216eec/src/main/resources/static/docs/Refrigerator.html)
+  - Refrigerator (냉장고) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/6c2f3577f0856643602d08789a480548bd596984/src/main/resources/static/docs/Refrigerator.html)
 
-  - Storage (냉장고 저장소) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/3b3a205a89b40962de5afb006982820f9a216eec/src/main/resources/static/docs/Storage.html)
+  - Storage (냉장고 저장소) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/6c2f3577f0856643602d08789a480548bd596984/src/main/resources/static/docs/Storage.html)
   
-  - Grocery (식료품) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/3b3a205a89b40962de5afb006982820f9a216eec/src/main/resources/static/docs/Grocery.html)
+  - Grocery (식료품) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/6c2f3577f0856643602d08789a480548bd596984/src/main/resources/static/docs/Grocery.html)
   
-  - GroceryBucket (즐겨찾는 식료품) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/3b3a205a89b40962de5afb006982820f9a216eec/src/main/resources/static/docs/GroceryBucket.html)
+  - GroceryBucket (즐겨찾는 식료품) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/6c2f3577f0856643602d08789a480548bd596984/src/main/resources/static/docs/GroceryBucket.html)
   
-  - Recipe (레시피) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/3b3a205a89b40962de5afb006982820f9a216eec/src/main/resources/static/docs/Recipe.html)
+  - Recipe (레시피) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/6c2f3577f0856643602d08789a480548bd596984/src/main/resources/static/docs/Recipe.html)
   
-  - RecipeBucket (즐겨찾는 레시피) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/3b3a205a89b40962de5afb006982820f9a216eec/src/main/resources/static/docs/RecipeBucket.html)
+  - RecipeBucket (즐겨찾는 레시피) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/6c2f3577f0856643602d08789a480548bd596984/src/main/resources/static/docs/RecipeBucket.html)
   
-  - Post (게시글) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/3b3a205a89b40962de5afb006982820f9a216eec/src/main/resources/static/docs/Post.html)
+  - Post (게시글) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/6c2f3577f0856643602d08789a480548bd596984/src/main/resources/static/docs/Post.html)
   
-  - Comment (댓글) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/3b3a205a89b40962de5afb006982820f9a216eec/src/main/resources/static/docs/Comment.html)
+  - Comment (댓글) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/6c2f3577f0856643602d08789a480548bd596984/src/main/resources/static/docs/Comment.html)
     
 </details>
 <!--## ✨ Project Architecture-->
