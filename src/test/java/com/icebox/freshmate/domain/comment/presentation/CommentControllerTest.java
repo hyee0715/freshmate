@@ -34,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -165,7 +166,7 @@ class CommentControllerTest {
 		MockMultipartFile file2 = new MockMultipartFile("imageFiles", "test2.jpg", "image/jpeg", "Spring Framework".getBytes());
 		MockMultipartFile request = new MockMultipartFile("commentCreateReq", "commentCreateReq",
 			"application/json",
-			objectMapper.writeValueAsString(commentCreateReq).getBytes());
+			objectMapper.writeValueAsString(commentCreateReq).getBytes(StandardCharsets.UTF_8));
 
 		ImageRes imageRes1 = new ImageRes(commentImage1.getFileName(), commentImage1.getPath());
 		ImageRes imageRes2 = new ImageRes(commentImage2.getFileName(), commentImage2.getPath());
@@ -180,7 +181,9 @@ class CommentControllerTest {
 				.file(file1)
 				.file(file2)
 				.file(request)
-				.contentType(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.MULTIPART_FORM_DATA)
+				.accept(MediaType.APPLICATION_JSON)
+				.characterEncoding("UTF-8")
 				.header("Authorization", "Bearer {ACCESS_TOKEN}")
 				.with(user(principalDetails))
 				.with(csrf().asHeader())

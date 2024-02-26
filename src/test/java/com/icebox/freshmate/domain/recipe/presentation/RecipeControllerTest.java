@@ -34,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -258,7 +259,7 @@ class RecipeControllerTest {
 		MockMultipartFile file2 = new MockMultipartFile("imageFiles", "test2.jpg", "image/jpeg", "Spring Framework".getBytes());
 		MockMultipartFile request = new MockMultipartFile("recipeCreateReq", "recipeCreateReq",
 			"application/json",
-			objectMapper.writeValueAsString(recipeCreateReq).getBytes());
+			objectMapper.writeValueAsString(recipeCreateReq).getBytes(StandardCharsets.UTF_8));
 
 		ImageRes imageRes1 = new ImageRes(recipeImage1.getFileName(), recipeImage1.getPath());
 		ImageRes imageRes2 = new ImageRes(recipeImage2.getFileName(), recipeImage2.getPath());
@@ -271,15 +272,15 @@ class RecipeControllerTest {
 		//when
 		//then
 		mockMvc.perform(RestDocumentationRequestBuilders.multipart("/api/recipes")
-			.file(file1)
-			.file(file2)
-			.file(request)
-				.contentType(MediaType.APPLICATION_JSON)
+				.file(file1)
+				.file(file2)
+				.file(request)
 				.header("Authorization", "Bearer {ACCESS_TOKEN}")
 				.with(user(principalDetails))
 				.with(csrf().asHeader())
 				.contentType(MediaType.MULTIPART_FORM_DATA)
-				.accept(MediaType.APPLICATION_JSON))
+				.accept(MediaType.APPLICATION_JSON)
+				.characterEncoding("UTF-8"))
 			.andExpect(content().json(objectMapper.writeValueAsString(recipeRes)))
 			.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.recipeId").value(recipeRes.recipeId()))

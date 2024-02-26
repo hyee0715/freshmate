@@ -34,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -234,7 +235,7 @@ class PostControllerTest {
 		MockMultipartFile file2 = new MockMultipartFile("imageFiles", "test2.jpg", "image/jpeg", "Spring Framework".getBytes());
 		MockMultipartFile request = new MockMultipartFile("postReq", "postReq",
 			"application/json",
-			objectMapper.writeValueAsString(postReq).getBytes());
+			objectMapper.writeValueAsString(postReq).getBytes(StandardCharsets.UTF_8));
 
 		ImageRes imageRes1 = new ImageRes(postImage1.getFileName(), postImage1.getPath());
 		ImageRes imageRes2 = new ImageRes(postImage2.getFileName(), postImage2.getPath());
@@ -252,12 +253,12 @@ class PostControllerTest {
 				.file(file1)
 				.file(file2)
 				.file(request)
-				.contentType(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.MULTIPART_FORM_DATA)
+				.accept(MediaType.APPLICATION_JSON)
+				.characterEncoding("UTF-8")
 				.header("Authorization", "Bearer {ACCESS_TOKEN}")
 				.with(user(principalDetails))
-				.with(csrf().asHeader())
-				.contentType(MediaType.MULTIPART_FORM_DATA)
-				.accept(MediaType.APPLICATION_JSON))
+				.with(csrf().asHeader()))
 			.andExpect(content().json(objectMapper.writeValueAsString(postRes)))
 			.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.postId").value(postRes.postId()))

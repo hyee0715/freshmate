@@ -19,9 +19,12 @@ import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -30,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -173,16 +177,16 @@ class GroceryControllerTest {
 
 		MockMultipartFile file1 = new MockMultipartFile("imageFiles", "test1.jpg", "image/jpeg", "Spring Framework".getBytes());
 		MockMultipartFile file2 = new MockMultipartFile("imageFiles", "test2.jpg", "image/jpeg", "Spring Framework".getBytes());
-		MockMultipartFile request = new MockMultipartFile("groceryReq", "recipeCreateReq",
+		MockMultipartFile request = new MockMultipartFile("groceryReq", "groceryReq",
 			"application/json",
-			objectMapper.writeValueAsString(groceryReq).getBytes());
+			objectMapper.writeValueAsString(groceryReq).getBytes(StandardCharsets.UTF_8));
 
 		ImageRes imageRes1 = new ImageRes(groceryImage1.getFileName(), groceryImage1.getPath());
 		ImageRes imageRes2 = new ImageRes(groceryImage2.getFileName(), groceryImage2.getPath());
 
 		GroceryRes groceryRes = new GroceryRes(groceryId, grocery.getName(), grocery.getGroceryType().name(), grocery.getQuantity(), grocery.getDescription(), grocery.getExpirationDate(), storageId, grocery.getStorage().getName(), grocery.getGroceryExpirationType().name(), createdAt, updatedAt, List.of(imageRes1, imageRes2));
 
-		when(groceryService.create(any(GroceryReq.class), any(ImageUploadReq.class), any(String.class))).thenReturn(groceryRes);
+		when(groceryService.create(any(), any(), any())).thenReturn(groceryRes);
 
 		//when
 		//then
@@ -190,7 +194,9 @@ class GroceryControllerTest {
 				.file(file1)
 				.file(file2)
 				.file(request)
-				.contentType(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.MULTIPART_FORM_DATA)
+				.accept(MediaType.APPLICATION_JSON)
+				.characterEncoding("UTF-8")
 				.header("Authorization", "Bearer {ACCESS_TOKEN}")
 				.with(user(principalDetails))
 				.with(csrf().asHeader())
@@ -217,7 +223,11 @@ class GroceryControllerTest {
 				requestHeaders(
 					headerWithName("Authorization").description("Access Token")
 				),
-				requestFields(
+				requestParts(
+					partWithName("imageFiles").description("식료품 이미지"),
+					partWithName("groceryReq").description("식료품 등록 내용")
+				),
+				requestPartFields("groceryReq",
 					fieldWithPath("name").description("식료품 이름"),
 					fieldWithPath("groceryType").description("식료품 타입"),
 					fieldWithPath("quantity").description("식료품 수량"),
