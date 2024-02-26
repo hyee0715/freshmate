@@ -13,17 +13,15 @@
 include::{snippets}/recipe/recipe-create/http-request.adoc[]
 .Request Headers
 include::{snippets}/recipe/recipe-create/request-headers.adoc[]
-.Request MultiParts
+.Request Parts
 include::{snippets}/recipe/recipe-create/request-parts.adoc[]
-.Request MultiPart - recipeCreateReq fields
+.Request Parts Fields
 include::{snippets}/recipe/recipe-create/request-part-recipeCreateReq-fields.adoc[]
 
 .Response
 include::{snippets}/recipe/recipe-create/http-response.adoc[]
 .Response Fields
 include::{snippets}/recipe/recipe-create/response-fields.adoc[]
-.Response body
-include::{snippets}/recipe/recipe-create/response-body.adoc[]
 
 ---
 == POST: 레시피 스크랩

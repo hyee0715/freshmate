@@ -13,15 +13,15 @@
 include::{snippets}/comment/comment-create/http-request.adoc[]
 .Request Headers
 include::{snippets}/comment/comment-create/request-headers.adoc[]
-.Request Body
-include::{snippets}/comment/comment-create/request-body.adoc[]
+.Request Parts
+include::{snippets}/comment/comment-create/request-parts.adoc[]
+.Request Parts Fields
+include::{snippets}/comment/comment-create/request-part-commentCreateReq-fields.adoc[]
 
 .Response
 include::{snippets}/comment/comment-create/http-response.adoc[]
 .Response Fields
 include::{snippets}/comment/comment-create/response-fields.adoc[]
-.Response body
-include::{snippets}/comment/comment-create/response-body.adoc[]
 
 ---
 == GET: 게시글 별 모든 댓글 조회

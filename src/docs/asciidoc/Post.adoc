@@ -13,15 +13,15 @@
 include::{snippets}/post/post-create/http-request.adoc[]
 .Request Headers
 include::{snippets}/post/post-create/request-headers.adoc[]
-.Request Body
-include::{snippets}/post/post-create/request-body.adoc[]
+.Request Parts
+include::{snippets}/post/post-create/request-parts.adoc[]
+.Request Parts Fields
+include::{snippets}/post/post-create/request-part-postReq-fields.adoc[]
 
 .Response
 include::{snippets}/post/post-create/http-response.adoc[]
 .Response Fields
 include::{snippets}/post/post-create/response-fields.adoc[]
-.Response body
-include::{snippets}/post/post-create/response-body.adoc[]
 
 ---
 == GET: 게시글 단건 조회

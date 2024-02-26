@@ -13,17 +13,15 @@
 include::{snippets}/grocery/grocery-create/http-request.adoc[]
 .Request Headers
 include::{snippets}/grocery/grocery-create/request-headers.adoc[]
-.Request Fields
-include::{snippets}/grocery/grocery-create/request-fields.adoc[]
-.Request Body
-include::{snippets}/grocery/grocery-create/request-body.adoc[]
+.Request Parts
+include::{snippets}/grocery/grocery-create/request-parts.adoc[]
+.Request Parts Fields
+include::{snippets}/grocery/grocery-create/request-part-groceryReq-fields.adoc[]
 
 .Response
 include::{snippets}/grocery/grocery-create/http-response.adoc[]
 .Response Fields
 include::{snippets}/grocery/grocery-create/response-fields.adoc[]
-.Response body
-include::{snippets}/grocery/grocery-create/response-body.adoc[]
 
 ---
 == GET: 식료품 단건 조회
