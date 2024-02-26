@@ -38,6 +38,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icebox.freshmate.domain.auth.application.AuthService;
@@ -83,6 +84,7 @@ class AuthControllerTest {
 			.webAppContextSetup(context)
 			.apply(documentationConfiguration(restDocumentationContextProvider))
 			.apply(springSecurity())
+			.addFilter(new CharacterEncodingFilter("UTF-8", true))
 			.alwaysDo(print()).build();
 
 		principalDetails = (PrincipalDetails) testUserDetailsService.loadUserByUsername(TestPrincipalDetailsService.USERNAME);
