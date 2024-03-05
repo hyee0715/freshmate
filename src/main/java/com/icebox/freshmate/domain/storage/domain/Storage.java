@@ -24,8 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Entity
 @Table(name = "storages", indexes = {
-	@Index(name = "index_storages_name_updated_at", columnList = "name, updatedAt", unique = true),
-	@Index(name = "index_storages_updated_at", columnList = "updatedAt", unique = true)})
+	@Index(name = "index_storages_refrigerator_id_storage_type_name_updated_at", columnList = "refrigerator_id, storage_type, name, updated_at", unique = true),
+	@Index(name = "index_storages_updated_at", columnList = "refrigerator_id, storage_type, updated_at", unique = true)})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
 public class Storage extends BaseEntity {

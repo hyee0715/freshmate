@@ -14,6 +14,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -26,7 +27,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Entity
-@Table(name = "posts")
+@Table(name = "posts", indexes = {
+	@Index(name = "index_posts_member_id_post_id", columnList = "member_id, id", unique = true)})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
 public class Post extends BaseEntity {
