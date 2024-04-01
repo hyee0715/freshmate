@@ -41,6 +41,7 @@ public class SecurityConfig {
 			.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(request -> request
 				.requestMatchers("/api/**").permitAll()
+				.requestMatchers("/**").permitAll()
 				.anyRequest().authenticated())
 			.addFilterAfter(jsonUsernamePasswordLoginFilter(), LogoutFilter.class)
 			.addFilterBefore(jwtAuthenticationProcessingFilter(), JsonUsernamePasswordAuthenticationFilter.class)
