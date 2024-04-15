@@ -4,7 +4,7 @@
 --------------------------------------------------------------
 
 ## 💻프로젝트 기간
-2023.12.16 ~ 현재 진행 중
+2023.12.16 ~ 2024.03.05
 
 ## 🧱 기술 스택
 <img src="https://img.shields.io/badge/Java%2017-007396?style=for-the-badge&logo=openJDK&logoColor=white"/> <img src="https://img.shields.io/badge/Spring%206-6DB33F?style=for-the-badge&logo=Spring&logoColor=white" />  <img src="https://img.shields.io/badge/Springboot%203.2.0-6DB33F?style=for-the-badge&logo=Springboot&logoColor=white"/> <img src="https://img.shields.io/badge/Spring%20Security-6DB33F?style=for-the-badge&logo=spring-security&logoColor=white" />  <img src="https://img.shields.io/badge/Hibernate-59666C?style=for-the-badge&logo=Hibernate&logoColor=white" />  <img src="https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=Gradle&logoColor=white"/> <img src="https://img.shields.io/badge/QueryDSL-0769AD?style=for-the-badge&logoColor=white"/>  <img src="https://img.shields.io/badge/Asciidoctor-E40046?style=for-the-badge&logo=asciidoctor&logoColor=white">  <img src="https://img.shields.io/badge/Server%20Sent%20Event-09B3AF?style=for-the-badge&logoColor=white"/>  <img src="https://img.shields.io/badge/JWT-ED8106?style=for-the-badge&logoColor=white"/> <img src="https://img.shields.io/badge/JUnit5-25A162?style=for-the-badge&logo=JUnit5&logoColor=white"/> 
