@@ -32,6 +32,37 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+            
+      # 서비스에 필요한 yml 파일 생성
+      # application-db.yml 생성
+      - name: Make application-db.yml
+        if: |
+          contains(github.ref, 'develop')
+        run: |
+          cd ./src/main/resources
+          touch ./application-db.yml
+          echo ${{ secrets.YML_DEV_DB }} | base64 --decode > ./application-db.yml
+        shell: bash
+
+      # application-file.yml 생성
+      - name: Make application-file.yml
+        if: |
+          contains(github.ref, 'develop')
+        run: |
+          cd ./src/main/resources
+          touch ./application-file.yml
+          echo ${{ secrets.YML_DEV_FILE }} | base64 --decode > ./application-file.yml
+        shell: bash
+
+      # application-jwt.yml 생성
+      - name: Make application-jwt.yml
+        if: |
+          contains(github.ref, 'develop')
+        run: |
+          cd ./src/main/resources
+          touch ./application-jwt.yml
+          echo ${{ secrets.YML_DEV_JWT }} | base64 --decode > ./application-jwt.yml
+        shell: bash
 
       # Gradle에 실행 권한을 부여
       - name: Grant execute permission for gradlew
@@ -94,7 +125,7 @@ jobs:
         uses: jtalk/url-health-check-action@v3
         with:
           url: http://${{ secrets.FRESHMATE_IP }}:${{env.STOPPED_PORT}}/env
-          max-attempts: 3
+          max-attempts: 5
           retry-delay: 10s
 
       - name: Change nginx upstream
