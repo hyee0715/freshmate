@@ -81,7 +81,16 @@ jobs:
 
       # Docker image 빌드
       - name: Build Docker
-        run: docker build --platform linux/amd64 -t ${{ secrets.DOCKERHUB_USERNAME }}/freshmate .
+        run: |
+          STATUS=$(curl -o /dev/null -w "%{http_code}" "http://${{ secrets.FRESHMATE_IP }}/env")
+          echo $STATUS
+          if [ $STATUS = 200 ]; then
+            CURRENT_UPSTREAM=$(curl -s "http://${{ secrets.FRESHMATE_IP }}/env")
+          else
+            CURRENT_UPSTREAM=green
+          fi
+          
+          docker build --platform linux/amd64 -t ${{ secrets.DOCKERHUB_USERNAME }}/freshmate -f Dockerfile-$CURRENT_UPSTREAM .
 
       # DuckerHub에 Push
       - name: Push Docker
