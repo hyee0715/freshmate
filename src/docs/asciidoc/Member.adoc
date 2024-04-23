@@ -1,0 +1,91 @@
+= REST Docs Member API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+[[Member-API]]
+== GET: 회원 ID로 회원 정보 조회
+=== 성공
+.Request
+include::{snippets}/member/member-find-info-by-id/http-request.adoc[]
+.Path Parameters
+include::{snippets}/member/member-find-info-by-id/path-parameters.adoc[]
+
+.Response
+include::{snippets}/member/member-find-info-by-id/http-response.adoc[]
+.Response Fields
+include::{snippets}/member/member-find-info-by-id/response-fields.adoc[]
+.Response body
+include::{snippets}/member/member-find-info-by-id/response-body.adoc[]
+
+---
+== GET: 접속중인 회원 정보 조회
+=== 성공
+.Request
+include::{snippets}/member/member-find-info/http-request.adoc[]
+.Request Headers
+include::{snippets}/member/member-find-info/request-headers.adoc[]
+
+.Response
+include::{snippets}/member/member-find-info/http-response.adoc[]
+.Response Fields
+include::{snippets}/member/member-find-info/response-fields.adoc[]
+.Response body
+include::{snippets}/member/member-find-info/response-body.adoc[]
+
+---
+== PATCH: 회원 정보 수정
+=== 성공
+.Request
+include::{snippets}/member/member-update-info/http-request.adoc[]
+.Request Headers
+include::{snippets}/member/member-update-info/request-headers.adoc[]
+.Request Fields
+include::{snippets}/member/member-update-info/request-fields.adoc[]
+.Request Body
+include::{snippets}/member/member-update-info/request-body.adoc[]
+
+.Response
+include::{snippets}/member/member-update-info/http-response.adoc[]
+.Response Fields
+include::{snippets}/member/member-update-info/response-fields.adoc[]
+.Response body
+include::{snippets}/member/member-update-info/response-body.adoc[]
+
+---
+== PATCH: 회원 비밀번호 수정
+=== 성공
+.Request
+include::{snippets}/member/member-update-password/http-request.adoc[]
+.Request Headers
+include::{snippets}/member/member-update-password/request-headers.adoc[]
+.Request Fields
+include::{snippets}/member/member-update-password/request-fields.adoc[]
+.Request Body
+include::{snippets}/member/member-update-password/request-body.adoc[]
+
+.Response
+include::{snippets}/member/member-update-password/http-response.adoc[]
+.Response Fields
+include::{snippets}/member/member-update-password/response-fields.adoc[]
+.Response body
+include::{snippets}/member/member-update-password/response-body.adoc[]
+
+=== 실패 - 기존 비밀번호가 일치하지 않는 경우
+.Request
+include::{snippets}/member/member-update-password-failure-wrong-original-password/http-request.adoc[]
+.Request Headers
+include::{snippets}/member/member-update-password-failure-wrong-original-password/request-headers.adoc[]
+.Request Fields
+include::{snippets}/member/member-update-password-failure-wrong-original-password/request-fields.adoc[]
+.Request Body
+include::{snippets}/member/member-update-password-failure-wrong-original-password/request-body.adoc[]
+
+.Response
+include::{snippets}/member/member-update-password-failure-wrong-original-password/http-response.adoc[]
+.Response Fields
+include::{snippets}/member/member-update-password-failure-wrong-original-password/response-fields.adoc[]
+.Response body
+include::{snippets}/member/member-update-password-failure-wrong-original-password/response-body.adoc[]

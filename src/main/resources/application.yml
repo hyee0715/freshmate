@@ -1,4 +1,59 @@
 spring:
+  profiles:
+    group:
+      local: local, common
+      blue: blue, common
+      green: green, common
+
+---
+
+spring:
   config:
+    activate:
+      on-profile: local
+
+server:
+  port: 8080
+  serverAddress: localhost
+  env: local
+
+serverName: local_server
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: blue
+
+server:
+  port: 8080
+  serverAddress: 13.124.73.236
+  env: blue
+
+serverName: blue_server
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: green
+
+server:
+  port: 8080
+  serverAddress: 13.124.73.236
+  env: green
+
+serverName: green_server
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: common
     import:
       - classpath:application-db.yml
+      - classpath:application-jwt.yml
+      - classpath:application-file.yml

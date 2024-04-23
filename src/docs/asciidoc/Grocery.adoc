@@ -1,0 +1,94 @@
+= REST Docs Grocery API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+[[Grocery-API]]
+== POST: 식료품 생성
+=== 성공
+
+.Request
+include::{snippets}/grocery/grocery-create/http-request.adoc[]
+.Request Headers
+include::{snippets}/grocery/grocery-create/request-headers.adoc[]
+.Request Parts
+include::{snippets}/grocery/grocery-create/request-parts.adoc[]
+.Request Parts Fields
+include::{snippets}/grocery/grocery-create/request-part-groceryReq-fields.adoc[]
+
+.Response
+include::{snippets}/grocery/grocery-create/http-response.adoc[]
+.Response Fields
+include::{snippets}/grocery/grocery-create/response-fields.adoc[]
+
+---
+== GET: 식료품 단건 조회
+=== 성공
+
+.Request
+include::{snippets}/grocery/grocery-find-by-id/http-request.adoc[]
+.Path Parameters
+include::{snippets}/grocery/grocery-find-by-id/path-parameters.adoc[]
+
+.Response
+include::{snippets}/grocery/grocery-find-by-id/http-response.adoc[]
+.Response Fields
+include::{snippets}/grocery/grocery-find-by-id/response-fields.adoc[]
+.Response body
+include::{snippets}/grocery/grocery-find-by-id/response-body.adoc[]
+
+---
+== GET: 특정 냉장고 저장소의 모든 식료품 조회
+=== 성공
+
+.Request
+include::{snippets}/grocery/grocery-find-all-by-storage-id/http-request.adoc[]
+.Path Parameters
+include::{snippets}/grocery/grocery-find-all-by-storage-id/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/grocery/grocery-find-all-by-storage-id/request-headers.adoc[]
+
+.Response
+include::{snippets}/grocery/grocery-find-all-by-storage-id/http-response.adoc[]
+.Response Fields
+include::{snippets}/grocery/grocery-find-all-by-storage-id/response-fields.adoc[]
+.Response body
+include::{snippets}/grocery/grocery-find-all-by-storage-id/response-body.adoc[]
+
+---
+== PATCH: 식료품 수정
+=== 성공
+
+.Request
+include::{snippets}/grocery/grocery-update/http-request.adoc[]
+.Path Parameters
+include::{snippets}/grocery/grocery-update/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/grocery/grocery-update/request-headers.adoc[]
+.Request Fields
+include::{snippets}/grocery/grocery-update/request-fields.adoc[]
+.Request Body
+include::{snippets}/grocery/grocery-update/request-body.adoc[]
+
+.Response
+include::{snippets}/grocery/grocery-update/http-response.adoc[]
+.Response Fields
+include::{snippets}/grocery/grocery-update/response-fields.adoc[]
+.Response body
+include::{snippets}/grocery/grocery-update/response-body.adoc[]
+
+---
+== DELETE: 식료품 삭제
+=== 성공
+
+.Request
+include::{snippets}/grocery/grocery-delete/http-request.adoc[]
+.Path Parameters
+include::{snippets}/grocery/grocery-delete/path-parameters.adoc[]
+
+.Response
+include::{snippets}/grocery/grocery-delete/http-response.adoc[]
+
+---

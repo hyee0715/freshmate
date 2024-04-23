@@ -1,0 +1,94 @@
+= REST Docs Grocery Bucket API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+[[Grocery-Bucket-API]]
+== POST: 즐겨 찾는 식료품 생성
+=== 성공
+
+.Request
+include::{snippets}/grocery-bucket/grocery-bucket-create/http-request.adoc[]
+.Request Headers
+include::{snippets}/grocery-bucket/grocery-bucket-create/request-headers.adoc[]
+.Request Fields
+include::{snippets}/grocery-bucket/grocery-bucket-create/request-fields.adoc[]
+.Request Body
+include::{snippets}/grocery-bucket/grocery-bucket-create/request-body.adoc[]
+
+.Response
+include::{snippets}/grocery-bucket/grocery-bucket-create/http-response.adoc[]
+.Response Fields
+include::{snippets}/grocery-bucket/grocery-bucket-create/response-fields.adoc[]
+.Response body
+include::{snippets}/grocery-bucket/grocery-bucket-create/response-body.adoc[]
+
+---
+== GET: 즐겨 찾는 식료품 단건 조회
+=== 성공
+
+.Request
+include::{snippets}/grocery-bucket/grocery-bucket-find-by-id/http-request.adoc[]
+.Path Parameters
+include::{snippets}/grocery-bucket/grocery-bucket-find-by-id/path-parameters.adoc[]
+
+.Response
+include::{snippets}/grocery-bucket/grocery-bucket-find-by-id/http-response.adoc[]
+.Response Fields
+include::{snippets}/grocery-bucket/grocery-bucket-find-by-id/response-fields.adoc[]
+.Response body
+include::{snippets}/grocery-bucket/grocery-bucket-find-by-id/response-body.adoc[]
+
+---
+== GET: 사용자의 즐겨 찾는 식료품 목록 조회
+=== 성공
+
+.Request
+include::{snippets}/grocery-bucket/grocery-bucket-find-all/http-request.adoc[]
+.Request Headers
+include::{snippets}/grocery-bucket/grocery-bucket-find-all/request-headers.adoc[]
+
+.Response
+include::{snippets}/grocery-bucket/grocery-bucket-find-all/http-response.adoc[]
+.Response Fields
+include::{snippets}/grocery-bucket/grocery-bucket-find-all/response-fields.adoc[]
+.Response body
+include::{snippets}/grocery-bucket/grocery-bucket-find-all/response-body.adoc[]
+
+---
+== PATCH: 즐겨 찾는 식료품 수정
+=== 성공
+
+.Request
+include::{snippets}/grocery-bucket/grocery-bucket-update/http-request.adoc[]
+.Path Parameters
+include::{snippets}/grocery-bucket/grocery-bucket-update/path-parameters.adoc[]
+.Request Fields
+include::{snippets}/grocery-bucket/grocery-bucket-update/request-fields.adoc[]
+.Request Body
+include::{snippets}/grocery-bucket/grocery-bucket-update/request-body.adoc[]
+
+.Response
+include::{snippets}/grocery-bucket/grocery-bucket-update/http-response.adoc[]
+.Response Fields
+include::{snippets}/grocery-bucket/grocery-bucket-update/response-fields.adoc[]
+.Response body
+include::{snippets}/grocery-bucket/grocery-bucket-update/response-body.adoc[]
+
+---
+== DELETE: 즐겨 찾는 식료품 삭제
+=== 성공
+
+.Request
+include::{snippets}/grocery-bucket/grocery-bucket-delete/http-request.adoc[]
+.Path Parameters
+include::{snippets}/grocery-bucket/grocery-bucket-delete/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/grocery-bucket/grocery-bucket-delete/request-headers.adoc[]
+
+.Response
+include::{snippets}/grocery-bucket/grocery-bucket-delete/http-response.adoc[]
+
+---

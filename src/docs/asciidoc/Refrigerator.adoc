@@ -1,0 +1,96 @@
+= REST Docs Refrigerator API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+[[Refrigerator-API]]
+== POST: 냉장고 생성
+=== 성공
+
+.Request
+include::{snippets}/refrigerator/refrigerator-create/http-request.adoc[]
+.Request Headers
+include::{snippets}/refrigerator/refrigerator-create/request-headers.adoc[]
+.Request Fields
+include::{snippets}/refrigerator/refrigerator-create/request-fields.adoc[]
+.Request Body
+include::{snippets}/refrigerator/refrigerator-create/request-body.adoc[]
+
+.Response
+include::{snippets}/refrigerator/refrigerator-create/http-response.adoc[]
+.Response Fields
+include::{snippets}/refrigerator/refrigerator-create/response-fields.adoc[]
+.Response body
+include::{snippets}/refrigerator/refrigerator-create/response-body.adoc[]
+
+---
+== GET: 냉장고 단건 조회
+=== 성공
+
+.Request
+include::{snippets}/refrigerator/refrigerator-find-by-id/http-request.adoc[]
+.Path Parameters
+include::{snippets}/refrigerator/refrigerator-find-by-id/path-parameters.adoc[]
+
+.Response
+include::{snippets}/refrigerator/refrigerator-find-by-id/http-response.adoc[]
+.Response Fields
+include::{snippets}/refrigerator/refrigerator-find-by-id/response-fields.adoc[]
+.Response body
+include::{snippets}/refrigerator/refrigerator-find-by-id/response-body.adoc[]
+
+---
+== GET: 회원의 모든 냉장고 조회
+=== 성공
+
+.Request
+include::{snippets}/refrigerator/refrigerator-find-all/http-request.adoc[]
+.Request Headers
+include::{snippets}/refrigerator/refrigerator-find-all/request-headers.adoc[]
+.Request Body
+include::{snippets}/refrigerator/refrigerator-find-all/request-body.adoc[]
+
+.Response
+include::{snippets}/refrigerator/refrigerator-find-all/http-response.adoc[]
+.Response Fields
+include::{snippets}/refrigerator/refrigerator-find-all/response-fields.adoc[]
+.Response body
+include::{snippets}/refrigerator/refrigerator-find-all/response-body.adoc[]
+
+---
+== PATCH: 냉장고 수정
+=== 성공
+
+.Request
+include::{snippets}/refrigerator/refrigerator-update/http-request.adoc[]
+.Path Parameters
+include::{snippets}/refrigerator/refrigerator-update/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/refrigerator/refrigerator-update/request-headers.adoc[]
+.Request Fields
+include::{snippets}/refrigerator/refrigerator-update/request-fields.adoc[]
+.Request Body
+include::{snippets}/refrigerator/refrigerator-update/request-body.adoc[]
+
+.Response
+include::{snippets}/refrigerator/refrigerator-update/http-response.adoc[]
+.Response Fields
+include::{snippets}/refrigerator/refrigerator-update/response-fields.adoc[]
+.Response body
+include::{snippets}/refrigerator/refrigerator-update/response-body.adoc[]
+
+---
+== DELETE: 냉장고 삭제
+=== 성공
+
+.Request
+include::{snippets}/refrigerator/refrigerator-delete/http-request.adoc[]
+.Path Parameters
+include::{snippets}/refrigerator/refrigerator-delete/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/refrigerator/refrigerator-delete/request-headers.adoc[]
+
+.Response
+include::{snippets}/refrigerator/refrigerator-delete/http-response.adoc[]

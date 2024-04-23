@@ -1,0 +1,98 @@
+= REST Docs Storage API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+[[Storage-API]]
+== POST: 냉장고 저장소 생성
+=== 성공
+
+.Request
+include::{snippets}/storage/storage-create/http-request.adoc[]
+.Request Headers
+include::{snippets}/storage/storage-create/request-headers.adoc[]
+.Request Fields
+include::{snippets}/storage/storage-create/request-fields.adoc[]
+.Request Body
+include::{snippets}/storage/storage-create/request-body.adoc[]
+
+.Response
+include::{snippets}/storage/storage-create/http-response.adoc[]
+.Response Fields
+include::{snippets}/storage/storage-create/response-fields.adoc[]
+.Response body
+include::{snippets}/storage/storage-create/response-body.adoc[]
+
+---
+== GET: 냉장고 저장소 단건 조회
+=== 성공
+
+.Request
+include::{snippets}/storage/storage-find-by-id/http-request.adoc[]
+.Path Parameters
+include::{snippets}/storage/storage-find-by-id/path-parameters.adoc[]
+
+.Response
+include::{snippets}/storage/storage-find-by-id/http-response.adoc[]
+.Response Fields
+include::{snippets}/storage/storage-find-by-id/response-fields.adoc[]
+.Response body
+include::{snippets}/storage/storage-find-by-id/response-body.adoc[]
+
+---
+== GET: 특정 냉장고의 모든 냉장고 저장소 조회
+=== 성공
+
+.Request
+include::{snippets}/storage/storage-find-all-by-refrigerator-id/http-request.adoc[]
+.Path Parameters
+include::{snippets}/storage/storage-find-all-by-refrigerator-id/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/storage/storage-find-all-by-refrigerator-id/request-headers.adoc[]
+
+.Response
+include::{snippets}/storage/storage-find-all-by-refrigerator-id/http-response.adoc[]
+.Response Fields
+include::{snippets}/storage/storage-find-all-by-refrigerator-id/response-fields.adoc[]
+.Response body
+include::{snippets}/storage/storage-find-all-by-refrigerator-id/response-body.adoc[]
+
+---
+== PATCH: 냉장고 저장소 수정
+=== 성공
+
+.Request
+include::{snippets}/storage/storage-update/http-request.adoc[]
+.Path Parameters
+include::{snippets}/storage/storage-update/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/storage/storage-update/request-headers.adoc[]
+.Request Fields
+include::{snippets}/storage/storage-update/request-fields.adoc[]
+.Request Body
+include::{snippets}/storage/storage-update/request-body.adoc[]
+
+.Response
+include::{snippets}/storage/storage-update/http-response.adoc[]
+.Response Fields
+include::{snippets}/storage/storage-update/response-fields.adoc[]
+.Response body
+include::{snippets}/storage/storage-update/response-body.adoc[]
+
+---
+== DELETE: 냉장고 저장소 삭제
+=== 성공
+
+.Request
+include::{snippets}/storage/storage-delete/http-request.adoc[]
+.Path Parameters
+include::{snippets}/storage/storage-delete/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/storage/storage-delete/request-headers.adoc[]
+
+.Response
+include::{snippets}/storage/storage-delete/http-response.adoc[]
+
+---
