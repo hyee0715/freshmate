@@ -63,8 +63,9 @@
     
 </details>
 
-## ✨ CI/CD
-![freshmate ci cd drawio (3)](https://github.com/hyee0715/freshmate/assets/59169881/0902de47-3b13-4b36-b110-1beaccd11f95)
+## ✨ CI/CD 파이프라인
+![freshmate ci cd drawio (1)](https://github.com/hyee0715/freshmate/assets/59169881/3c35f928-6678-4977-8817-b86456557349)
+
 
 
 <!--## 📈 플로우 차트-->
