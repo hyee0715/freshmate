@@ -38,30 +38,8 @@
 <!--## 📄 프로젝트 문서-->
 
 ## 🔍 API 명세
-<details>
-<summary>도메인 별 API 명세</summary>
-  
-  - Auth (인증/인가) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/a1ec280310753dcfc42e52c2a987dc22b707b95f/src/main/resources/static/docs/Auth.html)
+[Freshmate API 명세서 바로가기](http://13.124.73.236/docs)
 
-  - Member (회원) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/a1ec280310753dcfc42e52c2a987dc22b707b95f/src/main/resources/static/docs/Member.html)
-  
-  - Refrigerator (냉장고) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/a1ec280310753dcfc42e52c2a987dc22b707b95f/src/main/resources/static/docs/Refrigerator.html)
-
-  - Storage (냉장고 저장소) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/a1ec280310753dcfc42e52c2a987dc22b707b95f/src/main/resources/static/docs/Storage.html)
-  
-  - Grocery (식료품) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/a1ec280310753dcfc42e52c2a987dc22b707b95f/src/main/resources/static/docs/Grocery.html)
-  
-  - GroceryBucket (즐겨찾는 식료품) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/a1ec280310753dcfc42e52c2a987dc22b707b95f/src/main/resources/static/docs/GroceryBucket.html)
-  
-  - Recipe (레시피) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/a1ec280310753dcfc42e52c2a987dc22b707b95f/src/main/resources/static/docs/Recipe.html)
-  
-  - RecipeBucket (즐겨찾는 레시피) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/a1ec280310753dcfc42e52c2a987dc22b707b95f/src/main/resources/static/docs/RecipeBucket.html)
-  
-  - Post (게시글) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/a1ec280310753dcfc42e52c2a987dc22b707b95f/src/main/resources/static/docs/Post.html)
-  
-  - Comment (댓글) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/a1ec280310753dcfc42e52c2a987dc22b707b95f/src/main/resources/static/docs/Comment.html)
-    
-</details>
 
 ## ✨ CI/CD 파이프라인
 ![freshmate ci cd drawio (1)](https://github.com/hyee0715/freshmate/assets/59169881/3c35f928-6678-4977-8817-b86456557349)
@@ -76,17 +54,17 @@
   <summary>패키지 구조</summary>
   
 ```
-  
-📦 Freshmate
-.github
+
+📦 
+├─ .github
 │  └─ workflows
 │     └─ cicd-script.yml
 ├─ .gitignore
 ├─ Dockerfile-blue
 ├─ Dockerfile-green
-README.md
-build.gradle
-gradle
+├─ README.md
+├─ build.gradle
+├─ gradle
 │  └─ wrapper
 │     ├─ gradle-wrapper.jar
 │     └─ gradle-wrapper.properties
@@ -352,6 +330,8 @@ gradle
    │  │              │  ├─ S3Config.java
    │  │              │  ├─ SchedulerConfig.java
    │  │              │  └─ SecurityConfig.java
+   │  │              ├─ docs
+   │  │              │  └─ DocsViewController.java
    │  │              ├─ error
    │  │              │  ├─ ErrorCode.java
    │  │              │  ├─ ErrorResponse.java
@@ -365,18 +345,21 @@ gradle
    │  │                 └─ SortTypeUtils.java
    │  └─ resources
    │     ├─ application.yml
-   │     └─ static
+   │     ├─ static
+   │     │  └─ docs
+   │     │     ├─ Auth.html
+   │     │     ├─ Comment.html
+   │     │     ├─ Grocery.html
+   │     │     ├─ GroceryBucket.html
+   │     │     ├─ Member.html
+   │     │     ├─ Post.html
+   │     │     ├─ Recipe.html
+   │     │     ├─ RecipeBucket.html
+   │     │     ├─ Refrigerator.html
+   │     │     └─ Storage.html
+   │     └─ templates
    │        └─ docs
-   │           ├─ Auth.html
-   │           ├─ Comment.html
-   │           ├─ Grocery.html
-   │           ├─ GroceryBucket.html
-   │           ├─ Member.html
-   │           ├─ Post.html
-   │           ├─ Recipe.html
-   │           ├─ RecipeBucket.html
-   │           ├─ Refrigerator.html
-   │           └─ Storage.html
+   │           └─ docs-home.html
    └─ test
       └─ java
          └─ com
@@ -438,6 +421,7 @@ gradle
                   │        └─ StorageControllerTest.java
                   └─ global
                      └─ TestPrincipalDetailsService.java
+                     
   
 ```
 
