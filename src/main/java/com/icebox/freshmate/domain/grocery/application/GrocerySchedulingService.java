@@ -32,7 +32,7 @@ public class GrocerySchedulingService {
 
 	private static final String NOT_EXPIRED_GROCERIES_MESSAGE = "유통기한이 최소 %d일 남은 식료품이 있습니다. 어떤 식료품인지 확인해보세요!";
 	private static final String EXPIRED_GROCERIES_MESSAGE = "유통기한으로부터 최대 %d일 지난 식료품이 있습니다. 어떤 식료품인지 확인해보세요!";
-	private static final String TODAY_EXPIRATION_MESSAGE = "오늘이 유통기한 마감일인 식료품이 있습니다. 어떤 식료품인지 확인해보세요!";
+	private static final String EXPIRED_TODAY_GROCERIES_MESSAGE = "오늘이 유통기한 마감일인 식료품이 있습니다. 어떤 식료품인지 확인해보세요!";
 
 	private final GroceryRepository groceryRepository;
 	private final Map<GroceryExpirationType, Consumer<LocalDate>> expirationTypeStrategies;
@@ -122,7 +122,7 @@ public class GrocerySchedulingService {
 
 		return Map.of(
 			days -> days < 0, this::notifyNotExpiredGroceries,
-			days -> days == 0, this::notifyTodayExpirationGroceries,
+			days -> days == 0, this::notifyExpiredTodayGroceries,
 			days -> days > 0, this::notifyExpiredGroceries
 		);
 	}
@@ -133,9 +133,9 @@ public class GrocerySchedulingService {
 		notifyGroceryExpiration(memberId, message);
 	}
 
-	private void notifyTodayExpirationGroceries(int days, Long memberId) {
+	private void notifyExpiredTodayGroceries(int days, Long memberId) {
 
-		notifyGroceryExpiration(memberId, TODAY_EXPIRATION_MESSAGE);
+		notifyGroceryExpiration(memberId, EXPIRED_TODAY_GROCERIES_MESSAGE);
 	}
 
 	private void notifyExpiredGroceries(int days, Long memberId) {
