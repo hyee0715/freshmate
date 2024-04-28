@@ -35,14 +35,14 @@ public class GrocerySchedulingService {
 	private static final String EXPIRED_TODAY_GROCERIES_MESSAGE = "오늘이 유통기한 마감일인 식료품이 있습니다. 어떤 식료품인지 확인해보세요!";
 
 	private final GroceryRepository groceryRepository;
-	private final Map<GroceryExpirationType, Consumer<LocalDate>> expirationTypeStrategies;
-	private final Map<Predicate<Integer>, BiConsumer<Integer, Long>> expirationNotificationStrategies;
+	private final Map<GroceryExpirationType, Consumer<LocalDate>> expirationTypeMap;
+	private final Map<Predicate<Integer>, BiConsumer<Integer, Long>> expirationNotificationMap;
 	private final NotificationEventPublisher notificationEventPublisher;
 
 	public GrocerySchedulingService(GroceryRepository groceryRepository, NotificationEventPublisher notificationEventPublisher) {
 		this.groceryRepository = groceryRepository;
-		this.expirationTypeStrategies = initializeExpirationTypeStrategies();
-		this.expirationNotificationStrategies = initializeExpirationStrategies();
+		this.expirationTypeMap = initializeExpirationTypeMap();
+		this.expirationNotificationMap = initializeExpirationMap();
 		this.notificationEventPublisher = notificationEventPublisher;
 	}
 
@@ -61,7 +61,7 @@ public class GrocerySchedulingService {
 			.forEach(this::getExpirationInformation);
 	}
 
-	private Map<GroceryExpirationType, Consumer<LocalDate>> initializeExpirationTypeStrategies() {
+	private Map<GroceryExpirationType, Consumer<LocalDate>> initializeExpirationTypeMap() {
 
 		return Map.of(
 			GroceryExpirationType.NOT_EXPIRED, this::handleNotExpired,
@@ -72,7 +72,7 @@ public class GrocerySchedulingService {
 	private void getExpirationInformation(GroceryExpirationType groceryExpirationType) {
 		LocalDate currentDate = LocalDate.now();
 
-		expirationTypeStrategies.get(groceryExpirationType)
+		expirationTypeMap.get(groceryExpirationType)
 			.accept(currentDate);
 	}
 
@@ -111,14 +111,14 @@ public class GrocerySchedulingService {
 
 	private void notifyExpirationInformation(int expirationDate, Long memberId) {
 
-		expirationNotificationStrategies.entrySet().stream()
+		expirationNotificationMap.entrySet().stream()
 			.filter(entry -> entry.getKey().test(expirationDate))
 			.findFirst()
 			.map(Map.Entry::getValue)
 			.ifPresent(strategy -> strategy.accept(expirationDate, memberId));
 	}
 
-	private Map<Predicate<Integer>, BiConsumer<Integer, Long>> initializeExpirationStrategies() {
+	private Map<Predicate<Integer>, BiConsumer<Integer, Long>> initializeExpirationMap() {
 
 		return Map.of(
 			days -> days < 0, this::notifyNotExpiredGroceries,
