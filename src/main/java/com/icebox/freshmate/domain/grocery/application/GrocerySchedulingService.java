@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,7 @@ public class GrocerySchedulingService {
 	private final GroceryRepository groceryRepository;
 	private final Map<String, GroceryExpirationStrategy> groceryExpirationMap;
 
+	@Async
 	@Scheduled(cron = GROCERY_EXPIRATION_UPDATE_PERIOD)
 	public void updateGroceryExpiration() {
 		List<Grocery> expiredGroceries = groceryRepository.findAllNotExpiredBeforeCurrentDate(LocalDate.now());
@@ -35,6 +37,7 @@ public class GrocerySchedulingService {
 		expiredGroceries.forEach(Grocery::updateGroceryExpirationType);
 	}
 
+	@Async
 	@Scheduled(cron = GROCERY_NOTIFICATION_PERIOD)
 	public void checkGroceryExpiration() {
 		GroceryExpirationType[] groceryExpirationSequence = GroceryExpirationType.getGroceryExpirationSequence();
