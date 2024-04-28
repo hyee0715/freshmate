@@ -1,12 +1,12 @@
 package com.icebox.freshmate.domain.grocery.application;
 
+import static com.icebox.freshmate.domain.notification.application.NotificationStrategyType.findNotificationStrategyType;
+
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,9 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.icebox.freshmate.domain.grocery.domain.Grocery;
 import com.icebox.freshmate.domain.grocery.domain.GroceryExpirationType;
 import com.icebox.freshmate.domain.grocery.domain.GroceryRepository;
-import com.icebox.freshmate.domain.notification.application.NotificationEventPublisher;
-import com.icebox.freshmate.domain.notification.application.dto.request.NotificationReq;
-import com.icebox.freshmate.domain.notification.domain.NotificationType;
+import com.icebox.freshmate.domain.notification.application.NotificationStrategy;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,20 +28,14 @@ public class GrocerySchedulingService {
 	private static final String GROCERY_EXPIRATION_UPDATE_PERIOD = "0 10 0 * * *"; //매일 0시 10분에 실행
 	private static final String GROCERY_NOTIFICATION_PERIOD = "0 0 18 * * *"; //매일 18시에 실행
 
-	private static final String NOT_EXPIRED_GROCERIES_MESSAGE = "유통기한이 최소 %d일 남은 식료품이 있습니다. 어떤 식료품인지 확인해보세요!";
-	private static final String EXPIRED_GROCERIES_MESSAGE = "유통기한으로부터 최대 %d일 지난 식료품이 있습니다. 어떤 식료품인지 확인해보세요!";
-	private static final String EXPIRED_TODAY_GROCERIES_MESSAGE = "오늘이 유통기한 마감일인 식료품이 있습니다. 어떤 식료품인지 확인해보세요!";
-
 	private final GroceryRepository groceryRepository;
 	private final Map<GroceryExpirationType, Consumer<LocalDate>> expirationTypeMap;
-	private final Map<Predicate<Integer>, BiConsumer<Integer, Long>> expirationNotificationMap;
-	private final NotificationEventPublisher notificationEventPublisher;
+	private final Map<String, NotificationStrategy> expirationNotificationMap;
 
-	public GrocerySchedulingService(GroceryRepository groceryRepository, NotificationEventPublisher notificationEventPublisher) {
+	public GrocerySchedulingService(GroceryRepository groceryRepository, Map<GroceryExpirationType, Consumer<LocalDate>> expirationTypeMap, Map<String, NotificationStrategy> expirationNotificationMap) {
 		this.groceryRepository = groceryRepository;
 		this.expirationTypeMap = initializeExpirationTypeMap();
-		this.expirationNotificationMap = initializeExpirationMap();
-		this.notificationEventPublisher = notificationEventPublisher;
+		this.expirationNotificationMap = expirationNotificationMap;
 	}
 
 	@Scheduled(cron = GROCERY_EXPIRATION_UPDATE_PERIOD)
@@ -110,47 +102,10 @@ public class GrocerySchedulingService {
 	}
 
 	private void notifyExpirationInformation(int expirationDate, Long memberId) {
+		String notificationStrategyType = findNotificationStrategyType(expirationDate);
 
-		expirationNotificationMap.entrySet().stream()
-			.filter(entry -> entry.getKey().test(expirationDate))
-			.findFirst()
-			.map(Map.Entry::getValue)
-			.ifPresent(strategy -> strategy.accept(expirationDate, memberId));
-	}
+		NotificationStrategy notificationStrategy = expirationNotificationMap.get(notificationStrategyType);
 
-	private Map<Predicate<Integer>, BiConsumer<Integer, Long>> initializeExpirationMap() {
-
-		return Map.of(
-			days -> days < 0, this::notifyNotExpiredGroceries,
-			days -> days == 0, this::notifyExpiredTodayGroceries,
-			days -> days > 0, this::notifyExpiredGroceries
-		);
-	}
-
-	private void notifyNotExpiredGroceries(int days, Long memberId) {
-		String message = String.format(NOT_EXPIRED_GROCERIES_MESSAGE, Math.abs(days));
-
-		notifyGroceryExpiration(memberId, message);
-	}
-
-	private void notifyExpiredTodayGroceries(int days, Long memberId) {
-
-		notifyGroceryExpiration(memberId, EXPIRED_TODAY_GROCERIES_MESSAGE);
-	}
-
-	private void notifyExpiredGroceries(int days, Long memberId) {
-		String message = String.format(EXPIRED_GROCERIES_MESSAGE, days);
-
-		notifyGroceryExpiration(memberId, message);
-	}
-
-	private void notifyGroceryExpiration(Long memberId, String message) {
-		NotificationReq groceryNotificationReq = getGroceryNotificationReq(memberId, message);
-		notificationEventPublisher.publishEvent(groceryNotificationReq);
-	}
-
-	private NotificationReq getGroceryNotificationReq(Long memberId, String message) {
-
-		return new NotificationReq(memberId, NotificationType.EXPIRATION.name(), message, "");
+		notificationStrategy.notifyMessage(expirationDate, memberId);
 	}
 }
