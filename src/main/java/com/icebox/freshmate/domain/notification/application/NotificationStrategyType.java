@@ -9,7 +9,7 @@ public enum NotificationStrategyType {
 	EXPIRED_TODAY_NOTIFICATION("expiredTodayNotificationStrategy"),
 	NOT_EXPIRED_NOTIFICATION("notExpiredNotificationStrategy");
 
-	String notificationStrategy;
+	private final String notificationStrategy;
 
 	NotificationStrategyType(String notificationStrategy) {
 		this.notificationStrategy = notificationStrategy;
