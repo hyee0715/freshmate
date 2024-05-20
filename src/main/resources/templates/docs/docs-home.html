@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freshmate API 명세서</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+        }
+        nav {
+            background-color: #f4f4f4;
+            padding: 10px 20px;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        nav ul li {
+            display: inline;
+            margin-right: 10px;
+        }
+        nav ul li a {
+            text-decoration: none;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+            display: flex; /* Flexbox 사용 */
+            flex-wrap: wrap; /* 자식 요소가 넘치면 줄바꿈 */
+        }
+        .container section {
+            width: 45%; /* 2개의 열로 나누기 위해 너비 조정 */
+            margin-right: 5%; /* 열 사이 간격 */
+            margin-bottom: 40px; /* 섹션 간 간격 추가 */
+            border-bottom: 1px solid #ccc; /* 섹션 간 수평선 추가 */
+            padding-bottom: 20px; /* 수평선과 섹션 내용 사이 간격 추가 */
+        }
+        h2 a, p a {
+            text-decoration: none; /* 링크에 파란색 밑줄 제거 */
+            color: #333; /* 링크 색상 변경 */
+            cursor: pointer;
+        }
+        h2 a:hover, p a:hover {
+            text-decoration: underline; /* 링크에 마우스 호버시 밑줄 표시 */
+        }
+        h2 {
+            margin-bottom: 10px; /* 제목과 내용 사이 간격 좁히기 */
+            font-size: 28px; /* 제목의 글씨 크기 더 크게 설정 */
+        }
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 3px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Freshmate API 명세서</h1>
+</header>
+<nav>
+    <ul>
+        <li><a href="docs/Auth.html">Auth API</a></li>
+        <li><a href="docs/Member.html">Member API</a></li>
+        <li><a href="docs/Refrigerator.html">Refrigerator API</a></li>
+        <li><a href="docs/Storage.html">Storage API</a></li>
+        <li><a href="docs/Grocery.html">Grocery API</a></li>
+        <li><a href="docs/GroceryBucket.html">GroceryBucket API</a></li>
+        <li><a href="docs/Recipe.html">Recipe API</a></li>
+        <li><a href="docs/RecipeBucket.html">RecipeBucket API</a></li>
+        <li><a href="docs/Post.html">Post API</a></li>
+        <li><a href="docs/Comment.html">Comment API</a></li>
+    </ul>
+</nav>
+<div class="container">
+    <section id="api1">
+        <h2><a href="docs/Auth.html">Auth API</a></h2>
+        <p><a href="docs/Auth.html">인증/인가 API 문서</a></p>
+    </section>
+    <section id="api2">
+        <h2><a href="docs/Member.html">Member API</a></h2>
+        <p><a href="docs/Member.html">회원 API 문서</a></p>
+    </section>
+    <section id="api3">
+        <h2><a href="docs/Refrigerator.html">Refrigerator API</a></h2>
+        <p><a href="docs/Refrigerator.html">냉장고 API 문서</a></p>
+    </section>
+    <section id="api4">
+        <h2><a href="docs/Storage.html">Storage API</a></h2>
+        <p><a href="docs/Storage.html">냉장고 저장소 API 문서</a></p>
+    </section>
+    <section id="api5">
+        <h2><a href="docs/Grocery.html">Grocery API</a></h2>
+        <p><a href="docs/Grocery.html">식료품 API 문서</a></p>
+    </section>
+    <section id="api6">
+        <h2><a href="docs/GroceryBucket.html">GroceryBucket API</a></h2>
+        <p><a href="docs/GroceryBucket.html">식료품 즐겨찾기 API 문서</a></p>
+    </section>
+    <section id="api7">
+        <h2><a href="docs/Recipe.html">Recipe API</a></h2>
+        <p><a href="docs/Recipe.html">레시피 API 문서</a></p>
+    </section>
+    <section id="api8">
+        <h2><a href="docs/RecipeBucket.html">RecipeBucket API</a></h2>
+        <p><a href="docs/RecipeBucket.html">레시피 즐겨찾기 API 문서</a></p>
+    </section>
+    <section id="api9">
+        <h2><a href="docs/Post.html">Post API</a></h2>
+        <p><a href="docs/Post.html">게시글 API 문서</a></p>
+    </section>
+    <section id="api10">
+        <h2><a href="docs/Comment.html">Comment API</a></h2>
+        <p><a href="docs/Comment.html">댓글 API 문서</a></p>
+    </section>
+</div>
+<footer>
+    <p>Freshmate API 명세서 &copy; 2024

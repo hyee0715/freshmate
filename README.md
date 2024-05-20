@@ -3,8 +3,12 @@
 
 --------------------------------------------------------------
 
+## 💌 프로젝트 소개
+냉장고에 등록한 식료품들의 유통기한 현황을 알려주고, 레시피를 등록 & 공유할 수 있는 서비스
+
 ## 💻프로젝트 기간
-2023.12.16 ~ 2024.04.30
+2023.12.16 ~ 2024.03.05 <br>
+2024.04.16 ~ 2024.04.28
 
 ## 🧱 기술 스택
 
@@ -16,9 +20,6 @@
 |Infrastructure|<img src="https://img.shields.io/badge/NGINX-009639?style=for-the-badge&logo=nginx&logoColor=white"/>  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white"/> <img src="https://img.shields.io/badge/Docker%20Hub-2496ED?style=for-the-badge&logo=Docker&logoColor=white"/>     <img src="https://img.shields.io/badge/GitHub%20Actions-2088FF?style=for-the-badge&logo=GitHub-Actions&logoColor=white"/>   |
 |Cloud|<img src="https://img.shields.io/badge/AWS%20EC2-FF9900?style=for-the-badge&logo=Amazon-EC2&logoColor=white"/> <img src="https://img.shields.io/badge/AWS%20RDS-527FFF?style=for-the-badge&logo=Amazon-RDS&logoColor=white"/> <img src="https://img.shields.io/badge/AWS%20S3-569A31?style=for-the-badge&logo=Amazon-S3&logoColor=white"/>   |
 
-## 💌 프로젝트 소개
-냉장고에 등록한 식료품들의 유통기한 현황을 알려주고, 레시피를 등록 & 공유할 수 있는 서비스
-
 ## 🔮 핵심 기능
 <!--- 식료품 즐겨찾기 기능으로 자주 사용하는 식료품을 조회할 수 있고, 즐겨 찾는 식료품을 통해 식료품을 냉장고에 간단하게 등록할 수 있습니다.-->
 - 사용자만의 냉장고에 식료품의 이름이나 유통기한 등의 정보를 등록할 수 있습니다.
@@ -28,43 +29,21 @@
 - 사용자는 레시피 게시판에 댓글을 남겨 소통할 수 있습니다.
 - 본인이 작성한 게시판에 타 이용자가 댓글을 남길 경우, 알림을 받습니다.
 - 사용자는 레시피 게시판에서 타 이용자의 레시피를 스크랩할 수 있습니다.
-- 레시피 즐겨찾기 기능으로 따로 즐겨찾기 목록에 등록한 레시피들(직접 등록한 레시피 & 스크랩한 레시피)을 간편하게 조회할 수 있습니다.
+- 레시피 즐겨찾기 기능을 이용하여 즐겨찾기 목록에 등록한 레시피(직접 등록한 레시피 & 스크랩한 레시피)를 조회할 수 있습니다.
 
 ## 📌 타깃층
 - 식료품 관리가 어려운 자취생
   - 냉장실/냉동실에 음식을 넣고 유통기한이 지날 때까지 잊어버리는 자취생들을 타깃으로 만들었습니다.
-  - 본인만의 레시피를 저장하고, 레시피를 공유하여 소통할 수 있도록 했습니다.
+  - 본인만의 레시피를 저장하고, 레시피를 공유하여 타 유저들과 소통할 수 있습니다.
 
 <!--## 📄 프로젝트 문서-->
 
 ## 🔍 API 명세
-<details>
-<summary>도메인 별 API 명세</summary>
-  
-  - Auth (인증/인가) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/a1ec280310753dcfc42e52c2a987dc22b707b95f/src/main/resources/static/docs/Auth.html)
+[Freshmate API 명세서 바로가기](http://13.124.73.236/docs)
 
-  - Member (회원) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/a1ec280310753dcfc42e52c2a987dc22b707b95f/src/main/resources/static/docs/Member.html)
-  
-  - Refrigerator (냉장고) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/a1ec280310753dcfc42e52c2a987dc22b707b95f/src/main/resources/static/docs/Refrigerator.html)
 
-  - Storage (냉장고 저장소) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/a1ec280310753dcfc42e52c2a987dc22b707b95f/src/main/resources/static/docs/Storage.html)
-  
-  - Grocery (식료품) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/a1ec280310753dcfc42e52c2a987dc22b707b95f/src/main/resources/static/docs/Grocery.html)
-  
-  - GroceryBucket (즐겨찾는 식료품) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/a1ec280310753dcfc42e52c2a987dc22b707b95f/src/main/resources/static/docs/GroceryBucket.html)
-  
-  - Recipe (레시피) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/a1ec280310753dcfc42e52c2a987dc22b707b95f/src/main/resources/static/docs/Recipe.html)
-  
-  - RecipeBucket (즐겨찾는 레시피) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/a1ec280310753dcfc42e52c2a987dc22b707b95f/src/main/resources/static/docs/RecipeBucket.html)
-  
-  - Post (게시글) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/a1ec280310753dcfc42e52c2a987dc22b707b95f/src/main/resources/static/docs/Post.html)
-  
-  - Comment (댓글) : [링크](https://rawcdn.githack.com/hyee0715/freshmate/a1ec280310753dcfc42e52c2a987dc22b707b95f/src/main/resources/static/docs/Comment.html)
-    
-</details>
-
-## ✨ CI/CD
-![freshmate ci cd drawio (3)](https://github.com/hyee0715/freshmate/assets/59169881/0902de47-3b13-4b36-b110-1beaccd11f95)
+## ✨ CI/CD 파이프라인
+![freshmate ci cd drawio (1)](https://github.com/hyee0715/freshmate/assets/59169881/3c35f928-6678-4977-8817-b86456557349)
 
 
 <!--## 📈 플로우 차트-->
@@ -75,17 +54,17 @@
   <summary>패키지 구조</summary>
   
 ```
-  
-📦 Freshmate
-.github
+
+📦 
+├─ .github
 │  └─ workflows
 │     └─ cicd-script.yml
 ├─ .gitignore
 ├─ Dockerfile-blue
 ├─ Dockerfile-green
-README.md
-build.gradle
-gradle
+├─ README.md
+├─ build.gradle
+├─ gradle
 │  └─ wrapper
 │     ├─ gradle-wrapper.jar
 │     └─ gradle-wrapper.properties
@@ -351,6 +330,8 @@ gradle
    │  │              │  ├─ S3Config.java
    │  │              │  ├─ SchedulerConfig.java
    │  │              │  └─ SecurityConfig.java
+   │  │              ├─ docs
+   │  │              │  └─ DocsViewController.java
    │  │              ├─ error
    │  │              │  ├─ ErrorCode.java
    │  │              │  ├─ ErrorResponse.java
@@ -364,18 +345,21 @@ gradle
    │  │                 └─ SortTypeUtils.java
    │  └─ resources
    │     ├─ application.yml
-   │     └─ static
+   │     ├─ static
+   │     │  └─ docs
+   │     │     ├─ Auth.html
+   │     │     ├─ Comment.html
+   │     │     ├─ Grocery.html
+   │     │     ├─ GroceryBucket.html
+   │     │     ├─ Member.html
+   │     │     ├─ Post.html
+   │     │     ├─ Recipe.html
+   │     │     ├─ RecipeBucket.html
+   │     │     ├─ Refrigerator.html
+   │     │     └─ Storage.html
+   │     └─ templates
    │        └─ docs
-   │           ├─ Auth.html
-   │           ├─ Comment.html
-   │           ├─ Grocery.html
-   │           ├─ GroceryBucket.html
-   │           ├─ Member.html
-   │           ├─ Post.html
-   │           ├─ Recipe.html
-   │           ├─ RecipeBucket.html
-   │           ├─ Refrigerator.html
-   │           └─ Storage.html
+   │           └─ docs-home.html
    └─ test
       └─ java
          └─ com
@@ -437,6 +421,7 @@ gradle
                   │        └─ StorageControllerTest.java
                   └─ global
                      └─ TestPrincipalDetailsService.java
+                     
   
 ```
 
