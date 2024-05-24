@@ -45,6 +45,7 @@ import com.icebox.freshmate.domain.storage.domain.Storage;
 import com.icebox.freshmate.domain.storage.domain.StorageRepository;
 import com.icebox.freshmate.global.error.exception.BusinessException;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
+import com.icebox.freshmate.global.error.exception.InvalidValueException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -337,7 +338,7 @@ public class GroceryService {
 		if (!Pattern.matches(pattern, lastPageUpdatedAt)) {
 			log.warn("GET:READ:INVALID_LAST_PAGE_UPDATED_AT_FORMAT : {}", lastPageUpdatedAt);
 
-			throw new BusinessException(INVALID_LAST_PAGE_UPDATED_AT_FORMAT);
+			throw new InvalidValueException(INVALID_LAST_PAGE_UPDATED_AT_FORMAT);
 		}
 	}
 
@@ -347,7 +348,7 @@ public class GroceryService {
 		if (!Pattern.matches(pattern, lastPageExpirationDate)) {
 			log.warn("GET:READ:INVALID_LAST_PAGE_EXPIRATION_DATE_FORMAT : {}", lastPageExpirationDate);
 
-			throw new BusinessException(INVALID_LAST_PAGE_EXPIRATION_DATE_FORMAT);
+			throw new InvalidValueException(INVALID_LAST_PAGE_EXPIRATION_DATE_FORMAT);
 		}
 	}
 
@@ -355,7 +356,7 @@ public class GroceryService {
 		if (!sortBy.equalsIgnoreCase("nameAsc") && !sortBy.equalsIgnoreCase("nameDesc") && !sortBy.equalsIgnoreCase("updatedAtAsc") && !sortBy.equalsIgnoreCase("updatedAtDesc") && !sortBy.equalsIgnoreCase("expirationDateAsc") && !sortBy.equalsIgnoreCase("expirationDateDesc")) {
 			log.warn("GET:READ:INVALID_GROCERY_SORT_TYPE : {}", sortBy);
 
-			throw new BusinessException(INVALID_GROCERY_SORT_TYPE);
+			throw new InvalidValueException(INVALID_GROCERY_SORT_TYPE);
 		}
 	}
 }

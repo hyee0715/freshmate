@@ -40,6 +40,7 @@ import com.icebox.freshmate.domain.recipegrocery.application.dto.response.Recipe
 import com.icebox.freshmate.domain.recipegrocery.domain.RecipeGroceryRepository;
 import com.icebox.freshmate.global.error.exception.BusinessException;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
+import com.icebox.freshmate.global.error.exception.InvalidValueException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -310,7 +311,7 @@ public class PostService {
 		if (!sortBy.equalsIgnoreCase("idAsc") && !sortBy.equalsIgnoreCase("idDesc")) {
 			log.warn("GET:READ:INVALID_POST_SORT_TYPE : {}", sortBy);
 
-			throw new BusinessException(INVALID_POST_SORT_TYPE);
+			throw new InvalidValueException(INVALID_POST_SORT_TYPE);
 		}
 	}
 
@@ -318,7 +319,7 @@ public class PostService {
 		if (!searchType.equalsIgnoreCase("all") && !searchType.equalsIgnoreCase("title") && !searchType.equalsIgnoreCase("content") && !searchType.equalsIgnoreCase("writer")) {
 			log.warn("GET:READ:INVALID_POST_SEARCH_TYPE : {}", searchType);
 
-			throw new BusinessException(INVALID_POST_SEARCH_TYPE);
+			throw new InvalidValueException(INVALID_POST_SEARCH_TYPE);
 		}
 	}
 }

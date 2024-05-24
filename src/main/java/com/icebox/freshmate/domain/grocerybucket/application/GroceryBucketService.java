@@ -24,6 +24,7 @@ import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.MemberRepository;
 import com.icebox.freshmate.global.error.exception.BusinessException;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
+import com.icebox.freshmate.global.error.exception.InvalidValueException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -116,7 +117,7 @@ public class GroceryBucketService {
 		if (!sortBy.equalsIgnoreCase("nameAsc") && !sortBy.equalsIgnoreCase("nameDesc") && !sortBy.equalsIgnoreCase("updatedAtAsc") && !sortBy.equalsIgnoreCase("updatedAtDesc")) {
 			log.warn("GET:READ:INVALID_GROCERY_BUCKET_SORT_TYPE : {}", sortBy);
 
-			throw new BusinessException(INVALID_GROCERY_BUCKET_SORT_TYPE);
+			throw new InvalidValueException(INVALID_GROCERY_BUCKET_SORT_TYPE);
 		}
 	}
 
@@ -147,7 +148,7 @@ public class GroceryBucketService {
 		if (!Pattern.matches(pattern, lastPageUpdatedAt)) {
 			log.warn("GET:READ:INVALID_LAST_PAGE_UPDATED_AT_FORMAT : {}", lastPageUpdatedAt);
 
-			throw new BusinessException(INVALID_LAST_PAGE_UPDATED_AT_FORMAT);
+			throw new InvalidValueException(INVALID_LAST_PAGE_UPDATED_AT_FORMAT);
 		}
 	}
 }

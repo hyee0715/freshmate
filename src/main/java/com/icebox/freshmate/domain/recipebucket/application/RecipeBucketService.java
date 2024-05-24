@@ -33,6 +33,7 @@ import com.icebox.freshmate.domain.recipegrocery.application.dto.response.Recipe
 import com.icebox.freshmate.domain.recipegrocery.domain.RecipeGrocery;
 import com.icebox.freshmate.global.error.exception.BusinessException;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
+import com.icebox.freshmate.global.error.exception.InvalidValueException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -160,7 +161,7 @@ public class RecipeBucketService {
 		if (!sortBy.equalsIgnoreCase("titleAsc") && !sortBy.equalsIgnoreCase("titleDesc") && !sortBy.equalsIgnoreCase("createdAtAsc") && !sortBy.equalsIgnoreCase("createdAtDesc")) {
 			log.warn("GET:READ:INVALID_RECIPE_BUCKET_SORT_TYPE : {}", sortBy);
 
-			throw new BusinessException(INVALID_RECIPE_BUCKET_SORT_TYPE);
+			throw new InvalidValueException(INVALID_RECIPE_BUCKET_SORT_TYPE);
 		}
 	}
 
@@ -191,7 +192,7 @@ public class RecipeBucketService {
 		if (!Pattern.matches(pattern, lastPageCreatedAt)) {
 			log.warn("GET:READ:INVALID_LAST_PAGE_CREATED_AT_FORMAT : {}", lastPageCreatedAt);
 
-			throw new BusinessException(INVALID_LAST_PAGE_CREATED_AT_FORMAT);
+			throw new InvalidValueException(INVALID_LAST_PAGE_CREATED_AT_FORMAT);
 		}
 	}
 }

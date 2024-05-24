@@ -29,6 +29,7 @@ import com.icebox.freshmate.domain.storage.domain.StorageRepository;
 import com.icebox.freshmate.domain.storage.domain.StorageType;
 import com.icebox.freshmate.global.error.exception.BusinessException;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
+import com.icebox.freshmate.global.error.exception.InvalidValueException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -170,7 +171,7 @@ public class StorageService {
 		if (!Pattern.matches(pattern, lastPageUpdatedAt)) {
 			log.warn("GET:READ:INVALID_LAST_PAGE_UPDATED_AT_FORMAT : {}", lastPageUpdatedAt);
 
-			throw new BusinessException(INVALID_LAST_PAGE_UPDATED_AT_FORMAT);
+			throw new InvalidValueException(INVALID_LAST_PAGE_UPDATED_AT_FORMAT);
 		}
 	}
 
@@ -178,7 +179,7 @@ public class StorageService {
 		if (!sortBy.equalsIgnoreCase("nameAsc") && !sortBy.equalsIgnoreCase("nameDesc") && !sortBy.equalsIgnoreCase("updatedAtAsc") && !sortBy.equalsIgnoreCase("updatedAtDesc")) {
 			log.warn("GET:READ:INVALID_STORAGE_SORT_TYPE : {}", sortBy);
 
-			throw new BusinessException(INVALID_STORAGE_SORT_TYPE);
+			throw new InvalidValueException(INVALID_STORAGE_SORT_TYPE);
 		}
 	}
 }
