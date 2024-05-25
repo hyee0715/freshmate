@@ -189,7 +189,7 @@ class GroceryServiceTest {
 		when(groceryRepository.findAllByWhereConditionsAndOrderBySortConditions(any(), any(), any(), any(), any(), eq(PageRequest.of(page, size)), any(), any(), any(), any())).thenReturn(groceries);
 
 		//when
-		GroceriesRes groceriesRes = groceryService.findAllByStorageId(storageId, "", "nameAsc", null, "notExpired", pageRequest, null, null, null, member.getUsername());
+		GroceriesRes groceriesRes = groceryService.findAllByStorageId(storageId, "", "nameAsc", "meat", "notExpired", pageRequest, null, null, null, member.getUsername());
 
 		//then
 		assertThat(groceriesRes.groceries()).hasSize(2);

@@ -153,7 +153,7 @@ public class StorageService {
 		try {
 
 			return StorageType.findStorageType(storageType);
-		} catch (BusinessException e) {
+		} catch (InvalidValueException e) {
 
 			return null;
 		}

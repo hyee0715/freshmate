@@ -496,7 +496,7 @@ public class RecipeService {
 		try {
 
 			return RecipeType.findRecipeType(recipeType);
-		} catch (BusinessException e) {
+		} catch (InvalidValueException e) {
 
 			return null;
 		}

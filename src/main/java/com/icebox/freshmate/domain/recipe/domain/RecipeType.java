@@ -3,7 +3,7 @@ package com.icebox.freshmate.domain.recipe.domain;
 import java.util.Arrays;
 
 import com.icebox.freshmate.global.error.ErrorCode;
-import com.icebox.freshmate.global.error.exception.BusinessException;
+import com.icebox.freshmate.global.error.exception.InvalidValueException;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ public enum RecipeType {
 			.orElseThrow(() -> {
 				log.error("INVALID_RECIPE_TYPE : {}", recipeType);
 
-				return new BusinessException(ErrorCode.INVALID_RECIPE_TYPE);
+				return new InvalidValueException(ErrorCode.INVALID_RECIPE_TYPE);
 			});
 	}
 }

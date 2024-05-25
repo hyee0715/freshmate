@@ -3,7 +3,7 @@ package com.icebox.freshmate.domain.storage.domain;
 import java.util.Arrays;
 
 import com.icebox.freshmate.global.error.ErrorCode;
-import com.icebox.freshmate.global.error.exception.BusinessException;
+import com.icebox.freshmate.global.error.exception.InvalidValueException;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ public enum StorageType {
 			.orElseThrow(() -> {
 				log.error("INVALID_STORAGE_TYPE : {}", storageType);
 
-				return new BusinessException(ErrorCode.INVALID_STORAGE_TYPE);
+				return new InvalidValueException(ErrorCode.INVALID_STORAGE_TYPE);
 			});
 	}
 }

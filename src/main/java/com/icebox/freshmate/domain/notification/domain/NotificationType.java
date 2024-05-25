@@ -3,7 +3,7 @@ package com.icebox.freshmate.domain.notification.domain;
 import java.util.Arrays;
 
 import com.icebox.freshmate.global.error.ErrorCode;
-import com.icebox.freshmate.global.error.exception.BusinessException;
+import com.icebox.freshmate.global.error.exception.InvalidValueException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,7 +20,7 @@ public enum NotificationType {
 			.orElseThrow(() -> {
 				log.error("INVALID_NOTIFICATION_TYPE : {}", notificationType);
 
-				return new BusinessException(ErrorCode.INVALID_NOTIFICATION_TYPE);
+				return new InvalidValueException(ErrorCode.INVALID_NOTIFICATION_TYPE);
 			});
 	}
 }

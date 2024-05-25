@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 
 import com.icebox.freshmate.global.error.ErrorCode;
-import com.icebox.freshmate.global.error.exception.BusinessException;
+import com.icebox.freshmate.global.error.exception.InvalidValueException;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +50,7 @@ public enum GroceryExpirationType {
 			.orElseThrow(() -> {
 				log.error("INVALID_GROCERY_EXPIRATION_TYPE = {}", groceryExpirationType);
 
-				return new BusinessException(ErrorCode.INVALID_GROCERY_EXPIRATION_TYPE);
+				return new InvalidValueException(ErrorCode.INVALID_GROCERY_EXPIRATION_TYPE);
 			});
 	}
 }

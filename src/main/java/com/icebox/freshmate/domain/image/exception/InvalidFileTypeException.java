@@ -1,11 +1,13 @@
 package com.icebox.freshmate.domain.image.exception;
 
 import com.icebox.freshmate.global.error.ErrorCode;
-import com.icebox.freshmate.global.error.exception.BusinessException;
 
-public class InvalidFileTypeException extends BusinessException {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-	public InvalidFileTypeException(ErrorCode errorCode) {
-		super(errorCode);
-	}
+@Getter
+@AllArgsConstructor
+public class InvalidFileTypeException extends RuntimeException {
+
+	private final ErrorCode errorCode;
 }
