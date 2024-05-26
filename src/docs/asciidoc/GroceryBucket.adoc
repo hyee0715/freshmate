@@ -25,6 +25,24 @@ include::{snippets}/grocery-bucket/grocery-bucket-create/response-fields.adoc[]
 .Response body
 include::{snippets}/grocery-bucket/grocery-bucket-create/response-body.adoc[]
 
+=== 실패 - 회원이 존재하지 않는 경우
+
+.Request
+include::{snippets}/grocery-bucket/grocery-bucket-create-failure-not-found-member/http-request.adoc[]
+.Request Headers
+include::{snippets}/grocery-bucket/grocery-bucket-create-failure-not-found-member/request-headers.adoc[]
+.Request Fields
+include::{snippets}/grocery-bucket/grocery-bucket-create-failure-not-found-member/request-fields.adoc[]
+.Request Body
+include::{snippets}/grocery-bucket/grocery-bucket-create-failure-not-found-member/request-body.adoc[]
+
+.Response
+include::{snippets}/grocery-bucket/grocery-bucket-create-failure-not-found-member/http-response.adoc[]
+.Response Fields
+include::{snippets}/grocery-bucket/grocery-bucket-create-failure-not-found-member/response-fields.adoc[]
+.Response body
+include::{snippets}/grocery-bucket/grocery-bucket-create-failure-not-found-member/response-body.adoc[]
+
 ---
 == GET: 즐겨 찾는 식료품 단건 조회
 === 성공
@@ -40,6 +58,20 @@ include::{snippets}/grocery-bucket/grocery-bucket-find-by-id/http-response.adoc[
 include::{snippets}/grocery-bucket/grocery-bucket-find-by-id/response-fields.adoc[]
 .Response body
 include::{snippets}/grocery-bucket/grocery-bucket-find-by-id/response-body.adoc[]
+
+=== 실패 - 즐겨 찾는 식료품이 존재하지 않는 경우
+
+.Request
+include::{snippets}/grocery-bucket/grocery-bucket-find-by-id-failure-not-found-grocery-bucket/http-request.adoc[]
+.Path Parameters
+include::{snippets}/grocery-bucket/grocery-bucket-find-by-id-failure-not-found-grocery-bucket/path-parameters.adoc[]
+
+.Response
+include::{snippets}/grocery-bucket/grocery-bucket-find-by-id-failure-not-found-grocery-bucket/http-response.adoc[]
+.Response Fields
+include::{snippets}/grocery-bucket/grocery-bucket-find-by-id-failure-not-found-grocery-bucket/response-fields.adoc[]
+.Response body
+include::{snippets}/grocery-bucket/grocery-bucket-find-by-id-failure-not-found-grocery-bucket/response-body.adoc[]
 
 ---
 == GET: 사용자의 즐겨 찾는 식료품 목록 조회

@@ -23,6 +23,38 @@ include::{snippets}/post/post-create/http-response.adoc[]
 .Response Fields
 include::{snippets}/post/post-create/response-fields.adoc[]
 
+=== 실패 - 회원이 존재하지 않는 경우
+
+.Request
+include::{snippets}/post/post-create-failure-not-found-member/http-request.adoc[]
+.Request Headers
+include::{snippets}/post/post-create-failure-not-found-member/request-headers.adoc[]
+.Request Parts
+include::{snippets}/post/post-create-failure-not-found-member/request-parts.adoc[]
+.Request Parts Fields
+include::{snippets}/post/post-create-failure-not-found-member/request-part-postReq-fields.adoc[]
+
+.Response
+include::{snippets}/post/post-create-failure-not-found-member/http-response.adoc[]
+.Response Fields
+include::{snippets}/post/post-create-failure-not-found-member/response-fields.adoc[]
+
+=== 실패 - 본인이 작성하지 않은 레시피는 게시글로 공유할 수 없음
+
+.Request
+include::{snippets}/post/post-create-failure-invalid-attempt-to-post-recipe/http-request.adoc[]
+.Request Headers
+include::{snippets}/post/post-create-failure-invalid-attempt-to-post-recipe/request-headers.adoc[]
+.Request Parts
+include::{snippets}/post/post-create-failure-invalid-attempt-to-post-recipe/request-parts.adoc[]
+.Request Parts Fields
+include::{snippets}/post/post-create-failure-invalid-attempt-to-post-recipe/request-part-postReq-fields.adoc[]
+
+.Response
+include::{snippets}/post/post-create-failure-invalid-attempt-to-post-recipe/http-response.adoc[]
+.Response Fields
+include::{snippets}/post/post-create-failure-invalid-attempt-to-post-recipe/response-fields.adoc[]
+
 ---
 == GET: 게시글 단건 조회
 === 성공
@@ -38,6 +70,20 @@ include::{snippets}/post/post-find-by-id/http-response.adoc[]
 include::{snippets}/post/post-find-by-id/response-fields.adoc[]
 .Response body
 include::{snippets}/post/post-find-by-id/response-body.adoc[]
+
+=== 실패 - 게시글이 존재하지 않는 경우
+
+.Request
+include::{snippets}/post/post-find-by-id-failure-not-found-post/http-request.adoc[]
+.Path Parameters
+include::{snippets}/post/post-find-by-id-failure-not-found-post/path-parameters.adoc[]
+
+.Response
+include::{snippets}/post/post-find-by-id-failure-not-found-post/http-response.adoc[]
+.Response Fields
+include::{snippets}/post/post-find-by-id-failure-not-found-post/response-fields.adoc[]
+.Response body
+include::{snippets}/post/post-find-by-id-failure-not-found-post/response-body.adoc[]
 
 ---
 == GET: 게시글 목록 조회

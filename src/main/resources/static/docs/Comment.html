@@ -444,6 +444,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#Comment-API">POST: 댓글 생성</a>
 <ul class="sectlevel2">
 <li><a href="#_성공">성공</a></li>
+<li><a href="#_실패_게시글이_존재하지_않는_경우">실패 - 게시글이 존재하지 않는 경우</a></li>
 </ul>
 </li>
 <li><a href="#_get_게시글_별_모든_댓글_조회">GET: 게시글 별 모든 댓글 조회</a>
@@ -454,6 +455,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_patch_댓글_수정">PATCH: 댓글 수정</a>
 <ul class="sectlevel2">
 <li><a href="#_성공_3">성공</a></li>
+<li><a href="#_실패_댓글이_존재하지_않는_경우">실패 - 댓글이 존재하지 않는 경우</a></li>
 </ul>
 </li>
 <li><a href="#_delete_댓글_삭제">DELETE: 댓글 삭제</a>
@@ -478,7 +480,7 @@ Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWA
 Accept: application/json
 Authorization: Bearer {ACCESS_TOKEN}
 Content-Length: 52
-X-CSRF-TOKEN: N41m1Y7NFDGAxS_O9G4OGSg5BL-MwUMUxQmQpmFLYme-S2m3U7pW4LascAet9kz_wUM6KhsOKd2-8SA5pzr1xwV_AF6Kc1qO
+X-CSRF-TOKEN: xOPKQaCtY9hhivm3V7DB9ZmigmmEx10RKfZ07PlI-kcXQUZp8Nr9IsWaVbpMvMHSZ531l6yQr1G8_mo8TMIViJ8rynchdHYP
 Host: localhost:8080
 
 {
@@ -570,16 +572,16 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 416
+Content-Length: 407
 
 {
   "commentId" : 1,
   "postId" : 1,
   "memberId" : 1,
-  "memberNickName" : "닉네임닉네임",
+  "memberNickName" : "닉네임",
   "content" : "내용",
-  "createdAt" : "2024-04-23 14:02:41",
-  "updatedAt" : "2024-04-23 14:02:41",
+  "createdAt" : "2024-05-27 01:47:20",
+  "updatedAt" : "2024-05-27 01:47:20",
   "images" : [ {
     "fileName" : "image1.jpg",
     "path" : "https://test-image-urls.com/image1.jpg"
@@ -652,6 +654,156 @@ Content-Length: 416
 </tr>
 </tbody>
 </table>
+</div>
+<div class="sect2">
+<h3 id="_실패_게시글이_존재하지_않는_경우">실패 - 게시글이 존재하지 않는 경우</h3>
+<div class="listingblock">
+<div class="title">Request</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/comments HTTP/1.1
+Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Accept: application/json
+Authorization: Bearer {ACCESS_TOKEN}
+Content-Length: 52
+X-CSRF-TOKEN: grz3mfPIKi9S1DPjidaE7_nAHFk8MZJSGAtS5nDnGxO9BJiB54_Pr5CpSUl_4gXTvvuw3cmhMWFaUPZ_ez1j0UjTKiWJMavi
+Host: localhost:8080
+
+{
+  "postId" : 1,
+  "content" : "댓글 내용"
+}</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 5. Request Headers</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Authorization</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Access Token</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 6. Request Parts</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Part</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>imageFiles</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">댓글 이미지들</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>commentCreateReq</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">댓글 등록 내용</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 7. Request Parts Fields</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>postId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">게시글 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>content</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">댓글 내용</p></td>
+</tr>
+</tbody>
+</table>
+<div class="listingblock">
+<div class="title">Response</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 404 Not Found
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 140
+
+{
+  "timestamp" : "2024-05-27 01:47:23",
+  "code" : "P001",
+  "errors" : [ ],
+  "message" : "게시글이 존재하지 않습니다."
+}</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 8. Response Fields</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>timestamp</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">예외 시간</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>code</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">예외 코드</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>errors[]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">오류 목록</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>message</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">오류 메시지</p></td>
+</tr>
+</tbody>
+</table>
 <hr>
 </div>
 </div>
@@ -666,12 +818,12 @@ Content-Length: 416
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/comments?post-id=1 HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-X-CSRF-TOKEN: UfpB1BxiaF48a-aaMW2J2HAMHTJyMXt6hBwcjrW-yJIKclzpMMtzsngEXjgRXdL4AkC970E_MApLAhpX5y4r74WKrvM6Smvc
+X-CSRF-TOKEN: 311iVHbeGOTJyZ8mnQy535qQjLT6VSlCCQ4NYqKxWe2BkDcd52RUYUfped3k__5FpCGNu6mkodbDMBhvazw7A8ODbI_j9A8o
 Host: localhost:8080</code></pre>
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 5. Query Strings</caption>
+<caption class="title">Table 9. Query Strings</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -703,17 +855,17 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 956
+Content-Length: 938
 
 {
   "comments" : [ {
     "commentId" : 1,
     "postId" : 1,
     "memberId" : 1,
-    "memberNickName" : "닉네임닉네임",
+    "memberNickName" : "닉네임",
     "content" : "댓글 내용",
-    "createdAt" : "2024-04-23 14:02:42",
-    "updatedAt" : "2024-04-23 14:02:42",
+    "createdAt" : "2024-05-27 01:47:22",
+    "updatedAt" : "2024-05-27 01:47:22",
     "images" : [ {
       "fileName" : "image1.jpg",
       "path" : "https://test-image-urls.com/image1.jpg"
@@ -725,10 +877,10 @@ Content-Length: 956
     "commentId" : 2,
     "postId" : 1,
     "memberId" : 1,
-    "memberNickName" : "닉네임닉네임",
+    "memberNickName" : "닉네임",
     "content" : "댓글 내용2",
-    "createdAt" : "2024-04-23 14:02:42",
-    "updatedAt" : "2024-04-23 14:02:42",
+    "createdAt" : "2024-05-27 01:47:22",
+    "updatedAt" : "2024-05-27 01:47:22",
     "images" : [ {
       "fileName" : "image1.jpg",
       "path" : "https://test-image-urls.com/image1.jpg"
@@ -742,7 +894,7 @@ Content-Length: 956
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 6. Response Fields</caption>
+<caption class="title">Table 10. Response Fields</caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -821,10 +973,10 @@ Content-Length: 956
     "commentId" : 1,
     "postId" : 1,
     "memberId" : 1,
-    "memberNickName" : "닉네임닉네임",
+    "memberNickName" : "닉네임",
     "content" : "댓글 내용",
-    "createdAt" : "2024-04-23 14:02:42",
-    "updatedAt" : "2024-04-23 14:02:42",
+    "createdAt" : "2024-05-27 01:47:22",
+    "updatedAt" : "2024-05-27 01:47:22",
     "images" : [ {
       "fileName" : "image1.jpg",
       "path" : "https://test-image-urls.com/image1.jpg"
@@ -836,10 +988,10 @@ Content-Length: 956
     "commentId" : 2,
     "postId" : 1,
     "memberId" : 1,
-    "memberNickName" : "닉네임닉네임",
+    "memberNickName" : "닉네임",
     "content" : "댓글 내용2",
-    "createdAt" : "2024-04-23 14:02:42",
-    "updatedAt" : "2024-04-23 14:02:42",
+    "createdAt" : "2024-05-27 01:47:22",
+    "updatedAt" : "2024-05-27 01:47:22",
     "images" : [ {
       "fileName" : "image1.jpg",
       "path" : "https://test-image-urls.com/image1.jpg"
@@ -868,7 +1020,7 @@ Content-Length: 956
 Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
 Content-Length: 42
-X-CSRF-TOKEN: EEbUswvQl2ImMszX-gTGjIzlrQlpNjkLbHQApj-XIb2Zow61KHPl0TnloQELUKqzmCnyvO7TgGhZBA8mWE1hwl6iRdyvkDrR
+X-CSRF-TOKEN: EVq8VgeCm_gWrkHZykrDGwYf4wF_IEGXJI5MRVy_XK2GTzYcIWmJbjK1rZ07nHLu_Gf3Kzd5zjgcQnO6QrYuJGqNbszkegEp
 Host: localhost:8080
 
 {
@@ -877,7 +1029,7 @@ Host: localhost:8080
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 7. /api/comments/{id}</caption>
+<caption class="title">Table 11. /api/comments/{id}</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -896,7 +1048,7 @@ Host: localhost:8080
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 8. Request Headers</caption>
+<caption class="title">Table 12. Request Headers</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -915,7 +1067,7 @@ Host: localhost:8080
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 9. Request Fields</caption>
+<caption class="title">Table 13. Request Fields</caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -958,16 +1110,16 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 430
+Content-Length: 421
 
 {
   "commentId" : 1,
   "postId" : 1,
   "memberId" : 1,
-  "memberNickName" : "닉네임닉네임",
+  "memberNickName" : "닉네임",
   "content" : "댓글 내용 수정",
-  "createdAt" : "2024-04-23 14:02:42",
-  "updatedAt" : "2024-04-23 14:02:42",
+  "createdAt" : "2024-05-27 01:47:23",
+  "updatedAt" : "2024-05-27 01:47:23",
   "images" : [ {
     "fileName" : "image1.jpg",
     "path" : "https://test-image-urls.com/image1.jpg"
@@ -979,7 +1131,7 @@ Content-Length: 430
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 10. Response Fields</caption>
+<caption class="title">Table 14. Response Fields</caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -1047,10 +1199,10 @@ Content-Length: 430
   "commentId" : 1,
   "postId" : 1,
   "memberId" : 1,
-  "memberNickName" : "닉네임닉네임",
+  "memberNickName" : "닉네임",
   "content" : "댓글 내용 수정",
-  "createdAt" : "2024-04-23 14:02:42",
-  "updatedAt" : "2024-04-23 14:02:42",
+  "createdAt" : "2024-05-27 01:47:23",
+  "updatedAt" : "2024-05-27 01:47:23",
   "images" : [ {
     "fileName" : "image1.jpg",
     "path" : "https://test-image-urls.com/image1.jpg"
@@ -1061,27 +1213,26 @@ Content-Length: 430
 }</code></pre>
 </div>
 </div>
-<hr>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_delete_댓글_삭제">DELETE: 댓글 삭제</h2>
-<div class="sectionbody">
 <div class="sect2">
-<h3 id="_성공_4">성공</h3>
+<h3 id="_실패_댓글이_존재하지_않는_경우">실패 - 댓글이 존재하지 않는 경우</h3>
 <div class="listingblock">
 <div class="title">Request</div>
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/comments/1 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PATCH /api/comments/1 HTTP/1.1
 Content-Type: application/json;charset=UTF-8
 Authorization: Bearer {ACCESS_TOKEN}
-X-CSRF-TOKEN: vqKaulNAhTAXeuyW0YBMyb_owm_Mp07R_IqffBPD_ezuj_FM3cSqj2Z2tQE6G9Sg6a14_9mK7w38kXb8mu-tRXLyzIndvsgt
-Host: localhost:8080</code></pre>
+Content-Length: 42
+X-CSRF-TOKEN: 2ztxnY8FD68Cb3Oa2hmDrnKe2bJlKOkeNj_XDXL_pHuScIjV6lhBr75nO5cvDhGsuTS3lkqp9IoHGNozUwzgaxfKnUirE7-x
+Host: localhost:8080
+
+{
+  "content" : "댓글 내용 수정"
+}</code></pre>
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 11. /api/comments/{id}</caption>
+<caption class="title">Table 15. /api/comments/{id}</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1100,7 +1251,166 @@ Host: localhost:8080</code></pre>
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 12. Request Headers</caption>
+<caption class="title">Table 16. Request Headers</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Authorization</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Access Token</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 17. Request Fields</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>content</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">수정할 댓글 내용</p></td>
+</tr>
+</tbody>
+</table>
+<div class="listingblock">
+<div class="title">Request Body</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
+  "content" : "댓글 내용 수정"
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Response</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 404 Not Found
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 138
+
+{
+  "timestamp" : "2024-05-27 01:47:19",
+  "code" : "CM001",
+  "errors" : [ ],
+  "message" : "댓글이 존재하지 않습니다."
+}</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 18. Response Fields</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>timestamp</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">예외 시간</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>code</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">예외 코드</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>errors[]</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">오류 목록</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>message</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">오류 메시지</p></td>
+</tr>
+</tbody>
+</table>
+<div class="listingblock">
+<div class="title">Response body</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
+  "timestamp" : "2024-05-27 01:47:19",
+  "code" : "CM001",
+  "errors" : [ ],
+  "message" : "댓글이 존재하지 않습니다."
+}</code></pre>
+</div>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_delete_댓글_삭제">DELETE: 댓글 삭제</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_성공_4">성공</h3>
+<div class="listingblock">
+<div class="title">Request</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/comments/1 HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Authorization: Bearer {ACCESS_TOKEN}
+X-CSRF-TOKEN: YAs9EuBZ8bEmIJ3nG0IoyGuyBFE4dZKZMuQSG3j90qd7z-_fAjJZKtJrkNALEvuBLG8c_wmFKWlbR6W0UNQnIkCe4p4eq9bp
+Host: localhost:8080</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 19. /api/comments/{id}</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">댓글 ID</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 20. Request Headers</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1140,7 +1450,7 @@ X-Frame-Options: DENY</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-03-30 22:31:12 +0900
+Last updated 2024-05-27 01:44:21 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

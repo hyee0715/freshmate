@@ -4,7 +4,9 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -13,6 +15,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
 import static org.springframework.restdocs.payload.JsonFieldType.BOOLEAN;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
@@ -69,6 +72,9 @@ import com.icebox.freshmate.domain.refrigerator.domain.Refrigerator;
 import com.icebox.freshmate.domain.storage.domain.Storage;
 import com.icebox.freshmate.domain.storage.domain.StorageType;
 import com.icebox.freshmate.global.TestPrincipalDetailsService;
+import com.icebox.freshmate.global.error.ErrorCode;
+import com.icebox.freshmate.global.error.exception.BusinessException;
+import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
 
 @ExtendWith({RestDocumentationExtension.class})
 @WebMvcTest(value = {RecipeBucketController.class})
@@ -92,7 +98,6 @@ class RecipeBucketControllerTest {
 
 	private Member member;
 	private Recipe recipe;
-	private RecipeBucket recipeBucket;
 	private Refrigerator refrigerator;
 	private Storage storage;
 	private Grocery grocery1;
@@ -115,7 +120,7 @@ class RecipeBucketControllerTest {
 			.realName("성이름")
 			.username("aaaa1111")
 			.password("aaaa1111!")
-			.nickName("닉네임닉네임")
+			.nickName("닉네임")
 			.role(Role.USER)
 			.build();
 
@@ -172,14 +177,9 @@ class RecipeBucketControllerTest {
 
 		recipe.addRecipeGrocery(recipeGrocery1);
 		recipe.addRecipeGrocery(recipeGrocery2);
-
-		recipeBucket = RecipeBucket.builder()
-			.recipe(recipe)
-			.member(member)
-			.build();
 	}
 
-	@DisplayName("즐겨 찾는 레시피 생성 테스트")
+	@DisplayName("즐겨 찾는 레시피 생성 성공 테스트")
 	@Test
 	void create() throws Exception {
 		//given
@@ -263,7 +263,91 @@ class RecipeBucketControllerTest {
 			));
 	}
 
-	@DisplayName("즐겨 찾는 레시피 단건 조회 테스트")
+	@DisplayName("즐겨 찾는 레시피 생성 실패 테스트 - 이미 즐겨 찾는 레시피로 등록되어 있는 경우")
+	@Test
+	void createFailure_duplicatedRecipeBucket() throws Exception {
+		//given
+		Long recipeId = 1L;
+		RecipeBucketReq recipeBucketReq = new RecipeBucketReq(recipeId);
+
+		doThrow(new BusinessException(ErrorCode.DUPLICATED_RECIPE_BUCKET)).when(
+			recipeBucketService).create(eq(recipeBucketReq), any(String.class));
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.post("/api/recipe-buckets")
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader())
+				.content(objectMapper.writeValueAsString(recipeBucketReq)))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("RB002"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("해당 레시피는 이미 즐겨 찾는 레시피로 등록되어 있습니다."))
+			.andDo(print())
+			.andDo(document("recipe-bucket/recipe-bucket-create-failure-duplicated-recipe-bucket",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				requestFields(
+					fieldWithPath("recipeId").description("레시피 ID")
+				),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("즐겨 찾는 레시피 생성 실패 테스트 - 레시피 소유자의 정보와 즐겨 찾는 레시피로 등록하려는 사용자의 정보가 일치하지 않은 경우")
+	@Test
+	void createFailure_recipeOwnerMismatchToCreateRecipeBucket() throws Exception {
+		//given
+		Long recipeId = 1L;
+		RecipeBucketReq recipeBucketReq = new RecipeBucketReq(recipeId);
+
+		doThrow(new BusinessException(ErrorCode.RECIPE_OWNER_MISMATCH_TO_CREATE_RECIPE_BUCKET)).when(
+			recipeBucketService).create(eq(recipeBucketReq), any(String.class));
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.post("/api/recipe-buckets")
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader())
+				.content(objectMapper.writeValueAsString(recipeBucketReq)))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("RB001"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("레시피 소유자의 정보와 즐겨 찾는 레시피로 등록하려는 사용자의 정보가 일치하지 않습니다."))
+			.andDo(print())
+			.andDo(document("recipe-bucket/recipe-bucket-create-failure-recipe-owner-mismatch-to-create-recipe-bucket",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				requestFields(
+					fieldWithPath("recipeId").description("레시피 ID")
+				),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("즐겨 찾는 레시피 단건 조회 성공 테스트")
 	@Test
 	void findById() throws Exception {
 		//given
@@ -338,7 +422,41 @@ class RecipeBucketControllerTest {
 			));
 	}
 
-	@DisplayName("사용자의 즐겨 찾는 레시피 목록 조회 테스트")
+	@DisplayName("즐겨 찾는 레시피 단건 조회 실패 테스트 - 즐겨 찾는 레시피가 존재하지 않는 경우")
+	@Test
+	void findByIdFailure_notFoundRecipeBucket() throws Exception {
+		//given
+		Long recipeBucketId = 1L;
+
+		doThrow(new EntityNotFoundException(ErrorCode.NOT_FOUND_RECIPE_BUCKET)).when(
+			recipeBucketService).findById(anyLong());
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/recipe-buckets/{id}", recipeBucketId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("RB003"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("즐겨 찾는 레시피가 존재하지 않습니다."))
+			.andDo(print())
+			.andDo(document("recipe-bucket/recipe-bucket-find-by-id-failure-not-found-recipe-bucket",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				pathParameters(parameterWithName("id").description("즐겨 찾는 레시피 ID")),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("사용자의 즐겨 찾는 레시피 목록 조회 성공 테스트")
 	@Test
 	void findAllByMemberId() throws Exception {
 		//given
@@ -397,10 +515,10 @@ class RecipeBucketControllerTest {
 		//when
 		//then
 		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/recipe-buckets")
-			.contentType(MediaType.APPLICATION_JSON)
-			.header("Authorization", "Bearer {ACCESS_TOKEN}")
-			.with(user(principalDetails))
-			.with(csrf().asHeader()))
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
 			.andExpect(content().json(objectMapper.writeValueAsString(recipeBucketsRes)))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.recipeBuckets", hasSize(2)))
@@ -451,7 +569,42 @@ class RecipeBucketControllerTest {
 			));
 	}
 
-	@DisplayName("즐겨 찾는 레시피 삭제 테스트")
+	@DisplayName("사용자의 즐겨 찾는 레시피 목록 조회 실패 테스트 - 회원이 존재하지 않는 경우")
+	@Test
+	void findAllByMemberIdFailure_notFoundMember() throws Exception {
+		//given
+		doThrow(new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER)).when(
+			recipeBucketService).findAllByMemberId(any(), any(), any(), any(), anyString());
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/recipe-buckets")
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("M003"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("회원을 찾을 수 없습니다."))
+			.andDo(print())
+			.andDo(document("recipe-bucket/recipe-bucket-find-all-by-member-id-failure-not-found-member",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("즐겨 찾는 레시피 삭제 성공 테스트")
 	@Test
 	void delete() throws Exception {
 		//given

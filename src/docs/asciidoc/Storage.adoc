@@ -25,6 +25,24 @@ include::{snippets}/storage/storage-create/response-fields.adoc[]
 .Response body
 include::{snippets}/storage/storage-create/response-body.adoc[]
 
+=== 실패 - 회원이 존재하지 않는 경우
+
+.Request
+include::{snippets}/storage/storage-create-failure-not-found-member/http-request.adoc[]
+.Request Headers
+include::{snippets}/storage/storage-create-failure-not-found-member/request-headers.adoc[]
+.Request Fields
+include::{snippets}/storage/storage-create-failure-not-found-member/request-fields.adoc[]
+.Request Body
+include::{snippets}/storage/storage-create-failure-not-found-member/request-body.adoc[]
+
+.Response
+include::{snippets}/storage/storage-create-failure-not-found-member/http-response.adoc[]
+.Response Fields
+include::{snippets}/storage/storage-create-failure-not-found-member/response-fields.adoc[]
+.Response body
+include::{snippets}/storage/storage-create-failure-not-found-member/response-body.adoc[]
+
 ---
 == GET: 냉장고 저장소 단건 조회
 === 성공
@@ -40,6 +58,20 @@ include::{snippets}/storage/storage-find-by-id/http-response.adoc[]
 include::{snippets}/storage/storage-find-by-id/response-fields.adoc[]
 .Response body
 include::{snippets}/storage/storage-find-by-id/response-body.adoc[]
+
+=== 실패 - 냉장고 저장소가 존재하지 않는 경우
+
+.Request
+include::{snippets}/storage/storage-find-by-id-failure-not-found-storage/http-request.adoc[]
+.Path Parameters
+include::{snippets}/storage/storage-find-by-id-failure-not-found-storage/path-parameters.adoc[]
+
+.Response
+include::{snippets}/storage/storage-find-by-id-failure-not-found-storage/http-response.adoc[]
+.Response Fields
+include::{snippets}/storage/storage-find-by-id-failure-not-found-storage/response-fields.adoc[]
+.Response body
+include::{snippets}/storage/storage-find-by-id-failure-not-found-storage/response-body.adoc[]
 
 ---
 == GET: 특정 냉장고의 모든 냉장고 저장소 조회
@@ -58,6 +90,38 @@ include::{snippets}/storage/storage-find-all-by-refrigerator-id/http-response.ad
 include::{snippets}/storage/storage-find-all-by-refrigerator-id/response-fields.adoc[]
 .Response body
 include::{snippets}/storage/storage-find-all-by-refrigerator-id/response-body.adoc[]
+
+=== 실패 - 냉장고가 존재하지 않는 경우
+
+.Request
+include::{snippets}/storage/storage-find-all-by-refrigerator-id-failure-not-found-refrigerator/http-request.adoc[]
+.Path Parameters
+include::{snippets}/storage/storage-find-all-by-refrigerator-id-failure-not-found-refrigerator/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/storage/storage-find-all-by-refrigerator-id-failure-not-found-refrigerator/request-headers.adoc[]
+
+.Response
+include::{snippets}/storage/storage-find-all-by-refrigerator-id-failure-not-found-refrigerator/http-response.adoc[]
+.Response Fields
+include::{snippets}/storage/storage-find-all-by-refrigerator-id-failure-not-found-refrigerator/response-fields.adoc[]
+.Response body
+include::{snippets}/storage/storage-find-all-by-refrigerator-id-failure-not-found-refrigerator/response-body.adoc[]
+
+=== 실패 - 유효하지 않거나 허용되지 않는 냉장고 저장소 정렬 타입인 경우
+
+.Request
+include::{snippets}/storage/storage-find-all-by-refrigerator-id-failure-invalid-storage-sort-type/http-request.adoc[]
+.Path Parameters
+include::{snippets}/storage/storage-find-all-by-refrigerator-id-failure-invalid-storage-sort-type/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/storage/storage-find-all-by-refrigerator-id-failure-invalid-storage-sort-type/request-headers.adoc[]
+
+.Response
+include::{snippets}/storage/storage-find-all-by-refrigerator-id-failure-invalid-storage-sort-type/http-response.adoc[]
+.Response Fields
+include::{snippets}/storage/storage-find-all-by-refrigerator-id-failure-invalid-storage-sort-type/response-fields.adoc[]
+.Response body
+include::{snippets}/storage/storage-find-all-by-refrigerator-id-failure-invalid-storage-sort-type/response-body.adoc[]
 
 ---
 == PATCH: 냉장고 저장소 수정
@@ -80,6 +144,26 @@ include::{snippets}/storage/storage-update/http-response.adoc[]
 include::{snippets}/storage/storage-update/response-fields.adoc[]
 .Response body
 include::{snippets}/storage/storage-update/response-body.adoc[]
+
+=== 실패 - 냉장고 저장소 타입이 유효하지 않은 경우
+
+.Request
+include::{snippets}/storage/storage-update-failure-invalid-storage-type/http-request.adoc[]
+.Path Parameters
+include::{snippets}/storage/storage-update-failure-invalid-storage-type/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/storage/storage-update-failure-invalid-storage-type/request-headers.adoc[]
+.Request Fields
+include::{snippets}/storage/storage-update-failure-invalid-storage-type/request-fields.adoc[]
+.Request Body
+include::{snippets}/storage/storage-update-failure-invalid-storage-type/request-body.adoc[]
+
+.Response
+include::{snippets}/storage/storage-update-failure-invalid-storage-type/http-response.adoc[]
+.Response Fields
+include::{snippets}/storage/storage-update-failure-invalid-storage-type/response-fields.adoc[]
+.Response body
+include::{snippets}/storage/storage-update-failure-invalid-storage-type/response-body.adoc[]
 
 ---
 == DELETE: 냉장고 저장소 삭제

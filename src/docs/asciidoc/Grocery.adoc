@@ -23,6 +23,38 @@ include::{snippets}/grocery/grocery-create/http-response.adoc[]
 .Response Fields
 include::{snippets}/grocery/grocery-create/response-fields.adoc[]
 
+=== 실패 - 회원이 존재하지 않는 경우
+
+.Request
+include::{snippets}/grocery/grocery-create-failure-not-found-member/http-request.adoc[]
+.Request Headers
+include::{snippets}/grocery/grocery-create-failure-not-found-member/request-headers.adoc[]
+.Request Parts
+include::{snippets}/grocery/grocery-create-failure-not-found-member/request-parts.adoc[]
+.Request Parts Fields
+include::{snippets}/grocery/grocery-create-failure-not-found-member/request-part-groceryReq-fields.adoc[]
+
+.Response
+include::{snippets}/grocery/grocery-create-failure-not-found-member/http-response.adoc[]
+.Response Fields
+include::{snippets}/grocery/grocery-create-failure-not-found-member/response-fields.adoc[]
+
+=== 실패 - 냉장고 저장소가 존재하지 않는 경우
+
+.Request
+include::{snippets}/grocery/grocery-create-failure-not-found-storage/http-request.adoc[]
+.Request Headers
+include::{snippets}/grocery/grocery-create-failure-not-found-storage/request-headers.adoc[]
+.Request Parts
+include::{snippets}/grocery/grocery-create-failure-not-found-storage/request-parts.adoc[]
+.Request Parts Fields
+include::{snippets}/grocery/grocery-create-failure-not-found-storage/request-part-groceryReq-fields.adoc[]
+
+.Response
+include::{snippets}/grocery/grocery-create-failure-not-found-storage/http-response.adoc[]
+.Response Fields
+include::{snippets}/grocery/grocery-create-failure-not-found-storage/response-fields.adoc[]
+
 ---
 == GET: 식료품 단건 조회
 === 성공
@@ -38,6 +70,20 @@ include::{snippets}/grocery/grocery-find-by-id/http-response.adoc[]
 include::{snippets}/grocery/grocery-find-by-id/response-fields.adoc[]
 .Response body
 include::{snippets}/grocery/grocery-find-by-id/response-body.adoc[]
+
+=== 실패 - 식료품이 존재하지 않는 경우
+
+.Request
+include::{snippets}/grocery/grocery-find-by-id-failure-not-found-grocery/http-request.adoc[]
+.Path Parameters
+include::{snippets}/grocery/grocery-find-by-id-failure-not-found-grocery/path-parameters.adoc[]
+
+.Response
+include::{snippets}/grocery/grocery-find-by-id-failure-not-found-grocery/http-response.adoc[]
+.Response Fields
+include::{snippets}/grocery/grocery-find-by-id-failure-not-found-grocery/response-fields.adoc[]
+.Response body
+include::{snippets}/grocery/grocery-find-by-id-failure-not-found-grocery/response-body.adoc[]
 
 ---
 == GET: 특정 냉장고 저장소의 모든 식료품 조회
@@ -56,6 +102,38 @@ include::{snippets}/grocery/grocery-find-all-by-storage-id/http-response.adoc[]
 include::{snippets}/grocery/grocery-find-all-by-storage-id/response-fields.adoc[]
 .Response body
 include::{snippets}/grocery/grocery-find-all-by-storage-id/response-body.adoc[]
+
+=== 실패 - 유효하지 않거나 허용되지 않은 식료품 정렬 타입인 경우
+
+.Request
+include::{snippets}/grocery/grocery-find-all-by-storage-id-failure-invalid-grocery-sort-type/http-request.adoc[]
+.Path Parameters
+include::{snippets}/grocery/grocery-find-all-by-storage-id-failure-invalid-grocery-sort-type/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/grocery/grocery-find-all-by-storage-id-failure-invalid-grocery-sort-type/request-headers.adoc[]
+
+.Response
+include::{snippets}/grocery/grocery-find-all-by-storage-id-failure-invalid-grocery-sort-type/http-response.adoc[]
+.Response Fields
+include::{snippets}/grocery/grocery-find-all-by-storage-id-failure-invalid-grocery-sort-type/response-fields.adoc[]
+.Response body
+include::{snippets}/grocery/grocery-find-all-by-storage-id-failure-invalid-grocery-sort-type/response-body.adoc[]
+
+=== 실패 - 유효하지 않은 식료품 타입인 경우
+
+.Request
+include::{snippets}/grocery/grocery-find-all-by-storage-id-failure-invalid-grocery-type/http-request.adoc[]
+.Path Parameters
+include::{snippets}/grocery/grocery-find-all-by-storage-id-failure-invalid-grocery-type/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/grocery/grocery-find-all-by-storage-id-failure-invalid-grocery-type/request-headers.adoc[]
+
+.Response
+include::{snippets}/grocery/grocery-find-all-by-storage-id-failure-invalid-grocery-type/http-response.adoc[]
+.Response Fields
+include::{snippets}/grocery/grocery-find-all-by-storage-id-failure-invalid-grocery-type/response-fields.adoc[]
+.Response body
+include::{snippets}/grocery/grocery-find-all-by-storage-id-failure-invalid-grocery-type/response-body.adoc[]
 
 ---
 == PATCH: 식료품 수정
@@ -90,5 +168,3 @@ include::{snippets}/grocery/grocery-delete/path-parameters.adoc[]
 
 .Response
 include::{snippets}/grocery/grocery-delete/http-response.adoc[]
-
----

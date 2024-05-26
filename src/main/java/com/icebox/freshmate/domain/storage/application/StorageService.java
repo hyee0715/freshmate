@@ -27,7 +27,6 @@ import com.icebox.freshmate.domain.storage.application.dto.response.StoragesRes;
 import com.icebox.freshmate.domain.storage.domain.Storage;
 import com.icebox.freshmate.domain.storage.domain.StorageRepository;
 import com.icebox.freshmate.domain.storage.domain.StorageType;
-import com.icebox.freshmate.global.error.exception.BusinessException;
 import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
 import com.icebox.freshmate.global.error.exception.InvalidValueException;
 

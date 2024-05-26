@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -71,6 +72,8 @@ import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.Role;
 import com.icebox.freshmate.domain.post.domain.Post;
 import com.icebox.freshmate.global.TestPrincipalDetailsService;
+import com.icebox.freshmate.global.error.ErrorCode;
+import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
 
 @ExtendWith({RestDocumentationExtension.class})
 @WebMvcTest(value = {CommentController.class})
@@ -112,7 +115,7 @@ class CommentControllerTest {
 			.realName("성이름")
 			.username("aaaa1111")
 			.password("aaaa1111!")
-			.nickName("닉네임닉네임")
+			.nickName("닉네임")
 			.role(Role.USER)
 			.build();
 
@@ -152,7 +155,7 @@ class CommentControllerTest {
 		comment.addCommentImage(commentImage2);
 	}
 
-	@DisplayName("댓글 생성 테스트")
+	@DisplayName("댓글 생성 성공 테스트")
 	@Test
 	void create() throws Exception {
 		//given
@@ -164,8 +167,8 @@ class CommentControllerTest {
 
 		CommentCreateReq commentCreateReq = new CommentCreateReq(postId, comment.getContent());
 
-		MockMultipartFile file1 = new MockMultipartFile("imageFiles", "test1.jpg", "image/jpeg", "Spring Framework".getBytes());
-		MockMultipartFile file2 = new MockMultipartFile("imageFiles", "test2.jpg", "image/jpeg", "Spring Framework".getBytes());
+		MockMultipartFile file1 = new MockMultipartFile("imageFiles", "test1.jpg", "image/jpeg", "Spring Framework" .getBytes());
+		MockMultipartFile file2 = new MockMultipartFile("imageFiles", "test2.jpg", "image/jpeg", "Spring Framework" .getBytes());
 		MockMultipartFile request = new MockMultipartFile("commentCreateReq", "commentCreateReq",
 			"application/json",
 			objectMapper.writeValueAsString(commentCreateReq).getBytes(StandardCharsets.UTF_8));
@@ -230,7 +233,65 @@ class CommentControllerTest {
 			));
 	}
 
-	@DisplayName("게시글 별 모든 댓글 조회 테스트")
+	@DisplayName("댓글 생성 실패 테스트 - 게시글이 존재하지 않는 경우")
+	@Test
+	void createFailure_notFoundPost() throws Exception {
+		//given
+		Long postId = 1L;
+		CommentCreateReq commentCreateReq = new CommentCreateReq(postId, comment.getContent());
+
+		MockMultipartFile file1 = new MockMultipartFile("imageFiles", "test1.jpg", "image/jpeg", "Spring Framework" .getBytes());
+		MockMultipartFile file2 = new MockMultipartFile("imageFiles", "test2.jpg", "image/jpeg", "Spring Framework" .getBytes());
+		MockMultipartFile request = new MockMultipartFile("commentCreateReq", "commentCreateReq",
+			"application/json",
+			objectMapper.writeValueAsString(commentCreateReq).getBytes(StandardCharsets.UTF_8));
+
+		doThrow(new EntityNotFoundException(ErrorCode.NOT_FOUND_POST)).when(
+			commentService).create(any(CommentCreateReq.class), any(ImageUploadReq.class), anyString());
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.multipart("/api/comments")
+				.file(file1)
+				.file(file2)
+				.file(request)
+				.contentType(MediaType.MULTIPART_FORM_DATA)
+				.accept(MediaType.APPLICATION_JSON)
+				.characterEncoding("UTF-8")
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader())
+				.content(objectMapper.writeValueAsString(commentCreateReq)))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("P001"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("게시글이 존재하지 않습니다."))
+			.andDo(print())
+			.andDo(document("comment/comment-create-failure-not-found-post",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				requestParts(
+					partWithName("imageFiles").description("댓글 이미지들"),
+					partWithName("commentCreateReq").description("댓글 등록 내용")
+				),
+				requestPartFields("commentCreateReq",
+					fieldWithPath("postId").description("게시글 ID"),
+					fieldWithPath("content").description("댓글 내용")
+				),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("게시글 별 모든 댓글 조회 성공 테스트")
 	@Test
 	void findAllByPostId() throws Exception {
 		//given
@@ -298,7 +359,7 @@ class CommentControllerTest {
 			));
 	}
 
-	@DisplayName("댓글 수정 테스트")
+	@DisplayName("댓글 수정 성공 테스트")
 	@Test
 	void update() throws Exception {
 		//given
@@ -361,7 +422,50 @@ class CommentControllerTest {
 			));
 	}
 
-	@DisplayName("댓글 삭제 테스트")
+	@DisplayName("댓글 수정 실패 테스트 - 댓글이 존재하지 않는 경우")
+	@Test
+	void updateFailure_notFoundComment() throws Exception {
+		//given
+		Long commentId = 1L;
+		CommentUpdateReq commentUpdateReq = new CommentUpdateReq("댓글 내용 수정");
+
+		doThrow(new EntityNotFoundException(ErrorCode.NOT_FOUND_COMMENT)).when(
+			commentService).update(anyLong(), any(CommentUpdateReq.class), anyString());
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.patch("/api/comments/{id}", commentId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader())
+				.content(objectMapper.writeValueAsString(commentUpdateReq)))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("CM001"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("댓글이 존재하지 않습니다."))
+			.andDo(print())
+			.andDo(document("comment/comment-update-failure-not-found-comment",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				pathParameters(parameterWithName("id").description("댓글 ID")),
+				requestFields(
+					fieldWithPath("content").description("수정할 댓글 내용")
+				),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("댓글 삭제 성공 테스트")
 	@Test
 	void delete() throws Exception {
 		//given

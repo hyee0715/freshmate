@@ -23,6 +23,22 @@ include::{snippets}/comment/comment-create/http-response.adoc[]
 .Response Fields
 include::{snippets}/comment/comment-create/response-fields.adoc[]
 
+=== 실패 - 게시글이 존재하지 않는 경우
+
+.Request
+include::{snippets}/comment/comment-create-failure-not-found-post/http-request.adoc[]
+.Request Headers
+include::{snippets}/comment/comment-create-failure-not-found-post/request-headers.adoc[]
+.Request Parts
+include::{snippets}/comment/comment-create-failure-not-found-post/request-parts.adoc[]
+.Request Parts Fields
+include::{snippets}/comment/comment-create-failure-not-found-post/request-part-commentCreateReq-fields.adoc[]
+
+.Response
+include::{snippets}/comment/comment-create-failure-not-found-post/http-response.adoc[]
+.Response Fields
+include::{snippets}/comment/comment-create-failure-not-found-post/response-fields.adoc[]
+
 ---
 == GET: 게시글 별 모든 댓글 조회
 === 성공
@@ -60,6 +76,26 @@ include::{snippets}/comment/comment-update/http-response.adoc[]
 include::{snippets}/comment/comment-update/response-fields.adoc[]
 .Response body
 include::{snippets}/comment/comment-update/response-body.adoc[]
+
+=== 실패 - 댓글이 존재하지 않는 경우
+
+.Request
+include::{snippets}/comment/comment-update-failure-not-found-comment/http-request.adoc[]
+.Path Parameters
+include::{snippets}/comment/comment-update-failure-not-found-comment/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/comment/comment-update-failure-not-found-comment/request-headers.adoc[]
+.Request Fields
+include::{snippets}/comment/comment-update-failure-not-found-comment/request-fields.adoc[]
+.Request Body
+include::{snippets}/comment/comment-update-failure-not-found-comment/request-body.adoc[]
+
+.Response
+include::{snippets}/comment/comment-update-failure-not-found-comment/http-response.adoc[]
+.Response Fields
+include::{snippets}/comment/comment-update-failure-not-found-comment/response-fields.adoc[]
+.Response body
+include::{snippets}/comment/comment-update-failure-not-found-comment/response-body.adoc[]
 
 ---
 == DELETE: 댓글 삭제

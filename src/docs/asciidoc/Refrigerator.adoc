@@ -25,6 +25,24 @@ include::{snippets}/refrigerator/refrigerator-create/response-fields.adoc[]
 .Response body
 include::{snippets}/refrigerator/refrigerator-create/response-body.adoc[]
 
+=== 실패 - 회원이 존재하지 않는 경우
+
+.Request
+include::{snippets}/refrigerator/refrigerator-create-failure-not-found-member/http-request.adoc[]
+.Request Headers
+include::{snippets}/refrigerator/refrigerator-create-failure-not-found-member/request-headers.adoc[]
+.Request Fields
+include::{snippets}/refrigerator/refrigerator-create-failure-not-found-member/request-fields.adoc[]
+.Request Body
+include::{snippets}/refrigerator/refrigerator-create-failure-not-found-member/request-body.adoc[]
+
+.Response
+include::{snippets}/refrigerator/refrigerator-create-failure-not-found-member/http-response.adoc[]
+.Response Fields
+include::{snippets}/refrigerator/refrigerator-create-failure-not-found-member/response-fields.adoc[]
+.Response body
+include::{snippets}/refrigerator/refrigerator-create-failure-not-found-member/response-body.adoc[]
+
 ---
 == GET: 냉장고 단건 조회
 === 성공
@@ -40,6 +58,20 @@ include::{snippets}/refrigerator/refrigerator-find-by-id/http-response.adoc[]
 include::{snippets}/refrigerator/refrigerator-find-by-id/response-fields.adoc[]
 .Response body
 include::{snippets}/refrigerator/refrigerator-find-by-id/response-body.adoc[]
+
+=== 실패 - 냉장고가 존재하지 않는 경우
+
+.Request
+include::{snippets}/refrigerator/refrigerator-find-by-id-failure-not-found-refrigerator/http-request.adoc[]
+.Path Parameters
+include::{snippets}/refrigerator/refrigerator-find-by-id-failure-not-found-refrigerator/path-parameters.adoc[]
+
+.Response
+include::{snippets}/refrigerator/refrigerator-find-by-id-failure-not-found-refrigerator/http-response.adoc[]
+.Response Fields
+include::{snippets}/refrigerator/refrigerator-find-by-id-failure-not-found-refrigerator/response-fields.adoc[]
+.Response body
+include::{snippets}/refrigerator/refrigerator-find-by-id-failure-not-found-refrigerator/response-body.adoc[]
 
 ---
 == GET: 회원의 모든 냉장고 조회
@@ -58,6 +90,22 @@ include::{snippets}/refrigerator/refrigerator-find-all/http-response.adoc[]
 include::{snippets}/refrigerator/refrigerator-find-all/response-fields.adoc[]
 .Response body
 include::{snippets}/refrigerator/refrigerator-find-all/response-body.adoc[]
+
+=== 실패 - 유효하지 않거나 허용되지 않는 냉장고 정렬 타입인 경우
+
+.Request
+include::{snippets}/refrigerator/refrigerator-find-all-failure-invalid-refrigerator-sort-type/http-request.adoc[]
+.Request Headers
+include::{snippets}/refrigerator/refrigerator-find-all-failure-invalid-refrigerator-sort-type/request-headers.adoc[]
+.Request Body
+include::{snippets}/refrigerator/refrigerator-find-all-failure-invalid-refrigerator-sort-type/request-body.adoc[]
+
+.Response
+include::{snippets}/refrigerator/refrigerator-find-all-failure-invalid-refrigerator-sort-type/http-response.adoc[]
+.Response Fields
+include::{snippets}/refrigerator/refrigerator-find-all-failure-invalid-refrigerator-sort-type/response-fields.adoc[]
+.Response body
+include::{snippets}/refrigerator/refrigerator-find-all-failure-invalid-refrigerator-sort-type/response-body.adoc[]
 
 ---
 == PATCH: 냉장고 수정
@@ -80,6 +128,26 @@ include::{snippets}/refrigerator/refrigerator-update/http-response.adoc[]
 include::{snippets}/refrigerator/refrigerator-update/response-fields.adoc[]
 .Response body
 include::{snippets}/refrigerator/refrigerator-update/response-body.adoc[]
+
+=== 실패 - 냉장고 이름을 입력하지 않은 경우
+
+.Request
+include::{snippets}/refrigerator/refrigerator-update-failure-invalid-update-name/http-request.adoc[]
+.Path Parameters
+include::{snippets}/refrigerator/refrigerator-update-failure-invalid-update-name/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/refrigerator/refrigerator-update-failure-invalid-update-name/request-headers.adoc[]
+.Request Fields
+include::{snippets}/refrigerator/refrigerator-update-failure-invalid-update-name/request-fields.adoc[]
+.Request Body
+include::{snippets}/refrigerator/refrigerator-update-failure-invalid-update-name/request-body.adoc[]
+
+.Response
+include::{snippets}/refrigerator/refrigerator-update-failure-invalid-update-name/http-response.adoc[]
+.Response Fields
+include::{snippets}/refrigerator/refrigerator-update-failure-invalid-update-name/response-fields.adoc[]
+.Response body
+include::{snippets}/refrigerator/refrigerator-update-failure-invalid-update-name/response-body.adoc[]
 
 ---
 == DELETE: 냉장고 삭제

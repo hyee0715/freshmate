@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -79,6 +80,8 @@ import com.icebox.freshmate.domain.refrigerator.domain.Refrigerator;
 import com.icebox.freshmate.domain.storage.domain.Storage;
 import com.icebox.freshmate.domain.storage.domain.StorageType;
 import com.icebox.freshmate.global.TestPrincipalDetailsService;
+import com.icebox.freshmate.global.error.ErrorCode;
+import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
 
 @ExtendWith({RestDocumentationExtension.class})
 @WebMvcTest(value = {PostController.class})
@@ -126,7 +129,7 @@ class PostControllerTest {
 			.realName("성이름")
 			.username("aaaa1111")
 			.password("aaaa1111!")
-			.nickName("닉네임닉네임")
+			.nickName("닉네임")
 			.role(Role.USER)
 			.build();
 
@@ -215,7 +218,7 @@ class PostControllerTest {
 		post.addPostImage(postImage2);
 	}
 
-	@DisplayName("게시글 생성 테스트")
+	@DisplayName("게시글 생성 성공 테스트")
 	@Test
 	void create() throws Exception {
 		//given
@@ -233,8 +236,8 @@ class PostControllerTest {
 
 		PostReq postReq = new PostReq(post.getTitle(), post.getContent(), recipeId);
 
-		MockMultipartFile file1 = new MockMultipartFile("imageFiles", "test1.jpg", "image/jpeg", "Spring Framework".getBytes());
-		MockMultipartFile file2 = new MockMultipartFile("imageFiles", "test2.jpg", "image/jpeg", "Spring Framework".getBytes());
+		MockMultipartFile file1 = new MockMultipartFile("imageFiles", "test1.jpg", "image/jpeg", "Spring Framework" .getBytes());
+		MockMultipartFile file2 = new MockMultipartFile("imageFiles", "test2.jpg", "image/jpeg", "Spring Framework" .getBytes());
 		MockMultipartFile request = new MockMultipartFile("postReq", "postReq",
 			"application/json",
 			objectMapper.writeValueAsString(postReq).getBytes(StandardCharsets.UTF_8));
@@ -323,7 +326,123 @@ class PostControllerTest {
 			));
 	}
 
-	@DisplayName("게시글 단건 조회 테스트")
+	@DisplayName("게시글 생성 실패 테스트 - 회원이 존재하지 않는 경우")
+	@Test
+	void createFailure_notFoundMember() throws Exception {
+		//given
+		Long recipeId = 1L;
+		PostReq postReq = new PostReq(post.getTitle(), post.getContent(), recipeId);
+
+		MockMultipartFile file1 = new MockMultipartFile("imageFiles", "test1.jpg", "image/jpeg", "Spring Framework" .getBytes());
+		MockMultipartFile file2 = new MockMultipartFile("imageFiles", "test2.jpg", "image/jpeg", "Spring Framework" .getBytes());
+		MockMultipartFile request = new MockMultipartFile("postReq", "postReq",
+			"application/json",
+			objectMapper.writeValueAsString(postReq).getBytes(StandardCharsets.UTF_8));
+
+		doThrow(new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER)).when(
+			postService).create(any(PostReq.class), any(ImageUploadReq.class), anyString());
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.multipart("/api/posts")
+				.file(file1)
+				.file(file2)
+				.file(request)
+				.contentType(MediaType.MULTIPART_FORM_DATA)
+				.accept(MediaType.APPLICATION_JSON)
+				.characterEncoding("UTF-8")
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("M003"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("회원을 찾을 수 없습니다."))
+			.andDo(print())
+			.andDo(document("post/post-create-failure-not-found-member",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				requestParts(
+					partWithName("imageFiles").description("게시글 이미지들"),
+					partWithName("postReq").description("게시글 등록 내용")
+				),
+				requestPartFields("postReq",
+					fieldWithPath("title").description("게시글 제목"),
+					fieldWithPath("content").description("게시글 내용"),
+					fieldWithPath("recipeId").description("게시글에 공유하려는 레시피 ID")
+				),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("게시글 생성 실패 테스트 - 본인이 작성하지 않은 레시피는 게시글로 공유할 수 없음")
+	@Test
+	void createFailure_invalidAttemptToPostRecipe() throws Exception {
+		//given
+		Long recipeId = 1L;
+		PostReq postReq = new PostReq(post.getTitle(), post.getContent(), recipeId);
+
+		MockMultipartFile file1 = new MockMultipartFile("imageFiles", "test1.jpg", "image/jpeg", "Spring Framework" .getBytes());
+		MockMultipartFile file2 = new MockMultipartFile("imageFiles", "test2.jpg", "image/jpeg", "Spring Framework" .getBytes());
+		MockMultipartFile request = new MockMultipartFile("postReq", "postReq",
+			"application/json",
+			objectMapper.writeValueAsString(postReq).getBytes(StandardCharsets.UTF_8));
+
+		doThrow(new EntityNotFoundException(ErrorCode.INVALID_ATTEMPT_TO_POST_RECIPE)).when(
+			postService).create(any(PostReq.class), any(ImageUploadReq.class), anyString());
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.multipart("/api/posts")
+				.file(file1)
+				.file(file2)
+				.file(request)
+				.contentType(MediaType.MULTIPART_FORM_DATA)
+				.accept(MediaType.APPLICATION_JSON)
+				.characterEncoding("UTF-8")
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("RC004"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("본인이 작성하지 않은 레시피는 게시글로 공유할 수 없습니다."))
+			.andDo(print())
+			.andDo(document("post/post-create-failure-invalid-attempt-to-post-recipe",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				requestParts(
+					partWithName("imageFiles").description("게시글 이미지들"),
+					partWithName("postReq").description("게시글 등록 내용")
+				),
+				requestPartFields("postReq",
+					fieldWithPath("title").description("게시글 제목"),
+					fieldWithPath("content").description("게시글 내용"),
+					fieldWithPath("recipeId").description("게시글에 공유하려는 레시피 ID")
+				),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("게시글 단건 조회 성공 테스트")
 	@Test
 	void findById() throws Exception {
 		//given
@@ -406,7 +525,41 @@ class PostControllerTest {
 			));
 	}
 
-	@DisplayName("게시글 목록 조회 테스트")
+	@DisplayName("게시글 단건 조회 실패 테스트 - 게시글이 존재하지 않는 경우")
+	@Test
+	void findByIdFailure_notFoundPost() throws Exception {
+		//given
+		Long postId = 1L;
+
+		doThrow(new EntityNotFoundException(ErrorCode.NOT_FOUND_POST)).when(
+			postService).findById(anyLong());
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/posts/{id}", postId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("P001"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("게시글이 존재하지 않습니다."))
+			.andDo(print())
+			.andDo(document("post/post-find-by-id-failure-not-found-post",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				pathParameters(parameterWithName("id").description("게시글 ID")),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("게시글 목록 조회 성공 테스트")
 	@Test
 	void findAllByMemberId() throws Exception {
 		//given
@@ -504,7 +657,7 @@ class PostControllerTest {
 			));
 	}
 
-	@DisplayName("게시글 수정 테스트")
+	@DisplayName("게시글 수정 성공 테스트")
 	@Test
 	void update() throws Exception {
 		//given
@@ -598,7 +751,7 @@ class PostControllerTest {
 			));
 	}
 
-	@DisplayName("게시글 삭제 테스트")
+	@DisplayName("게시글 삭제 성공 테스트")
 	@Test
 	void delete() throws Exception {
 		//given

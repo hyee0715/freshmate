@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -62,6 +63,8 @@ import com.icebox.freshmate.domain.grocerybucket.domain.GroceryBucket;
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.Role;
 import com.icebox.freshmate.global.TestPrincipalDetailsService;
+import com.icebox.freshmate.global.error.ErrorCode;
+import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
 
 @ExtendWith({RestDocumentationExtension.class})
 @WebMvcTest(value = {GroceryBucketController.class})
@@ -101,7 +104,7 @@ class GroceryBucketControllerTest {
 			.realName("성이름")
 			.username("aaaa1111")
 			.password("aaaa1111!")
-			.nickName("닉네임닉네임")
+			.nickName("닉네임")
 			.role(Role.USER)
 			.build();
 
@@ -113,7 +116,7 @@ class GroceryBucketControllerTest {
 			.build();
 	}
 
-	@DisplayName("즐겨 찾는 식료품 생성 테스트")
+	@DisplayName("즐겨 찾는 식료품 생성 성공 테스트")
 	@Test
 	void create() throws Exception {
 		//given
@@ -171,7 +174,50 @@ class GroceryBucketControllerTest {
 			));
 	}
 
-	@DisplayName("즐겨 찾는 식료품 단건 조회 테스트")
+	@DisplayName("즐겨 찾는 식료품 생성 실패 테스트 - 회원이 존재하지 않는 경우")
+	@Test
+	void createFailure_notFoundMember() throws Exception {
+		//given
+		GroceryBucketReq groceryBucketReq = new GroceryBucketReq(groceryBucket.getGroceryName(), groceryBucket.getGroceryType().name(), groceryBucket.getGroceryDescription());
+
+		doThrow(new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER)).when(
+			groceryBucketService).create(eq(groceryBucketReq), any(String.class));
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.post("/api/grocery-buckets")
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader())
+				.content(objectMapper.writeValueAsString(groceryBucketReq)))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("M003"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("회원을 찾을 수 없습니다."))
+			.andDo(print())
+			.andDo(document("grocery-bucket/grocery-bucket-create-failure-not-found-member",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				requestFields(
+					fieldWithPath("groceryName").description("즐겨 찾는 식료품 목록에 등록할 식료품 이름"),
+					fieldWithPath("groceryType").description("즐겨 찾는 식료품 목록에 등록할 식료품 타입"),
+					fieldWithPath("groceryDescription").description("즐겨 찾는 식료품 목록에 등록할 식료품 설명")
+				),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("즐겨 찾는 식료품 단건 조회 성공 테스트")
 	@Test
 	void findById() throws Exception {
 		//given
@@ -218,7 +264,41 @@ class GroceryBucketControllerTest {
 			));
 	}
 
-	@DisplayName("사용자의 즐겨 찾는 식료품 목록 조회 테스트")
+	@DisplayName("즐겨 찾는 식료품 단건 조회 실패 테스트 - 즐겨 찾는 식료품이 존재하지 않는 경우")
+	@Test
+	void findByIdFailure_notFoundGroceryBucket() throws Exception {
+		//given
+		Long groceryBucketId = 1L;
+
+		doThrow(new EntityNotFoundException(ErrorCode.NOT_FOUND_GROCERY_BUCKET)).when(
+			groceryBucketService).findById(groceryBucketId);
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/grocery-buckets/{id}", groceryBucketId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("GB001"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("즐겨 찾는 식료품이 존재하지 않습니다."))
+			.andDo(print())
+			.andDo(document("grocery-bucket/grocery-bucket-find-by-id-failure-not-found-grocery-bucket",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				pathParameters(parameterWithName("id").description("즐겨 찾는 식료품 ID")),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("사용자의 즐겨 찾는 식료품 목록 조회 성공 테스트")
 	@Test
 	void findAll() throws Exception {
 		//given
@@ -282,7 +362,7 @@ class GroceryBucketControllerTest {
 			));
 	}
 
-	@DisplayName("즐겨 찾는 식료품 수정 테스트")
+	@DisplayName("즐겨 찾는 식료품 수정 성공 테스트")
 	@Test
 	void update() throws Exception {
 		//given
@@ -338,7 +418,7 @@ class GroceryBucketControllerTest {
 			));
 	}
 
-	@DisplayName("즐겨 찾는 식료품 삭제 테스트")
+	@DisplayName("즐겨 찾는 식료품 삭제 성공 테스트")
 	@Test
 	void delete() throws Exception {
 		//given

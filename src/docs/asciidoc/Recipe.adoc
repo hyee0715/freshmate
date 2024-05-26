@@ -23,6 +23,22 @@ include::{snippets}/recipe/recipe-create/http-response.adoc[]
 .Response Fields
 include::{snippets}/recipe/recipe-create/response-fields.adoc[]
 
+=== 실패 - 회원이 존재하지 않는 경우
+
+.Request
+include::{snippets}/recipe/recipe-create-failure-not-found-member/http-request.adoc[]
+.Request Headers
+include::{snippets}/recipe/recipe-create-failure-not-found-member/request-headers.adoc[]
+.Request Parts
+include::{snippets}/recipe/recipe-create-failure-not-found-member/request-parts.adoc[]
+.Request Parts Fields
+include::{snippets}/recipe/recipe-create-failure-not-found-member/request-part-recipeCreateReq-fields.adoc[]
+
+.Response
+include::{snippets}/recipe/recipe-create-failure-not-found-member/http-response.adoc[]
+.Response Fields
+include::{snippets}/recipe/recipe-create-failure-not-found-member/response-fields.adoc[]
+
 ---
 == POST: 레시피 스크랩
 === 성공
@@ -75,6 +91,22 @@ include::{snippets}/recipe/recipe-find-by-id/http-response.adoc[]
 include::{snippets}/recipe/recipe-find-by-id/response-fields.adoc[]
 .Response body
 include::{snippets}/recipe/recipe-find-by-id/response-body.adoc[]
+
+=== 실패 - 레시피가 존재하지 않는 경우
+
+.Request
+include::{snippets}/recipe/recipe-find-by-id-failure-not-found-recipe/http-request.adoc[]
+.Path Parameters
+include::{snippets}/recipe/recipe-find-by-id-failure-not-found-recipe/path-parameters.adoc[]
+.Request Headers
+include::{snippets}/recipe/recipe-find-by-id-failure-not-found-recipe/request-headers.adoc[]
+
+.Response
+include::{snippets}/recipe/recipe-find-by-id-failure-not-found-recipe/http-response.adoc[]
+.Response Fields
+include::{snippets}/recipe/recipe-find-by-id-failure-not-found-recipe/response-fields.adoc[]
+.Response body
+include::{snippets}/recipe/recipe-find-by-id-failure-not-found-recipe/response-body.adoc[]
 
 ---
 == GET: 사용자의 모든 레시피 조회

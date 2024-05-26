@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -74,6 +75,9 @@ import com.icebox.freshmate.domain.refrigerator.domain.Refrigerator;
 import com.icebox.freshmate.domain.storage.domain.Storage;
 import com.icebox.freshmate.domain.storage.domain.StorageType;
 import com.icebox.freshmate.global.TestPrincipalDetailsService;
+import com.icebox.freshmate.global.error.ErrorCode;
+import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
+import com.icebox.freshmate.global.error.exception.InvalidValueException;
 
 @ExtendWith({RestDocumentationExtension.class})
 @WebMvcTest(value = {GroceryController.class})
@@ -165,7 +169,7 @@ class GroceryControllerTest {
 		grocery.addGroceryImage(groceryImage2);
 	}
 
-	@DisplayName("식료품 생성 테스트")
+	@DisplayName("식료품 생성 성공 테스트")
 	@Test
 	void create() throws Exception {
 		//given
@@ -175,10 +179,10 @@ class GroceryControllerTest {
 		LocalDateTime createdAt = LocalDateTime.now();
 		LocalDateTime updatedAt = createdAt;
 
-		GroceryReq groceryReq = new GroceryReq(grocery.getName(), grocery.getGroceryType().name(), grocery.getQuantity(), grocery.getDescription(), grocery.getExpirationDate(), grocery.getStorage().getId());
+		GroceryReq groceryReq = new GroceryReq(grocery.getName(), grocery.getGroceryType().name(), grocery.getQuantity(), grocery.getDescription(), grocery.getExpirationDate(), storageId);
 
-		MockMultipartFile file1 = new MockMultipartFile("imageFiles", "test1.jpg", "image/jpeg", "Spring Framework".getBytes());
-		MockMultipartFile file2 = new MockMultipartFile("imageFiles", "test2.jpg", "image/jpeg", "Spring Framework".getBytes());
+		MockMultipartFile file1 = new MockMultipartFile("imageFiles", "test1.jpg", "image/jpeg", "Spring Framework" .getBytes());
+		MockMultipartFile file2 = new MockMultipartFile("imageFiles", "test2.jpg", "image/jpeg", "Spring Framework" .getBytes());
 		MockMultipartFile request = new MockMultipartFile("groceryReq", "groceryReq",
 			"application/json",
 			objectMapper.writeValueAsString(groceryReq).getBytes(StandardCharsets.UTF_8));
@@ -255,7 +259,129 @@ class GroceryControllerTest {
 			));
 	}
 
-	@DisplayName("식료품 단건 조회 테스트")
+	@DisplayName("식료품 생성 실패 테스트 - 회원이 존재하지 않는 경우")
+	@Test
+	void createFailure_notFoundMember() throws Exception {
+		//given
+		Long storageId = 1L;
+		GroceryReq groceryReq = new GroceryReq(grocery.getName(), grocery.getGroceryType().name(), grocery.getQuantity(), grocery.getDescription(), grocery.getExpirationDate(), storageId);
+
+		MockMultipartFile file1 = new MockMultipartFile("imageFiles", "test1.jpg", "image/jpeg", "Spring Framework" .getBytes());
+		MockMultipartFile file2 = new MockMultipartFile("imageFiles", "test2.jpg", "image/jpeg", "Spring Framework" .getBytes());
+		MockMultipartFile request = new MockMultipartFile("groceryReq", "groceryReq",
+			"application/json",
+			objectMapper.writeValueAsString(groceryReq).getBytes(StandardCharsets.UTF_8));
+
+		doThrow(new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER)).when(
+			groceryService).create(any(), any(), any());
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.multipart("/api/groceries")
+				.file(file1)
+				.file(file2)
+				.file(request)
+				.contentType(MediaType.MULTIPART_FORM_DATA)
+				.accept(MediaType.APPLICATION_JSON)
+				.characterEncoding("UTF-8")
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader())
+				.content(objectMapper.writeValueAsString(groceryReq)))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("M003"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("회원을 찾을 수 없습니다."))
+			.andDo(print())
+			.andDo(document("grocery/grocery-create-failure-not-found-member",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				requestParts(
+					partWithName("imageFiles").description("식료품 이미지"),
+					partWithName("groceryReq").description("식료품 등록 내용")
+				),
+				requestPartFields("groceryReq",
+					fieldWithPath("name").description("식료품 이름"),
+					fieldWithPath("groceryType").description("식료품 타입"),
+					fieldWithPath("quantity").description("식료품 수량"),
+					fieldWithPath("description").description("식료품 설명"),
+					fieldWithPath("expirationDate").description("식료품 유통기한"),
+					fieldWithPath("storageId").description("냉장고 저장소 ID")
+				),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("식료품 생성 실패 테스트 - 냉장고 저장소가 존재하지 않는 경우")
+	@Test
+	void createFailure_notFoundStorage() throws Exception {
+		//given
+		Long storageId = 1L;
+		GroceryReq groceryReq = new GroceryReq(grocery.getName(), grocery.getGroceryType().name(), grocery.getQuantity(), grocery.getDescription(), grocery.getExpirationDate(), storageId);
+
+		MockMultipartFile file1 = new MockMultipartFile("imageFiles", "test1.jpg", "image/jpeg", "Spring Framework" .getBytes());
+		MockMultipartFile file2 = new MockMultipartFile("imageFiles", "test2.jpg", "image/jpeg", "Spring Framework" .getBytes());
+		MockMultipartFile request = new MockMultipartFile("groceryReq", "groceryReq",
+			"application/json",
+			objectMapper.writeValueAsString(groceryReq).getBytes(StandardCharsets.UTF_8));
+
+		doThrow(new EntityNotFoundException(ErrorCode.NOT_FOUND_STORAGE)).when(
+			groceryService).create(any(), any(), any());
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.multipart("/api/groceries")
+				.file(file1)
+				.file(file2)
+				.file(request)
+				.contentType(MediaType.MULTIPART_FORM_DATA)
+				.accept(MediaType.APPLICATION_JSON)
+				.characterEncoding("UTF-8")
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader())
+				.content(objectMapper.writeValueAsString(groceryReq)))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("S002"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("냉장고 저장소가 존재하지 않습니다."))
+			.andDo(print())
+			.andDo(document("grocery/grocery-create-failure-not-found-storage",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				requestParts(
+					partWithName("imageFiles").description("식료품 이미지"),
+					partWithName("groceryReq").description("식료품 등록 내용")
+				),
+				requestPartFields("groceryReq",
+					fieldWithPath("name").description("식료품 이름"),
+					fieldWithPath("groceryType").description("식료품 타입"),
+					fieldWithPath("quantity").description("식료품 수량"),
+					fieldWithPath("description").description("식료품 설명"),
+					fieldWithPath("expirationDate").description("식료품 유통기한"),
+					fieldWithPath("storageId").description("냉장고 저장소 ID")
+				),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("식료품 단건 조회 성공 테스트")
 	@Test
 	void findById() throws Exception {
 		//given
@@ -315,7 +441,41 @@ class GroceryControllerTest {
 			));
 	}
 
-	@DisplayName("특정 냉장고 저장소의 모든 식료품 조회 테스트")
+	@DisplayName("식료품 단건 조회 실패 테스트 - 식료품이 존재하지 않는 경우")
+	@Test
+	void findByIdFailure_notFoundGrocery() throws Exception {
+		//given
+		Long groceryId = 1L;
+
+		doThrow(new EntityNotFoundException(ErrorCode.NOT_FOUND_GROCERY)).when(
+			groceryService).findById(groceryId);
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/groceries/{id}", groceryId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("G002"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("식료품이 존재하지 않습니다."))
+			.andDo(print())
+			.andDo(document("grocery/grocery-find-by-id-failure-not-found-grocery",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				pathParameters(parameterWithName("id").description("식료품 ID")),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("특정 냉장고 저장소의 모든 식료품 조회 성공 테스트")
 	@Test
 	void findAllByStorageId() throws Exception {
 		//given
@@ -398,7 +558,83 @@ class GroceryControllerTest {
 			));
 	}
 
-	@DisplayName("식료품 수정 테스트")
+	@DisplayName("특정 냉장고 저장소의 모든 식료품 조회 실패 테스트 - 유효하지 않거나 허용되지 않은 식료품 정렬 타입인 경우")
+	@Test
+	void findAllByStorageIdFailure_invalidGrocerySortType() throws Exception {
+		//given
+		Long storageId = 1L;
+
+		doThrow(new InvalidValueException(ErrorCode.INVALID_GROCERY_SORT_TYPE)).when(
+			groceryService).findAllByStorageId(eq(storageId), any(), any(), any(), any(), any(), any(), any(), any(), anyString());
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/groceries/storages/{storageId}", storageId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("GOO4"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("유효하지 않거나 허용되지 않는 식료품 정렬 타입입니다."))
+			.andDo(print())
+			.andDo(document("grocery/grocery-find-all-by-storage-id-failure-invalid-grocery-sort-type",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				pathParameters(parameterWithName("storageId").description("냉장고 저장소 ID")),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("특정 냉장고 저장소의 모든 식료품 조회 실패 테스트 - 유효하지 않은 식료품 타입인 경우")
+	@Test
+	void findAllByStorageIdFailure_invalidGroceryType() throws Exception {
+		//given
+		Long storageId = 1L;
+
+		doThrow(new InvalidValueException(ErrorCode.INVALID_GROCERY_TYPE)).when(
+			groceryService).findAllByStorageId(eq(storageId), any(), any(), any(), any(), any(), any(), any(), any(), anyString());
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/groceries/storages/{storageId}", storageId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("G001"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("유효하지 않은 식료품 타입입니다."))
+			.andDo(print())
+			.andDo(document("grocery/grocery-find-all-by-storage-id-failure-invalid-grocery-type",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				pathParameters(parameterWithName("storageId").description("냉장고 저장소 ID")),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("식료품 수정 성공 테스트")
 	@Test
 	void update() throws Exception {
 		//given
@@ -473,7 +709,7 @@ class GroceryControllerTest {
 			));
 	}
 
-	@DisplayName("식료품 삭제 테스트")
+	@DisplayName("식료품 삭제 성공 테스트")
 	@Test
 	void delete() throws Exception {
 		//given

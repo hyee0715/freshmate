@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -63,6 +64,9 @@ import com.icebox.freshmate.domain.storage.application.dto.response.StoragesRes;
 import com.icebox.freshmate.domain.storage.domain.Storage;
 import com.icebox.freshmate.domain.storage.domain.StorageType;
 import com.icebox.freshmate.global.TestPrincipalDetailsService;
+import com.icebox.freshmate.global.error.ErrorCode;
+import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
+import com.icebox.freshmate.global.error.exception.InvalidValueException;
 
 @ExtendWith({RestDocumentationExtension.class})
 @WebMvcTest(value = {StorageController.class})
@@ -103,7 +107,7 @@ class StorageControllerTest {
 			.realName("성이름")
 			.username("aaaa1111")
 			.password("aaaa1111!")
-			.nickName("닉네임닉네임")
+			.nickName("닉네임")
 			.role(Role.USER)
 			.build();
 
@@ -119,7 +123,7 @@ class StorageControllerTest {
 			.build();
 	}
 
-	@DisplayName("냉장고 저장소 생성 테스트")
+	@DisplayName("냉장고 저장소 생성 성공 테스트")
 	@Test
 	void create() throws Exception {
 		//given
@@ -175,7 +179,50 @@ class StorageControllerTest {
 			));
 	}
 
-	@DisplayName("냉장고 저장소 단건 조회 테스트")
+	@DisplayName("냉장고 저장소 생성 실패 테스트 - 회원이 존재하지 않는 경우")
+	@Test
+	void createFailure_notFoundMember() throws Exception {
+		//given
+		Long refrigeratorId = 1L;
+		StorageCreateReq storageCreateReq = new StorageCreateReq(storage.getName(), storage.getStorageType().name(), refrigeratorId);
+
+		doThrow(new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER)).when(storageService).create(eq(storageCreateReq), any(String.class));
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.post("/api/storages")
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader())
+				.content(objectMapper.writeValueAsString(storageCreateReq)))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("M003"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("회원을 찾을 수 없습니다."))
+			.andDo(print())
+			.andDo(document("storage/storage-create-failure-not-found-member",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				requestFields(
+					fieldWithPath("name").description("냉장고 저장소 이름"),
+					fieldWithPath("storageType").description("냉장고 저장소 타입"),
+					fieldWithPath("refrigeratorId").description("냉장고 ID")
+				),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("냉장고 저장소 단건 조회 성공 테스트")
 	@Test
 	void findById() throws Exception {
 		//given
@@ -222,7 +269,41 @@ class StorageControllerTest {
 			));
 	}
 
-	@DisplayName("특정 냉장고의 모든 냉장고 저장소 조회 테스트")
+	@DisplayName("냉장고 저장소 단건 조회 실패 테스트 - 냉장고 저장소가 존재하지 않는 경우")
+	@Test
+	void findByIdFailure_notFoundStorage() throws Exception {
+		//given
+		Long storageId = 1L;
+
+		doThrow(new EntityNotFoundException(ErrorCode.NOT_FOUND_STORAGE)).when(
+			storageService).findById(storageId);
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/storages/{id}", storageId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("S002"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("냉장고 저장소가 존재하지 않습니다."))
+			.andDo(print())
+			.andDo(document("storage/storage-find-by-id-failure-not-found-storage",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				pathParameters(parameterWithName("id").description("냉장고 저장소 ID")),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("특정 냉장고의 모든 냉장고 저장소 조회 성공 테스트")
 	@Test
 	void findAllByRefrigeratorId() throws Exception {
 		//given
@@ -288,7 +369,83 @@ class StorageControllerTest {
 			));
 	}
 
-	@DisplayName("냉장고 저장소 수정 테스트")
+	@DisplayName("특정 냉장고의 모든 냉장고 저장소 조회 실패 테스트 - 냉장고가 존재하지 않는 경우")
+	@Test
+	void findAllByRefrigeratorIdFailure_notFoundRefrigerator() throws Exception {
+		//given
+		Long refrigeratorId = 1L;
+
+		doThrow(new EntityNotFoundException(ErrorCode.NOT_FOUND_REFRIGERATOR)).when(
+			storageService).findAllByRefrigeratorId(eq(refrigeratorId), any(), any(), any(), any(), any(), anyString());
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/storages/refrigerators/{refrigeratorId}", refrigeratorId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("R001"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("냉장고가 존재하지 않습니다."))
+			.andDo(print())
+			.andDo(document("storage/storage-find-all-by-refrigerator-id-failure-not-found-refrigerator",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				pathParameters(parameterWithName("refrigeratorId").description("냉장고 ID")),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("특정 냉장고의 모든 냉장고 저장소 조회 실패 테스트 - 유효하지 않거나 허용되지 않는 냉장고 저장소 정렬 타입인 경우")
+	@Test
+	void findAllByRefrigeratorIdFailure_invalidStorageSortType() throws Exception {
+		//given
+		Long refrigeratorId = 1L;
+
+		doThrow(new InvalidValueException(ErrorCode.INVALID_STORAGE_SORT_TYPE)).when(
+			storageService).findAllByRefrigeratorId(eq(refrigeratorId), any(), any(), any(), any(), any(), anyString());
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/storages/refrigerators/{refrigeratorId}", refrigeratorId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("S003"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("유효하지 않거나 허용되지 않는 냉장고 저장소 정렬 타입입니다."))
+			.andDo(print())
+			.andDo(document("storage/storage-find-all-by-refrigerator-id-failure-invalid-storage-sort-type",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				pathParameters(parameterWithName("refrigeratorId").description("냉장고 ID")),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("냉장고 저장소 수정 성공 테스트")
 	@Test
 	void update() throws Exception {
 		//given
@@ -348,7 +505,56 @@ class StorageControllerTest {
 			));
 	}
 
-	@DisplayName("냉장고 저장소 삭제 테스트")
+	@DisplayName("냉장고 저장소 수정 실패 테스트 - 냉장고 저장소 타입이 유효하지 않은 경우")
+	@Test
+	void updateFailure_invalidStorageType() throws Exception {
+		//given
+		Long storageId = 1L;
+		String updateStorageName = "냉동실 수정";
+		String updateStorageType = "fakeFreezer";
+
+		StorageUpdateReq storageUpdateReq = new StorageUpdateReq(updateStorageName, updateStorageType);
+
+		doThrow(new InvalidValueException(ErrorCode.INVALID_STORAGE_TYPE)).when(
+			storageService).update(eq(storageId), eq(storageUpdateReq), any(String.class));
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.patch("/api/storages/{id}", storageId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader())
+				.content(objectMapper.writeValueAsString(storageUpdateReq)))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("S001"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("유효하지 않은 냉장고 저장소 타입입니다."))
+			.andDo(print())
+			.andDo(document("storage/storage-update-failure-invalid-storage-type",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				pathParameters(
+					parameterWithName("id").description("냉장고 저장소 ID")
+				),
+				requestFields(
+					fieldWithPath("name").description("수정할 냉장고 저장소 이름"),
+					fieldWithPath("storageType").description("수정할 냉장고 타입")
+				),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("냉장고 저장소 삭제 성공 테스트")
 	@Test
 	void delete() throws Exception {
 		//given

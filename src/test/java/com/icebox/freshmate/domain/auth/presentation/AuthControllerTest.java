@@ -2,6 +2,7 @@ package com.icebox.freshmate.domain.auth.presentation;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -10,6 +11,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -27,7 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -52,6 +53,9 @@ import com.icebox.freshmate.domain.member.application.dto.response.MemberInfoRes
 import com.icebox.freshmate.domain.member.domain.Member;
 import com.icebox.freshmate.domain.member.domain.Role;
 import com.icebox.freshmate.global.TestPrincipalDetailsService;
+import com.icebox.freshmate.global.error.ErrorCode;
+import com.icebox.freshmate.global.error.exception.BusinessException;
+import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
 
 @ExtendWith({RestDocumentationExtension.class})
 @WebMvcTest(value = {AuthController.class})
@@ -93,12 +97,12 @@ class AuthControllerTest {
 			.realName("성이름")
 			.username("aaaa1111")
 			.password("aaaa1111!")
-			.nickName("닉네임닉네임")
+			.nickName("닉네임")
 			.role(Role.USER)
 			.build();
 	}
 
-	@DisplayName("회원 가입 테스트")
+	@DisplayName("회원 가입 성공 테스트")
 	@Test
 	void signUp() throws Exception {
 		//given
@@ -143,7 +147,47 @@ class AuthControllerTest {
 			));
 	}
 
-	@DisplayName("로그인 테스트")
+	@DisplayName("회원 가입 실패 테스트 - 중복된 아이디")
+	@Test
+	void signUpFailure_duplicatedUsername() throws Exception {
+		//given
+		MemberSignUpAuthReq mockSignUpRequest = new MemberSignUpAuthReq(member.getUsername(), member.getPassword(), member.getRealName(), member.getNickName());
+
+		doThrow(new BusinessException(ErrorCode.ALREADY_EXIST_USERNAME)).when(
+			authService).signUp(mockSignUpRequest);
+
+		//when
+		//then
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/sign-up")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(mockSignUpRequest))
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("M001"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("이미 존재하는 아이디입니다."))
+			.andDo(print())
+			.andDo(document("auth/auth-sign-up-failure-duplicated-username",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestFields(
+					fieldWithPath("username").description("아이디"),
+					fieldWithPath("password").description("비밀번호"),
+					fieldWithPath("realName").description("사용자 이름"),
+					fieldWithPath("nickName").description("닉네임")
+				),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("로그인 성공 테스트")
 	@Test
 	void login() throws Exception {
 		//given
@@ -179,15 +223,89 @@ class AuthControllerTest {
 					fieldWithPath("refreshToken").type(STRING).description("Refresh Token")
 				)
 			));
-
 	}
 
-	@DisplayName("회원 탈퇴 테스트")
+	@DisplayName("로그인 실패 테스트 - 회원이 존재하지 않음")
+	@Test
+	void loginFailure_notFoundMember() throws Exception {
+		//given
+		MemberLoginReq mockLoginRequest = new MemberLoginReq(member.getUsername(), member.getPassword());
+
+		doThrow(new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER)).when(
+			authService).login(mockLoginRequest);
+
+		//when
+		//then
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/login")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(mockLoginRequest))
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("M003"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("회원을 찾을 수 없습니다."))
+			.andDo(print())
+			.andDo(document("auth/auth-login-failure-not-found-member",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestFields(
+					fieldWithPath("username").description("아이디"),
+					fieldWithPath("password").description("비밀번호")
+				),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("로그인 실패 테스트 - 비밀번호가 일치하지 않음")
+	@Test
+	void loginFailure_wrongPassword() throws Exception {
+		//given
+		MemberLoginReq mockLoginRequest = new MemberLoginReq(member.getUsername(), member.getPassword());
+
+		doThrow(new BusinessException(ErrorCode.LOGIN_FAILURE)).when(
+			authService).login(mockLoginRequest);
+
+		//when
+		//then
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/login")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(mockLoginRequest))
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("M002"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("로그인에 실패했습니다."))
+			.andDo(print())
+			.andDo(document("auth/auth-login-failure-wrong-password",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestFields(
+					fieldWithPath("username").description("아이디"),
+					fieldWithPath("password").description("비밀번호")
+				),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("회원 탈퇴 성공 테스트")
 	@Test
 	void withdraw() throws Exception {
 		//given
 		String password = "password1111!";
-
 		MemberWithdrawReq mockWithdrawRequest = new MemberWithdrawReq(password);
 
 		doNothing().when(authService).withdraw(anyString(), anyString());
@@ -253,7 +371,7 @@ class AuthControllerTest {
 			));
 	}
 
-	@DisplayName("로그아웃 테스트")
+	@DisplayName("로그아웃 성공 테스트")
 	@Test
 	void logout() throws Exception {
 		//given
@@ -275,7 +393,6 @@ class AuthControllerTest {
 					headerWithName("Authorization").description("Access Token")
 				)
 			));
-
 
 		Mockito.verify(authService, Mockito.times(1)).logout(member.getUsername());
 	}

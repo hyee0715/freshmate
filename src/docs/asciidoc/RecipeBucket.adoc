@@ -25,6 +25,42 @@ include::{snippets}/recipe-bucket/recipe-bucket-create/response-fields.adoc[]
 .Response body
 include::{snippets}/recipe-bucket/recipe-bucket-create/response-body.adoc[]
 
+=== 실패 - 이미 즐겨 찾는 레시피로 등록되어 있는 경우
+
+.Request
+include::{snippets}/recipe-bucket/recipe-bucket-create-failure-duplicated-recipe-bucket/http-request.adoc[]
+.Request Headers
+include::{snippets}/recipe-bucket/recipe-bucket-create-failure-duplicated-recipe-bucket/request-headers.adoc[]
+.Request Fields
+include::{snippets}/recipe-bucket/recipe-bucket-create-failure-duplicated-recipe-bucket/request-fields.adoc[]
+.Request Body
+include::{snippets}/recipe-bucket/recipe-bucket-create-failure-duplicated-recipe-bucket/request-body.adoc[]
+
+.Response
+include::{snippets}/recipe-bucket/recipe-bucket-create-failure-duplicated-recipe-bucket/http-response.adoc[]
+.Response Fields
+include::{snippets}/recipe-bucket/recipe-bucket-create-failure-duplicated-recipe-bucket/response-fields.adoc[]
+.Response body
+include::{snippets}/recipe-bucket/recipe-bucket-create-failure-duplicated-recipe-bucket/response-body.adoc[]
+
+=== 실패 - 레시피 소유자의 정보와 즐겨 찾는 레시피로 등록하려는 사용자의 정보가 일치하지 않은 경우
+
+.Request
+include::{snippets}/recipe-bucket/recipe-bucket-create-failure-recipe-owner-mismatch-to-create-recipe-bucket/http-request.adoc[]
+.Request Headers
+include::{snippets}/recipe-bucket/recipe-bucket-create-failure-recipe-owner-mismatch-to-create-recipe-bucket/request-headers.adoc[]
+.Request Fields
+include::{snippets}/recipe-bucket/recipe-bucket-create-failure-recipe-owner-mismatch-to-create-recipe-bucket/request-fields.adoc[]
+.Request Body
+include::{snippets}/recipe-bucket/recipe-bucket-create-failure-recipe-owner-mismatch-to-create-recipe-bucket/request-body.adoc[]
+
+.Response
+include::{snippets}/recipe-bucket/recipe-bucket-create-failure-recipe-owner-mismatch-to-create-recipe-bucket/http-response.adoc[]
+.Response Fields
+include::{snippets}/recipe-bucket/recipe-bucket-create-failure-recipe-owner-mismatch-to-create-recipe-bucket/response-fields.adoc[]
+.Response body
+include::{snippets}/recipe-bucket/recipe-bucket-create-failure-recipe-owner-mismatch-to-create-recipe-bucket/response-body.adoc[]
+
 ---
 == GET: 즐겨 찾는 레시피 단건 조회
 === 성공
@@ -41,6 +77,20 @@ include::{snippets}/recipe-bucket/recipe-bucket-find-by-id/response-fields.adoc[
 .Response body
 include::{snippets}/recipe-bucket/recipe-bucket-find-by-id/response-body.adoc[]
 
+=== 실패 - 즐겨 찾는 레시피가 존재하지 않는 경우
+
+.Request
+include::{snippets}/recipe-bucket/recipe-bucket-find-by-id-failure-not-found-recipe-bucket/http-request.adoc[]
+.Path Parameters
+include::{snippets}/recipe-bucket/recipe-bucket-find-by-id-failure-not-found-recipe-bucket/path-parameters.adoc[]
+
+.Response
+include::{snippets}/recipe-bucket/recipe-bucket-find-by-id-failure-not-found-recipe-bucket/http-response.adoc[]
+.Response Fields
+include::{snippets}/recipe-bucket/recipe-bucket-find-by-id-failure-not-found-recipe-bucket/response-fields.adoc[]
+.Response body
+include::{snippets}/recipe-bucket/recipe-bucket-find-by-id-failure-not-found-recipe-bucket/response-body.adoc[]
+
 ---
 == GET: 사용자의 즐겨 찾는 레시피 목록 조회
 === 성공
@@ -56,6 +106,20 @@ include::{snippets}/recipe-bucket/recipe-bucket-find-all-by-member-id/http-respo
 include::{snippets}/recipe-bucket/recipe-bucket-find-all-by-member-id/response-fields.adoc[]
 .Response body
 include::{snippets}/recipe-bucket/recipe-bucket-find-all-by-member-id/response-body.adoc[]
+
+=== 실패 - 회원이 존재하지 않는 경우
+
+.Request
+include::{snippets}/recipe-bucket/recipe-bucket-find-all-by-member-id-failure-not-found-member/http-request.adoc[]
+.Request Headers
+include::{snippets}/recipe-bucket/recipe-bucket-find-all-by-member-id-failure-not-found-member/request-headers.adoc[]
+
+.Response
+include::{snippets}/recipe-bucket/recipe-bucket-find-all-by-member-id-failure-not-found-member/http-response.adoc[]
+.Response Fields
+include::{snippets}/recipe-bucket/recipe-bucket-find-all-by-member-id-failure-not-found-member/response-fields.adoc[]
+.Response body
+include::{snippets}/recipe-bucket/recipe-bucket-find-all-by-member-id-failure-not-found-member/response-body.adoc[]
 
 ---
 == POST: 즐겨 찾는 레시피 삭제

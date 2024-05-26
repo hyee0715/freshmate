@@ -55,6 +55,7 @@ import com.icebox.freshmate.domain.member.domain.Role;
 import com.icebox.freshmate.global.TestPrincipalDetailsService;
 import com.icebox.freshmate.global.error.ErrorCode;
 import com.icebox.freshmate.global.error.exception.BusinessException;
+import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
 
 @ExtendWith({RestDocumentationExtension.class})
 @WebMvcTest(value = {MemberController.class})
@@ -93,12 +94,12 @@ class MemberControllerTest {
 			.realName("성이름")
 			.username("aaaa1111")
 			.password("aaaa1111!")
-			.nickName("닉네임닉네임")
+			.nickName("닉네임")
 			.role(Role.USER)
 			.build();
 	}
 
-	@DisplayName("회원 ID로 회원 정보 조회 테스트")
+	@DisplayName("회원 ID로 회원 정보 조회 성공 테스트")
 	@Test
 	void findInfoById() throws Exception {
 		//given
@@ -135,7 +136,41 @@ class MemberControllerTest {
 			));
 	}
 
-	@DisplayName("접속중인 회원 정보 조회 테스트")
+	@DisplayName("회원 ID로 회원 정보 조회 실패 테스트 - 회원이 존재하지 않는 경우")
+	@Test
+	void findInfoByIdFailure_notFoundMember() throws Exception {
+		//given
+		Long memberId = 1L;
+
+		doThrow(new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER)).when(
+			memberService).findInfoById(memberId);
+
+		//when
+		//then
+		mockMvc.perform(get("/api/member/{id}", memberId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("M003"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("회원을 찾을 수 없습니다."))
+			.andDo(print())
+			.andDo(document("member/member-find-info-by-id-failure-not-found-member",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				pathParameters(parameterWithName("id").description("회원 ID")),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("접속중인 회원 정보 조회 성공 테스트")
 	@Test
 	void findInfo() throws Exception {
 		//given
@@ -174,7 +209,7 @@ class MemberControllerTest {
 			));
 	}
 
-	@DisplayName("회원 정보 수정 테스트")
+	@DisplayName("회원 정보 수정 성공 테스트")
 	@Test
 	void updateInfo() throws Exception {
 		//given
@@ -223,7 +258,58 @@ class MemberControllerTest {
 			));
 	}
 
-	@DisplayName("회원 비밀번호 수정 테스트")
+	@DisplayName("회원 정보 수정 실패 테스트 - 이름이 형식에 맞지 않음")
+	@Test
+	void updateInfoFailure_invalidUpdateInfo() throws Exception {
+		//given
+		Long memberId = 1L;
+		String updatedRealName = "이름수정!!!";
+		String updatedNickName = "닉네임수정";
+
+		MemberUpdateInfoReq updateInfoReq = new MemberUpdateInfoReq(updatedRealName, updatedNickName);
+		MemberInfoRes memberInfoRes = new MemberInfoRes(memberId, member.getUsername(), updatedRealName, updatedNickName, member.getRole().name());
+
+		when(memberService.updateInfo(eq(updateInfoReq), eq(member.getUsername()))).thenReturn(memberInfoRes);
+
+		//when
+		//then
+		mockMvc.perform(patch("/api/member")
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader())
+				.content(objectMapper.writeValueAsString(updateInfoReq)))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("C001"))
+			.andExpect(jsonPath("$.errors[0].field").value("realName"))
+			.andExpect(jsonPath("$.errors[0].value").value("이름수정!!!"))
+			.andExpect(jsonPath("$.errors[0].reason").value("사용자 이름은 한글 또는 알파벳만 입력해주세요."))
+			.andExpect(jsonPath("$.message").value("잘못된 값을 입력하셨습니다."))
+			.andDo(print())
+			.andDo(document("member/member-update-info-failure-invalid-update-info",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				requestFields(
+					fieldWithPath("realName").description("수정할 사용자 이름"),
+					fieldWithPath("nickName").description("수정할 닉네임")
+				),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("errors[].field").type(STRING).description("오류 필드"),
+					fieldWithPath("errors[].value").type(STRING).description("오류 값"),
+					fieldWithPath("errors[].reason").type(STRING).description("오류 사유"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("회원 비밀번호 수정 성공 테스트")
 	@Test
 	void updatePassword() throws Exception {
 		//given

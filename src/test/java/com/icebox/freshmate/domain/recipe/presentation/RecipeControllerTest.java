@@ -82,6 +82,7 @@ import com.icebox.freshmate.domain.storage.domain.StorageType;
 import com.icebox.freshmate.global.TestPrincipalDetailsService;
 import com.icebox.freshmate.global.error.ErrorCode;
 import com.icebox.freshmate.global.error.exception.BusinessException;
+import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
 
 @ExtendWith({RestDocumentationExtension.class})
 @WebMvcTest(value = {RecipeController.class})
@@ -132,7 +133,7 @@ class RecipeControllerTest {
 			.realName("성이름")
 			.username("aaaa1111")
 			.password("aaaa1111!")
-			.nickName("닉네임닉네임")
+			.nickName("닉네임")
 			.role(Role.USER)
 			.build();
 
@@ -140,7 +141,7 @@ class RecipeControllerTest {
 			.realName("김이름")
 			.username("aaaa2222")
 			.password("aaaa2222!")
-			.nickName("닉네임닉네임2")
+			.nickName("닉네임2")
 			.role(Role.USER)
 			.build();
 
@@ -242,7 +243,7 @@ class RecipeControllerTest {
 		recipe3.addRecipeImage(recipeImage2);
 	}
 
-	@DisplayName("레시피 생성 테스트")
+	@DisplayName("레시피 생성 성공 테스트")
 	@Test
 	void create() throws Exception {
 		//given
@@ -257,8 +258,8 @@ class RecipeControllerTest {
 		List<RecipeGroceryReq> recipeGroceriesReq = List.of(recipeGroceryReq);
 		RecipeCreateReq recipeCreateReq = new RecipeCreateReq(recipe1.getTitle(), recipeGroceriesReq, recipe1.getContent());
 
-		MockMultipartFile file1 = new MockMultipartFile("imageFiles", "test1.jpg", "image/jpeg", "Spring Framework".getBytes());
-		MockMultipartFile file2 = new MockMultipartFile("imageFiles", "test2.jpg", "image/jpeg", "Spring Framework".getBytes());
+		MockMultipartFile file1 = new MockMultipartFile("imageFiles", "test1.jpg", "image/jpeg", "Spring Framework" .getBytes());
+		MockMultipartFile file2 = new MockMultipartFile("imageFiles", "test2.jpg", "image/jpeg", "Spring Framework" .getBytes());
 		MockMultipartFile request = new MockMultipartFile("recipeCreateReq", "recipeCreateReq",
 			"application/json",
 			objectMapper.writeValueAsString(recipeCreateReq).getBytes(StandardCharsets.UTF_8));
@@ -339,6 +340,69 @@ class RecipeControllerTest {
 					fieldWithPath("materials[].groceryQuantity").type(STRING).description("회원이 등록한 식재료 수량"),
 					fieldWithPath("images[].fileName").type(STRING).description("레시피 이미지 파일 이름"),
 					fieldWithPath("images[].path").type(STRING).description("레시피 이미지 파일 경로")
+				)
+			));
+	}
+
+	@DisplayName("레시피 생성 실패 테스트 - 회원이 존재하지 않는 경우")
+	@Test
+	void createFailure_notFoundMember() throws Exception {
+		//given
+		Long grocery1Id = 1L;
+
+		RecipeGroceryReq recipeGroceryReq = new RecipeGroceryReq(grocery1Id, grocery1.getName(), grocery1.getQuantity());
+		List<RecipeGroceryReq> recipeGroceriesReq = List.of(recipeGroceryReq);
+		RecipeCreateReq recipeCreateReq = new RecipeCreateReq(recipe1.getTitle(), recipeGroceriesReq, recipe1.getContent());
+
+		MockMultipartFile file1 = new MockMultipartFile("imageFiles", "test1.jpg", "image/jpeg", "Spring Framework" .getBytes());
+		MockMultipartFile file2 = new MockMultipartFile("imageFiles", "test2.jpg", "image/jpeg", "Spring Framework" .getBytes());
+		MockMultipartFile request = new MockMultipartFile("recipeCreateReq", "recipeCreateReq",
+			"application/json",
+			objectMapper.writeValueAsString(recipeCreateReq).getBytes(StandardCharsets.UTF_8));
+
+		doThrow(new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER)).when(
+			recipeService).create(any(RecipeCreateReq.class), any(ImageUploadReq.class), any(String.class));
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.multipart("/api/recipes")
+				.file(file1)
+				.file(file2)
+				.file(request)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader())
+				.contentType(MediaType.MULTIPART_FORM_DATA)
+				.accept(MediaType.APPLICATION_JSON)
+				.characterEncoding("UTF-8"))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("M003"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("회원을 찾을 수 없습니다."))
+			.andDo(print())
+			.andDo(document("recipe/recipe-create-failure-not-found-member",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				requestParts(
+					partWithName("imageFiles").description("레시피 이미지들"),
+					partWithName("recipeCreateReq").description("레시피 등록 내용")
+				),
+				requestPartFields("recipeCreateReq",
+					fieldWithPath("title").description("레시피 제목"),
+					fieldWithPath("materials[].groceryId").description("레시피 식재료 ID"),
+					fieldWithPath("materials[].groceryName").description("레시피 식재료 이름"),
+					fieldWithPath("materials[].groceryQuantity").description("레시피 식재료 수량"),
+					fieldWithPath("content").description("레시피 내용")
+				),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
 				)
 			));
 	}
@@ -465,7 +529,7 @@ class RecipeControllerTest {
 			));
 	}
 
-	@DisplayName("레시피 단건 조회 테스트")
+	@DisplayName("레시피 단건 조회 성공 테스트")
 	@Test
 	void findById() throws Exception {
 		//given
@@ -545,7 +609,45 @@ class RecipeControllerTest {
 			));
 	}
 
-	@DisplayName("사용자의 모든 레시피 조회 테스트")
+	@DisplayName("레시피 단건 조회 실패 테스트 - 레시피가 존재하지 않는 경우")
+	@Test
+	void findByIdFailure_notFoundRecipe() throws Exception {
+		//given
+		Long recipe1Id = 1L;
+
+		doThrow(new EntityNotFoundException(ErrorCode.NOT_FOUND_RECIPE)).when(
+			recipeService).findById(anyLong());
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/recipes/{id}", recipe1Id)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("RC001"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("레시피가 존재하지 않습니다."))
+			.andDo(print())
+			.andDo(document("recipe/recipe-find-by-id-failure-not-found-recipe",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				pathParameters(parameterWithName("id").description("레시피 ID")),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("사용자의 모든 레시피 조회 성공 테스트")
 	@Test
 	void findAllByMemberIdAndRecipeType() throws Exception {
 		//given

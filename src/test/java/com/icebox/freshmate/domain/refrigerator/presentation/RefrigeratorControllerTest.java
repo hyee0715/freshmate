@@ -3,7 +3,9 @@ package com.icebox.freshmate.domain.refrigerator.presentation;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -58,6 +60,9 @@ import com.icebox.freshmate.domain.refrigerator.application.dto.response.Refrige
 import com.icebox.freshmate.domain.refrigerator.application.dto.response.RefrigeratorsRes;
 import com.icebox.freshmate.domain.refrigerator.domain.Refrigerator;
 import com.icebox.freshmate.global.TestPrincipalDetailsService;
+import com.icebox.freshmate.global.error.ErrorCode;
+import com.icebox.freshmate.global.error.exception.EntityNotFoundException;
+import com.icebox.freshmate.global.error.exception.InvalidValueException;
 
 @ExtendWith({RestDocumentationExtension.class})
 @WebMvcTest(value = {RefrigeratorController.class})
@@ -97,7 +102,7 @@ class RefrigeratorControllerTest {
 			.realName("성이름")
 			.username("aaaa1111")
 			.password("aaaa1111!")
-			.nickName("닉네임닉네임")
+			.nickName("닉네임")
 			.role(Role.USER)
 			.build();
 
@@ -107,7 +112,7 @@ class RefrigeratorControllerTest {
 			.build();
 	}
 
-	@DisplayName("냉장고 생성 테스트")
+	@DisplayName("냉장고 생성 성공 테스트")
 	@Test
 	void create() throws Exception {
 		//given
@@ -161,7 +166,48 @@ class RefrigeratorControllerTest {
 			));
 	}
 
-	@DisplayName("냉장고 단건 조회 테스트")
+	@DisplayName("냉장고 생성 실패 테스트 - 회원이 존재하지 않는 경우")
+	@Test
+	void createFailure_notFoundMember() throws Exception {
+		//given
+		RefrigeratorReq refrigeratorReq = new RefrigeratorReq(refrigerator.getName());
+
+		doThrow(new EntityNotFoundException(ErrorCode.NOT_FOUND_MEMBER)).when(
+			refrigeratorService).create(eq(refrigeratorReq), any(String.class));
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.post("/api/refrigerators")
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader())
+				.content(objectMapper.writeValueAsString(refrigeratorReq)))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("M003"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("회원을 찾을 수 없습니다."))
+			.andDo(print())
+			.andDo(document("refrigerator/refrigerator-create-failure-not-found-member",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				requestFields(
+					fieldWithPath("name").description("냉장고 이름")
+				),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("냉장고 단건 조회 성공 테스트")
 	@Test
 	void findById() throws Exception {
 		//given
@@ -207,7 +253,41 @@ class RefrigeratorControllerTest {
 			));
 	}
 
-	@DisplayName("회원의 모든 냉장고 조회 테스트")
+	@DisplayName("냉장고 단건 조회 실패 테스트 - 냉장고가 존재하지 않는 경우")
+	@Test
+	void findByIdFailure_notFoundRefrigerator() throws Exception {
+		//given
+		Long refrigeratorId = 1L;
+
+		doThrow(new EntityNotFoundException(ErrorCode.NOT_FOUND_REFRIGERATOR)).when(
+			refrigeratorService).findById(refrigeratorId);
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/refrigerators/{id}", refrigeratorId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("R001"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("냉장고가 존재하지 않습니다."))
+			.andDo(print())
+			.andDo(document("refrigerator/refrigerator-find-by-id-failure-not-found-refrigerator",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				pathParameters(parameterWithName("id").description("냉장고 ID")),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("회원의 모든 냉장고 조회 성공 테스트")
 	@Test
 	void findAll() throws Exception {
 		//given
@@ -264,7 +344,42 @@ class RefrigeratorControllerTest {
 			));
 	}
 
-	@DisplayName("냉장고 수정 테스트")
+	@DisplayName("회원의 모든 냉장고 조회 실패 테스트 - 유효하지 않거나 허용되지 않는 냉장고 정렬 타입인 경우")
+	@Test
+	void findAllFailure_invalidRefrigeratorSortType() throws Exception {
+		//given
+		doThrow(new InvalidValueException(ErrorCode.INVALID_REFRIGERATOR_SORT_TYPE)).when(
+			refrigeratorService).findAll(any(String.class), any(), any(), any(), any());
+
+		//when
+		//then
+		mockMvc.perform(RestDocumentationRequestBuilders.get("/api/refrigerators")
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader()))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("R002"))
+			.andExpect(jsonPath("$.errors").isEmpty())
+			.andExpect(jsonPath("$.message").value("유효하지 않거나 허용되지 않는 냉장고 정렬 타입입니다."))
+			.andDo(print())
+			.andDo(document("refrigerator/refrigerator-find-all-failure-invalid-refrigerator-sort-type",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("냉장고 수정 성공 테스트")
 	@Test
 	void update() throws Exception {
 		//given
@@ -321,7 +436,60 @@ class RefrigeratorControllerTest {
 			));
 	}
 
-	@DisplayName("냉장고 삭제 테스트")
+	@DisplayName("냉장고 수정 실패 테스트 - 냉장고 이름을 입력하지 않은 경우")
+	@Test
+	void updateFailure_invalidUpdateName() throws Exception {
+		//given
+		Long refrigeratorId = 1L;
+		Long memberId = 1L;
+
+		LocalDateTime createdAt = LocalDateTime.now();
+		LocalDateTime updatedAt = createdAt;
+
+		RefrigeratorReq refrigeratorReq = new RefrigeratorReq("");
+		RefrigeratorRes refrigeratorRes = new RefrigeratorRes(refrigeratorId, refrigerator.getName(), memberId, refrigerator.getMember().getUsername(), refrigerator.getMember().getNickName(), createdAt, updatedAt);
+
+		when(refrigeratorService.update(eq(refrigeratorId), eq(refrigeratorReq), any(String.class))).thenReturn(refrigeratorRes);
+
+		//when
+		//then
+		mockMvc.perform(patch("/api/refrigerators/{id}", refrigeratorId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer {ACCESS_TOKEN}")
+				.with(user(principalDetails))
+				.with(csrf().asHeader())
+				.content(objectMapper.writeValueAsString(refrigeratorReq)))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.timestamp").isNotEmpty())
+			.andExpect(jsonPath("$.code").value("C001"))
+			.andExpect(jsonPath("$.errors").isNotEmpty())
+			.andExpect(jsonPath("$.message").value("잘못된 값을 입력하셨습니다."))
+			.andDo(print())
+			.andDo(document("refrigerator/refrigerator-update-failure-invalid-update-name",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				requestHeaders(
+					headerWithName("Authorization").description("Access Token")
+				),
+				pathParameters(
+					parameterWithName("id").description("냉장고 ID")
+				),
+				requestFields(
+					fieldWithPath("name").description("수정할 냉장고 이름")
+				),
+				responseFields(
+					fieldWithPath("timestamp").type(STRING).description("예외 시간"),
+					fieldWithPath("code").type(STRING).description("예외 코드"),
+					fieldWithPath("errors[]").type(ARRAY).description("오류 목록"),
+					fieldWithPath("errors[].field").type(STRING).description("오류 필드"),
+					fieldWithPath("errors[].value").type(STRING).description("오류 값"),
+					fieldWithPath("errors[].reason").type(STRING).description("오류 사유"),
+					fieldWithPath("message").type(STRING).description("오류 메시지")
+				)
+			));
+	}
+
+	@DisplayName("냉장고 삭제 성공 테스트")
 	@Test
 	void delete() throws Exception {
 		//given

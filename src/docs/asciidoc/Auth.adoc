@@ -23,6 +23,22 @@ include::{snippets}/auth/auth-sign-up/response-fields.adoc[]
 .Response body
 include::{snippets}/auth/auth-sign-up/response-body.adoc[]
 
+=== 실패 - 아이디가 중복되는 경우
+
+.Request
+include::{snippets}/auth/auth-sign-up-failure-duplicated-username/http-request.adoc[]
+.Request Fields
+include::{snippets}/auth/auth-sign-up-failure-duplicated-username/request-fields.adoc[]
+.Request Body
+include::{snippets}/auth/auth-sign-up-failure-duplicated-username/request-body.adoc[]
+
+.Response
+include::{snippets}/auth/auth-sign-up-failure-duplicated-username/http-response.adoc[]
+.Response Fields
+include::{snippets}/auth/auth-sign-up-failure-duplicated-username/response-fields.adoc[]
+.Response body
+include::{snippets}/auth/auth-sign-up-failure-duplicated-username/response-body.adoc[]
+
 ---
 == POST: 로그인
 === 성공
@@ -40,6 +56,38 @@ include::{snippets}/auth/auth-login/http-response.adoc[]
 include::{snippets}/auth/auth-login/response-fields.adoc[]
 .Response body
 include::{snippets}/auth/auth-login/response-body.adoc[]
+
+=== 실패 - 회원이 존재하지 않는 경우
+
+.Request
+include::{snippets}/auth/auth-login-failure-not-found-member/http-request.adoc[]
+.Request Fields
+include::{snippets}/auth/auth-login-failure-not-found-member/request-fields.adoc[]
+.Request Body
+include::{snippets}/auth/auth-login-failure-not-found-member/request-body.adoc[]
+
+.Response
+include::{snippets}/auth/auth-login-failure-not-found-member/http-response.adoc[]
+.Response Fields
+include::{snippets}/auth/auth-login-failure-not-found-member/response-fields.adoc[]
+.Response body
+include::{snippets}/auth/auth-login-failure-not-found-member/response-body.adoc[]
+
+=== 실패 - 비밀번호가 일치하지 않는 경우
+
+.Request
+include::{snippets}/auth/auth-login-failure-wrong-password/http-request.adoc[]
+.Request Fields
+include::{snippets}/auth/auth-login-failure-wrong-password/request-fields.adoc[]
+.Request Body
+include::{snippets}/auth/auth-login-failure-wrong-password/request-body.adoc[]
+
+.Response
+include::{snippets}/auth/auth-login-failure-wrong-password/http-response.adoc[]
+.Response Fields
+include::{snippets}/auth/auth-login-failure-wrong-password/response-fields.adoc[]
+.Response body
+include::{snippets}/auth/auth-login-failure-wrong-password/response-body.adoc[]
 
 ---
 == DELETE: 회원 탈퇴
