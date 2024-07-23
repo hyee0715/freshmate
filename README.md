@@ -40,6 +40,8 @@
 ## 🔍 API 명세
 [Freshmate API 명세서 바로가기](http://13.124.73.236/docs)
 
+## 🎬 아키텍처
+![freshmate 아키텍처](https://github.com/user-attachments/assets/b150ecc1-8e17-44d5-9656-aefad7cd4ebf)
 
 ## ✨ CI/CD 파이프라인
 ![freshmate ci cd drawio (1)](https://github.com/hyee0715/freshmate/assets/59169881/3c35f928-6678-4977-8817-b86456557349)
