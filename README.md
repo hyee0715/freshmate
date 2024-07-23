@@ -38,7 +38,7 @@
 <!--## 📄 프로젝트 문서-->
 
 ## 🔍 API 명세
-[Freshmate API 명세서 바로가기](http://13.124.73.236/docs)
+[Freshmate API 명세서 바로가기](http://13.124.73.236/api/docs)
 
 ## 🎬 아키텍처
 ![freshmate 아키텍처](https://github.com/user-attachments/assets/b150ecc1-8e17-44d5-9656-aefad7cd4ebf)
