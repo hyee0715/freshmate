@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class DocsViewController {
 
-	@GetMapping("/docs")
+	@GetMapping("/api/docs")
 	public String getDocs() {
 		return "docs/docs-home";
 	}
