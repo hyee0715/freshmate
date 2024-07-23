@@ -82,10 +82,10 @@ jobs:
       # Docker image 빌드
       - name: Build Docker
         run: |
-          STATUS=$(curl -o /dev/null -w "%{http_code}" "http://${{ secrets.FRESHMATE_IP }}/env")
+          STATUS=$(curl -o /dev/null -w "%{http_code}" "http://${{ secrets.FRESHMATE_IP }}/api/env")
           echo $STATUS
           if [ $STATUS = 200 ]; then
-            CURRENT_UPSTREAM=$(curl -s "http://${{ secrets.FRESHMATE_IP }}/env")
+            CURRENT_UPSTREAM=$(curl -s "http://${{ secrets.FRESHMATE_IP }}/api/env")
           else
             CURRENT_UPSTREAM=green
           fi
